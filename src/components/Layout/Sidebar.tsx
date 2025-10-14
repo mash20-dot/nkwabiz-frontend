@@ -12,7 +12,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const location = useLocation();
   const navigation = [{
     name: 'Dashboard',
-    href: '/',
+    href: '/dashboard',
     icon: LayoutDashboard
   }, {
     name: 'Products',

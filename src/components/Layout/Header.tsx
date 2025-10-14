@@ -1,15 +1,31 @@
 import React from 'react';
 import { Menu, Bell } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { logout } from '../../utils/auth';
+
 interface HeaderProps {
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
 }
+
 const Header: React.FC<HeaderProps> = ({
   sidebarOpen,
   setSidebarOpen
 }) => {
-  return <header className="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white shadow">
-      <button type="button" className="px-4 border-r border-gray-200 text-gray-500 md:hidden" onClick={() => setSidebarOpen(true)}>
+  const navigate = useNavigate();
+
+  function handleLogout() {
+    logout();
+    navigate('/login');
+  }
+
+  return (
+    <header className="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white shadow">
+      <button
+        type="button"
+        className="px-4 border-r border-gray-200 text-gray-500 md:hidden"
+        onClick={() => setSidebarOpen(true)}
+      >
         <span className="sr-only">Open sidebar</span>
         <Menu className="h-6 w-6" aria-hidden="true" />
       </button>
@@ -32,13 +48,25 @@ const Header: React.FC<HeaderProps> = ({
               <button className="max-w-xs bg-white flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                 <span className="sr-only">Open user menu</span>
                 <div className="h-8 w-8 rounded-full bg-blue-200 flex items-center justify-center">
-                  <span className="font-medium text-blue-800">SM</span>
+                  <span className="font-medium text-blue-800">
+                    {/* Optionally show user initials or avatar */}
+                    SM
+                  </span>
                 </div>
               </button>
             </div>
           </div>
+          {/* Logout Button */}
+          <button
+            onClick={handleLogout}
+            className="ml-6 px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700"
+          >
+            Logout
+          </button>
         </div>
       </div>
-    </header>;
+    </header>
+  );
 };
+
 export default Header;

@@ -124,9 +124,9 @@ const AboutUs = () => {
             </div>
             <div className="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {[{
-              name: 'Kofi Adu',
+              name: 'Nkwabiz',
               role: 'Founder & CEO',
-              image: 'https://images.unsplash.com/photo-1507152832244-10d45c7eda57?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+              image: 'https://i.postimg.cc/pLyJhZmB/51327299afe18483f5ae04d029ae31aa-high.webp',
               bio: 'Former small business owner with 15 years of experience in retail management.'
             }, {
               name: 'Ama Owusu',

@@ -8,7 +8,7 @@ const Navbar = () => {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="flex-shrink-0 flex items-center">
-              <span className="text-2xl font-bold text-blue-700">NkwaBiz</span>
+              <img className="h-10 w-20 object-cover" src="https://i.postimg.cc/HL8G2Xh5/Nkwabiz-logo.png" alt="Nkwabiz-Logo" />
             </Link>
           </div>
           {/* Desktop navigation */}
@@ -19,7 +19,19 @@ const Navbar = () => {
             <Link to="/about" className="text-gray-900 hover:text-blue-600 px-3 py-2 text-sm font-medium">
               About
             </Link>
-            <Link to="/" className="ml-2 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <Link to="/features" className="text-gray-900 hover:text-blue-600 px-3 py-2 text-sm font-medium">
+              Features
+            </Link>
+            <Link to="/testimonials" className="text-gray-900 hover:text-blue-600 px-3 py-2 text-sm font-medium">
+              Testimonials
+            </Link>
+            <Link to="/pricing" className="text-gray-900 hover:text-blue-600 px-3 py-2 text-sm font-medium">
+              Pricing
+            </Link>
+            <Link to="/login" className="text-gray-900 hover:text-blue-600 px-3 py-2 text-sm font-medium">
+              Login
+            </Link>
+            <Link to="/login" className="ml-2 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
               Get Started
             </Link>
           </div>

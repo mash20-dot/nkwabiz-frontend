@@ -58,7 +58,7 @@ const Testimonials = () => {
           </div>
         </div>
         <div className="mt-10 text-center">
-          <Link to="/" className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
+          <Link to="/testimonials" className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
             Read more success stories
           </Link>
         </div>

@@ -43,7 +43,7 @@ const CTA = () => {
                 </li>)}
             </ul>
             <div className="mt-8">
-              <Link to="/" className="block w-full bg-blue-600 border border-transparent rounded-md py-3 px-5 text-center text-base font-medium text-white hover:bg-blue-700">
+              <Link to="/login" className="block w-full bg-blue-600 border border-transparent rounded-md py-3 px-5 text-center text-base font-medium text-white hover:bg-blue-700">
                 Get Started Now
               </Link>
             </div>
