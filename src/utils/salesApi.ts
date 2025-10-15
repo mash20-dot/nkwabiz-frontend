@@ -15,8 +15,21 @@ export type ProductSoldItem = {
   quantity: number;
 };
 
+export type SalesHistoryResponse = {
+  summary?: {
+    recent_date: string;
+    total_profit_for_recent_date: number;
+    total_sales_for_recent_date: number;
+  };
+  history?: SaleHistoryItem[];
+};
+
 // Premium: Get full sales history with analytics (requires premium)
-export async function getSalesHistory() {
+export async function getSalesHistory(): Promise<SaleHistoryItem[]> {
+  return apiFetch("/stock_manage/stocks/history", { method: "GET" }, true);
+}
+
+export async function getSalesHistoryWithSummary() {
   return apiFetch("/stock_manage/stocks/history", { method: "GET" }, true);
 }
 
