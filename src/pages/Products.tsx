@@ -13,6 +13,7 @@ import {
 import ProductFormModal from "../components/ProductFormModal";
 import ProductSearchBar from "../components/ProductSearchBar";
 import ProductTable from "../components/ProductTable";
+import { getAutoCategory } from "../utils/categories";
 
 const Products: React.FC = () => {
   const location = useLocation();
@@ -43,7 +44,11 @@ const Products: React.FC = () => {
     setLoading(true);
     getProductsByStatus(statusFilter)
       .then((data) => {
-        setProducts(data.products || []);
+        const productsWithCategory = (data.products || []).map((prod: any) => ({
+          ...prod,
+          category: prod.category || getAutoCategory(prod.product_name).label,
+        }));
+        setProducts(productsWithCategory);
       })
       .catch(() => {
         setProducts([]);
@@ -83,6 +88,7 @@ const Products: React.FC = () => {
               : "Active",
           price: `₵${data.selling_price.toFixed(2)}`,
           stock: data.initial_stock,
+          category: data.category || getAutoCategory(data.product_name).label,
         } as Product,
       ]);
       toast.success("Product added successfully!");
@@ -102,7 +108,17 @@ const Products: React.FC = () => {
       setModalOpen(false);
       setProducts((prev) =>
         prev.map((p) =>
-          p.id === modalInitialData.id ? { ...p, ...result.product } : p
+          p.id === modalInitialData.id
+            ? {
+                ...p,
+                ...result.product,
+                category:
+                  result.product?.category ||
+                  getAutoCategory(
+                    result.product?.product_name || p.product_name
+                  ).label,
+              }
+            : p
         )
       );
       toast.success("Product updated successfully!");
@@ -136,14 +152,16 @@ const Products: React.FC = () => {
     try {
       const result = await searchProductsByName(searchTerm);
       if (Array.isArray(result.products)) {
-        setProducts(
-          result.products.map((p: any, idx: number) => ({
+        const productsWithCategory = result.products.map(
+          (p: any, idx: number) => ({
             ...p,
             id: p.id ?? idx + 1,
             price: `₵${p.selling_price?.toFixed(2)}`,
             stock: p.initial_stock,
-          }))
+            category: p.category || getAutoCategory(p.product_name).label,
+          })
         );
+        setProducts(productsWithCategory);
         toast.success("Products filtered!");
       } else {
         toast.error(result.message || "No matching products found");

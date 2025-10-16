@@ -10,7 +10,13 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { getDashboardOverview } from "../utils/productApi";
 import { getStockAlerts } from "../utils/stockApi";
-import { getSalesHistoryWithSummary, getProductsSold } from "../utils/salesApi";
+import {
+  getSalesHistoryWithSummary,
+  getProductsSold,
+  getMonthlySalesSummary,
+  MonthlySalesItem,
+  MonthlySalesSummaryResponse,
+} from "../utils/salesApi";
 import SaleModal from "../components/SaleModal";
 
 type DashboardProduct = {
@@ -50,6 +56,12 @@ const Dashboard = () => {
   // Recent Sales
   const [recentSales, setRecentSales] = useState<RecentSale[]>([]);
   const [loadingRecentSales, setLoadingRecentSales] = useState(false);
+
+  // Monthly Sales State
+  const [monthlySales, setMonthlySales] = useState<number | null>(null);
+  const [monthlyProfit, setMonthlyProfit] = useState<number | null>(null);
+  const [monthlyLoading, setMonthlyLoading] = useState<boolean>(true);
+  const [monthlyError, setMonthlyError] = useState<string>("");
 
   const navigate = useNavigate();
 
@@ -95,6 +107,35 @@ const Dashboard = () => {
       })
       .catch(() => setRecentSales([]))
       .finally(() => setLoadingRecentSales(false));
+  }, []);
+
+  useEffect(() => {
+    setMonthlyLoading(true);
+    setMonthlyError("");
+    getMonthlySalesSummary()
+      .then((response: MonthlySalesSummaryResponse) => {
+        const data = response.monthly_sales_summary || [];
+        const now = new Date();
+        const currentYear = now.getFullYear();
+        const currentMonth = now.getMonth() + 1;
+        const thisMonth = data.find(
+          (item) => item.year === currentYear && item.month === currentMonth
+        );
+        if (thisMonth) {
+          setMonthlySales(thisMonth.total_sales);
+          setMonthlyProfit(thisMonth.total_profit);
+        } else {
+          setMonthlySales(0);
+          setMonthlyProfit(0);
+        }
+      })
+      .catch((err) => {
+        console.error("Monthly sales fetch error:", err);
+        setMonthlySales(null);
+        setMonthlyProfit(null);
+        setMonthlyError("Could not fetch monthly sales.");
+      })
+      .finally(() => setMonthlyLoading(false));
   }, []);
 
   // Stats
@@ -259,8 +300,21 @@ const Dashboard = () => {
                   </dt>
                   <dd>
                     <div className="text-lg font-medium text-gray-900">
-                      ₵32,500 {/* Dummy data */}
+                      {monthlyLoading ? (
+                        "..."
+                      ) : monthlyError ? (
+                        <span className="text-red-500">{monthlyError}</span>
+                      ) : monthlySales !== null ? (
+                        `₵${monthlySales.toLocaleString()}`
+                      ) : (
+                        "₵0"
+                      )}
                     </div>
+                    {!monthlyLoading && monthlyProfit !== null && (
+                      <div className="text-xs text-gray-500">
+                        Profit: ₵{monthlyProfit.toLocaleString()}
+                      </div>
+                    )}
                   </dd>
                 </dl>
               </div>

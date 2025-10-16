@@ -1,7 +1,7 @@
 import { apiFetch } from "./api";
 
 export type SaleHistoryItem = {
-  sale_id: number;
+  sale_id?: string;
   product_name: string;
   quantity: number;
   unit_price: number;
@@ -24,8 +24,21 @@ export type SalesHistoryResponse = {
   history?: SaleHistoryItem[];
 };
 
+export type MonthlySalesItem = {
+  year: number;
+  month: number;
+  total_sales: number;
+  total_profit: number;
+};
+
+export type MonthlySalesSummaryResponse = {
+  user: string;
+  filter_used: { year: number; month: number; };
+  monthly_sales_summary: MonthlySalesItem[];
+};
+
 // Premium: Get full sales history with analytics (requires premium)
-export async function getSalesHistory(): Promise<SaleHistoryItem[]> {
+export async function getSalesHistory(): Promise<{ sales_history: SaleHistoryItem[]; summary?: any }> {
   return apiFetch("/stock_manage/stocks/history", { method: "GET" }, true);
 }
 
@@ -36,4 +49,8 @@ export async function getSalesHistoryWithSummary() {
 // Free: Get basic products sold info
 export async function getProductsSold() {
   return apiFetch("/stock_manage/product/sold", { method: "GET" }, true);
+}
+
+export async function getMonthlySalesSummary(): Promise<MonthlySalesSummaryResponse> {
+  return apiFetch("/stock_manage/monthly/sales", { method: "GET" }, true);
 }
