@@ -12,7 +12,7 @@ import {
   Line,
 } from "recharts";
 import { Download, Calendar } from "lucide-react";
-import { getSalesHistory, SaleHistoryItem } from "../utils/salesApi";
+import { getSalesHistory, getMonthlySalesSummary, SaleHistoryItem } from "../utils/salesApi";
 import { getToken } from "../utils/api";
 
 const Analytics = () => {
@@ -20,13 +20,13 @@ const Analytics = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
   const [dateRange, setDateRange] = useState<"week" | "month" | "year">("week");
-  const [exportLoading, setExportLoading] = useState(false); // add loading for export
-  const [exportError, setExportError] = useState<string>(""); // error for export
+  const [exportLoading, setExportLoading] = useState(false);
+  const [exportError, setExportError] = useState<string>("");
 
   useEffect(() => {
     setLoading(true);
     getSalesHistory()
-      .then((data) => setSalesData(Array.isArray(data) ? data : []))
+      .then((data) => setSalesData(Array.isArray(data.sales_history) ? data.sales_history : []))
       .catch((err) => setError(err.message || "Failed to fetch analytics"))
       .finally(() => setLoading(false));
   }, []);
