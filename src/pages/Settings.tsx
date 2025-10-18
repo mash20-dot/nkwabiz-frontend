@@ -15,7 +15,7 @@ const Settings = () => {
                   <User className="text-blue-500 mr-3 h-5 w-5" />
                   <span className="truncate">Account</span>
                 </button>
-                <button className="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group rounded-md px-3 py-2 flex items-center text-sm font-medium w-full">
+                {/* <button className="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group rounded-md px-3 py-2 flex items-center text-sm font-medium w-full">
                   <Building className="text-gray-400 group-hover:text-gray-500 mr-3 h-5 w-5" />
                   <span className="truncate">Business Profile</span>
                 </button>
@@ -30,7 +30,7 @@ const Settings = () => {
                 <button className="text-gray-600 hover:bg-gray-50 hover:text-gray-900 group rounded-md px-3 py-2 flex items-center text-sm font-medium w-full">
                   <CreditCard className="text-gray-400 group-hover:text-gray-500 mr-3 h-5 w-5" />
                   <span className="truncate">Billing</span>
-                </button>
+                </button> */}
               </nav>
             </div>
             {/* Settings Content */}
@@ -90,7 +90,7 @@ const Settings = () => {
                   </div>
                 </div>
               </div>
-              <div className="mt-10 pt-10 border-t border-gray-200">
+              {/* <div className="mt-10 pt-10 border-t border-gray-200">
                 <div>
                   <h3 className="text-lg font-medium leading-6 text-gray-900">
                     Subscription Plan
@@ -169,7 +169,7 @@ const Settings = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
