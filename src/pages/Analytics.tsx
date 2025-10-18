@@ -12,7 +12,11 @@ import {
   Line,
 } from "recharts";
 import { Download, Calendar } from "lucide-react";
-import { getSalesHistory, getMonthlySalesSummary, SaleHistoryItem } from "../utils/salesApi";
+import {
+  getSalesHistory,
+  getMonthlySalesSummary,
+  SaleHistoryItem,
+} from "../utils/salesApi";
 import { getToken } from "../utils/api";
 
 const Analytics = () => {
@@ -26,7 +30,11 @@ const Analytics = () => {
   useEffect(() => {
     setLoading(true);
     getSalesHistory()
-      .then((data) => setSalesData(Array.isArray(data.sales_history) ? data.sales_history : []))
+      .then((data) =>
+        setSalesData(
+          Array.isArray(data.sales_history) ? data.sales_history : []
+        )
+      )
       .catch((err) => setError(err.message || "Failed to fetch analytics"))
       .finally(() => setLoading(false));
   }, []);
@@ -132,176 +140,104 @@ const Analytics = () => {
           <span className="text-gray-700">Time Period:</span>
           <div className="flex space-x-2">
             <button
-              onClick={() => setDateRange("week")}
+              onClick={() => setDateRange("year")}
               className={`px-3 py-1 text-sm font-medium rounded-md ${
-                dateRange === "week"
+                dateRange === "year"
                   ? "bg-blue-100 text-blue-700"
-                  : "text-gray-500 hover:text-gray-700 border border-gray-300"
+                  : "bg-gray-100 text-gray-700"
               }`}
             >
-              This Week
+              This Year
             </button>
             <button
               onClick={() => setDateRange("month")}
               className={`px-3 py-1 text-sm font-medium rounded-md ${
                 dateRange === "month"
                   ? "bg-blue-100 text-blue-700"
-                  : "text-gray-500 hover:text-gray-700 border border-gray-300"
+                  : "bg-gray-100 text-gray-700"
               }`}
             >
               This Month
             </button>
             <button
-              onClick={() => setDateRange("year")}
+              onClick={() => setDateRange("week")}
               className={`px-3 py-1 text-sm font-medium rounded-md ${
-                dateRange === "year"
+                dateRange === "week"
                   ? "bg-blue-100 text-blue-700"
-                  : "text-gray-500 hover:text-gray-700 border border-gray-300"
+                  : "bg-gray-100 text-gray-700"
               }`}
             >
-              This Year
+              This Week
             </button>
           </div>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Calendar className="h-5 w-5 text-gray-400" />
-            </div>
-            <input
-              type="text"
-              placeholder="Custom date range..."
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            />
+        </div>
+      </div>
+      {/* Analytics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-white shadow rounded-lg p-4 text-center">
+          <div className="text-gray-500 text-sm">Total Sales</div>
+          <div className="text-2xl font-semibold text-gray-800">
+            ₵{totalSales.toLocaleString()}
+          </div>
+        </div>
+        <div className="bg-white shadow rounded-lg p-4 text-center">
+          <div className="text-gray-500 text-sm">Transactions</div>
+          <div className="text-2xl font-semibold text-gray-800">
+            {totalTransactions}
+          </div>
+        </div>
+        <div className="bg-white shadow rounded-lg p-4 text-center">
+          <div className="text-gray-500 text-sm">Products Sold</div>
+          <div className="text-2xl font-semibold text-gray-800">
+            {productsSold}
+          </div>
+        </div>
+        <div className="bg-white shadow rounded-lg p-4 text-center">
+          <div className="text-gray-500 text-sm">Avg. Sale Value</div>
+          <div className="text-2xl font-semibold text-gray-800">
+            ₵
+            {avgSaleValue.toLocaleString(undefined, {
+              maximumFractionDigits: 2,
+            })}
           </div>
         </div>
       </div>
-      {/* Sales Overview */}
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
-                    Total Sales
-                  </dt>
-                  <dd className="mt-1 text-3xl font-semibold text-gray-900">
-                    ₵{totalSales.toLocaleString()}
-                  </dd>
-                </dl>
-              </div>
-            </div>
+      {/* Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Sales Trend */}
+        <div className="bg-white shadow rounded-lg p-4">
+          <div className="flex items-center mb-2">
+            <Calendar className="h-4 w-4 text-blue-500 mr-2" />
+            <span className="font-medium text-gray-800">Sales Trend</span>
           </div>
-        </div>
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
-                    Total Transactions
-                  </dt>
-                  <dd className="mt-1 text-3xl font-semibold text-gray-900">
-                    {totalTransactions}
-                  </dd>
-                </dl>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
-                    Average Sale Value
-                  </dt>
-                  <dd className="mt-1 text-3xl font-semibold text-gray-900">
-                    ₵
-                    {avgSaleValue.toLocaleString(undefined, {
-                      maximumFractionDigits: 2,
-                    })}
-                  </dd>
-                </dl>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
-                    Products Sold
-                  </dt>
-                  <dd className="mt-1 text-3xl font-semibold text-gray-900">
-                    {productsSold}
-                  </dd>
-                </dl>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      {/* Sales Chart */}
-      <div className="bg-white shadow rounded-lg p-6">
-        <h2 className="text-lg font-medium text-gray-900 mb-4">Sales Trend</h2>
-        <div className="h-80">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart
-              width={500}
-              height={300}
-              data={chartData}
-              margin={{
-                top: 5,
-                right: 30,
-                left: 20,
-                bottom: 5,
-              }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
+          <ResponsiveContainer width="100%" height={250}>
+            <LineChart data={chartData}>
+              <CartesianGrid stroke="#e5e7eb" />
               <XAxis dataKey="name" />
               <YAxis />
-              <Tooltip formatter={(value) => [`₵${value}`, "Sales"]} />
-              <Legend />
+              <Tooltip />
               <Line
                 type="monotone"
                 dataKey="sales"
-                stroke="#3b82f6"
-                activeDot={{
-                  r: 8,
-                }}
-                name="Sales (₵)"
+                stroke="#2563eb"
+                strokeWidth={2}
+                dot={{ r: 3 }}
               />
             </LineChart>
           </ResponsiveContainer>
         </div>
-      </div>
-      {/* Top Products */}
-      <div className="bg-white shadow rounded-lg p-6">
-        <h2 className="text-lg font-medium text-gray-900 mb-4">
-          Top Selling Products
-        </h2>
-        <div className="h-80">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              width={500}
-              height={300}
-              data={topProductsData}
-              margin={{
-                top: 5,
-                right: 30,
-                left: 20,
-                bottom: 5,
-              }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
+        {/* Top Products */}
+        <div className="bg-white shadow rounded-lg p-4">
+          <div className="flex items-center mb-2">
+            <span className="font-medium text-gray-800">Top Products</span>
+          </div>
+          <ResponsiveContainer width="100%" height={250}>
+            <BarChart data={topProductsData}>
+              <CartesianGrid stroke="#e5e7eb" />
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip />
-              <Legend />
-              <Bar dataKey="sales" fill="#3b82f6" name="Units Sold" />
+              <Bar dataKey="sales" fill="#2563eb" barSize={40} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -309,4 +245,5 @@ const Analytics = () => {
     </div>
   );
 };
+
 export default Analytics;
