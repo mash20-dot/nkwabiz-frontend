@@ -357,7 +357,7 @@ const ExpensesPage: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-white shadow rounded-lg p-4 text-center">
           <div className="text-gray-500 text-sm">Total Expenses</div>
-          <div className="text-2xl font-semibold text-gray-800">₦{totalExpenses.toLocaleString()}</div>
+          <div className="text-2xl font-semibold text-gray-800">₵{totalExpenses.toLocaleString()}</div>
         </div>
 
         <div className="bg-white shadow rounded-lg p-4 text-center">
@@ -373,7 +373,7 @@ const ExpensesPage: React.FC = () => {
         <div className="bg-white shadow rounded-lg p-4 text-center">
           <div className="text-gray-500 text-sm">Avg. Expense</div>
           <div className="text-2xl font-semibold text-gray-800">
-            ₦{avgExpense.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+            ₵{avgExpense.toLocaleString(undefined, { maximumFractionDigits: 2 })}
           </div>
         </div>
       </div>
@@ -438,7 +438,7 @@ const ExpensesPage: React.FC = () => {
                   <td className="p-2">{new Date(exp.date).toLocaleDateString()}</td>
                   <td className="p-2">{exp.description}</td>
                   <td className="p-2">{exp.category || "-"}</td>
-                  <td className="p-2">₦{(exp.amount || 0).toLocaleString()}</td>
+                  <td className="p-2">₵{(exp.amount || 0).toLocaleString()}</td>
                 </tr>
               ))
             )}
