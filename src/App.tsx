@@ -17,6 +17,7 @@ import NotificationsPage from './pages/NotificationsPage';
 import SupplierPage from './pages/SupplierPage';
 import ReportsPage from './pages/ReportsPage';
 import ProductDetailsPage from './pages/ProductDetailsPage';
+import ExpensesPage from './pages/ExpensesPage';
 import { isAuthenticated } from './utils/auth';
 
 export function App() {
@@ -38,6 +39,7 @@ export function App() {
         <Route path="/products/:name" element={isAuthenticated() ? <Layout><ProductDetailsPage /></Layout> : <Navigate to="/login" />} />
         <Route path="/sales" element={isAuthenticated() ? <Layout><SalesPage /></Layout> : <Navigate to="/login" />} />
         <Route path="/analytics" element={isAuthenticated() ? <Layout><Analytics /></Layout> : <Navigate to="/login" />} />
+        <Route path="/expenses" element={isAuthenticated() ? <Layout><ExpensesPage /></Layout> : <Navigate to="/login" />} />
         <Route path="/settings" element={isAuthenticated() ? <Layout><Settings /></Layout> : <Navigate to="/login" />} />
         <Route path="/notifications" element={isAuthenticated() ? <Layout><NotificationsPage /></Layout> : <Navigate to="/login" />} />
         <Route path="/suppliers" element={isAuthenticated() ? <Layout><SupplierPage /></Layout> : <Navigate to="/login" />} />

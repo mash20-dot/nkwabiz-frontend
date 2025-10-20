@@ -5,6 +5,7 @@ import {
   Package,
   ShoppingCart,
   BarChart2,
+  WalletCards,
   Settings,
   X,
 } from "lucide-react";
@@ -29,6 +30,11 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
       name: "Sales",
       href: "/sales",
       icon: ShoppingCart,
+    },
+    {
+      name: "Expenses",
+      href: "/expenses",
+      icon: WalletCards,
     },
     {
       name: "Analytics",
