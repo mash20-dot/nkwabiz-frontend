@@ -4,14 +4,22 @@
 <head>
 
 
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-4SS98FFY8Z"></script>
+  <!-- Google tag (gtag.js) with development filtering -->
   <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
+    // Only load GA in production (not on localhost)
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      // Load the gtag script
+      var script = document.createElement('script');
+      script.async = true;
+      script.src = 'https://www.googletagmanager.com/gtag/js?id=G-4SS98FFY8Z';
+      document.head.appendChild(script);
 
-    gtag('config', 'G-4SS98FFY8Z');
+      // Initialize gtag
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-4SS98FFY8Z');
+    }
   </script>
 
 
