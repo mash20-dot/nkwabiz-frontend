@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://nkwabiz.com/</loc>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://nkwabiz.com/products</loc>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
+    <loc>https://nkwabiz.com/dashboard</loc>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
+    <loc>https://nkwabiz.com/signup</loc>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
+    <loc>https://nkwabiz.com/login</loc>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
+    <loc>https://nkwabiz.com/sales</loc>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
+    <loc>https://nkwabiz.com/expenses</loc>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
+    <loc>https://nkwabiz.com/analytics</loc>
+    <changefreq>weekly</changefreq>
+  </url>
+</urlset>
