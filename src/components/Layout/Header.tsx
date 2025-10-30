@@ -17,7 +17,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
   }
 
   return (
-    <header className="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white border-b-gray-300">
+    <header className="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white border-b-1 border-b-gray-300">
       <button
         type="button"
         className="px-4 border-r border-gray-200 text-gray-500 md:hidden"
