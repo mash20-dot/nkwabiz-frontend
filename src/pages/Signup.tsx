@@ -69,7 +69,7 @@ const Signup = () => {
               placeholder="First Name"
               value={form.firstname}
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded"
+              className="w-full px-3 py-2 border rounded-md"
             />
             <input
               name="lastname"
@@ -78,7 +78,7 @@ const Signup = () => {
               placeholder="Last Name"
               value={form.lastname}
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded"
+              className="w-full px-3 py-2 border rounded-md"
             />
             <input
               name="business_name"
@@ -87,7 +87,7 @@ const Signup = () => {
               placeholder="Business Name"
               value={form.business_name}
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded"
+              className="w-full px-3 py-2 border rounded-md"
             />
             <input
               name="email"
@@ -96,7 +96,7 @@ const Signup = () => {
               placeholder="Email"
               value={form.email}
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded"
+              className="w-full px-3 py-2 border rounded-md"
             />
             <input
               name="phone"
@@ -105,7 +105,7 @@ const Signup = () => {
               placeholder="Phone"
               value={form.phone}
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded"
+              className="w-full px-3 py-2 border rounded-md"
             />
             <input
               name="location"
@@ -114,7 +114,7 @@ const Signup = () => {
               placeholder="Location"
               value={form.location}
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded"
+              className="w-full px-3 py-2 border rounded-md"
             />
             <div className="relative">
               <input
@@ -124,7 +124,7 @@ const Signup = () => {
                 placeholder="Password"
                 value={form.password}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border rounded"
+                className="w-full px-3 py-2 border rounded-md"
               />
               <button
                 type="button"
@@ -139,7 +139,7 @@ const Signup = () => {
             {error && <div className="text-red-500 text-sm">{error}</div>}
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-2 rounded flex items-center justify-center"
+              className="w-full bg-blue-600 text-white py-2 rounded-md flex items-center justify-center"
               disabled={loading}
             >
               {loading ? <Spinner /> : "Sign up"}
