@@ -28,7 +28,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
       </button>
       <div className="flex-1 px-4 flex justify-between">
         <div className="flex-1 flex items-center">
-          <h1 className="text-xl font-semibold text-gray-900">
+          <h1 className="text-base font-semibold text-gray-700">
             {/* This will be dynamically set based on the current page */}
             Dashboard
           </h1>
