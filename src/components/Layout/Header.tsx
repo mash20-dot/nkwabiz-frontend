@@ -1,26 +1,23 @@
-import React from 'react';
-import { Menu, Bell } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { logout } from '../../utils/auth';
+import React from "react";
+import { Menu, Bell } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { logout } from "../../utils/auth";
 
 interface HeaderProps {
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
 }
 
-const Header: React.FC<HeaderProps> = ({
-  sidebarOpen,
-  setSidebarOpen
-}) => {
+const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
   const navigate = useNavigate();
 
   function handleLogout() {
     logout();
-    navigate('/login');
+    navigate("/login");
   }
 
   return (
-    <header className="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white shadow">
+    <header className="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white border-b-gray-300">
       <button
         type="button"
         className="px-4 border-r border-gray-200 text-gray-500 md:hidden"
@@ -57,12 +54,12 @@ const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
           {/* Logout Button */}
-          <button
+          {/* <button
             onClick={handleLogout}
             className="ml-6 px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700"
           >
             Logout
-          </button>
+          </button> */}
         </div>
       </div>
     </header>
