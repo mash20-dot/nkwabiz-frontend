@@ -172,11 +172,15 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6">
-      {/* <SaleModal
+      <SaleModal
         open={saleModalOpen}
         onClose={() => setSaleModalOpen(false)}
         products={products}
-      /> */}
+      />
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
+        <h1 className="text-2xl font-medium text-gray-900">Dashboard</h1>
+        <div></div>
+      </div>
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {/* Sales Today Card */}
         <SummaryCard
