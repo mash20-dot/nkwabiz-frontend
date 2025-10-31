@@ -186,7 +186,7 @@ const Dashboard = () => {
           icon={DollarSign}
           iconColor="text-green-500"
         >
-          <div className="text-lg font-medium text-gray-900">
+          <div className="text-[1.5rem] font-semibold text-gray-900">
             {loadingSalesToday
               ? "..."
               : salesToday !== null
@@ -202,7 +202,7 @@ const Dashboard = () => {
           linkLabel="View all"
           icon={Package}
         >
-          <div className="text-lg font-medium text-gray-900">
+          <div className="text-[1.5rem] font-semibold text-gray-900">
             {loadingProducts ? "..." : totalProducts}
           </div>
         </SummaryCard>
@@ -215,7 +215,7 @@ const Dashboard = () => {
           icon={AlertTriangle}
           iconColor="text-yellow-500"
         >
-          <div className="text-lg font-medium text-gray-900">
+          <div className="text-[1.5rem] font-semibold text-gray-900">
             {loadingProducts ? "..." : lowStockItems.length}
           </div>
         </SummaryCard>
@@ -228,11 +228,11 @@ const Dashboard = () => {
           icon={TrendingUp}
           iconColor="text-indigo-500"
         >
-          <div className="text-lg font-medium text-gray-900">
+          <div className="text-[1.5rem] font-semibold text-gray-900">
             {monthlyLoading ? (
               "..."
             ) : monthlyError ? (
-              <span className="text-red-500">{monthlyError}</span>
+              <span className="text-sm text-red-500">{monthlyError}</span>
             ) : monthlySales !== null ? (
               `₵${monthlySales.toLocaleString()}`
             ) : (

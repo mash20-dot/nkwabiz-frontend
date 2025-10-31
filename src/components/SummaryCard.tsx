@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { LucideIcon } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
 type SummaryCardProps = {
   linkPath: string;
@@ -19,23 +20,28 @@ export default function SummaryCard({
   children,
 }: SummaryCardProps) {
   return (
-    <div className="bg-white overflow-hidden shadow rounded-lg">
+    <div className="bg-white overflow-hidden border border-gray-200 hover:border-gray-300 cursor-pointer rounded-lg group">
       <div className="p-5">
-        <div className="flex items-center">
-          <div className="flex-shrink-0">
-            <Icon className={`h-6 w-6 ${iconColor}`} aria-hidden="true" />
-          </div>
-          <div className="ml-5 w-0 flex-1">
-            <dl>
-              <dt className="text-sm font-medium text-gray-500 truncate">
+        <div className="w-full flex-1">
+          <dl className="flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+              <dt className="flex items-center text-sm font-normal text-gray-500 truncate">
+                <Icon
+                  className={`h-4 w-4 ${iconColor} mr-1`}
+                  aria-hidden="true"
+                />
                 {title}
               </dt>
-              <dd>{children}</dd>
-            </dl>
-          </div>
+              <Link to={linkPath}>
+                <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-gray-500" />
+              </Link>
+            </div>
+
+            <dd>{children}</dd>
+          </dl>
         </div>
       </div>
-      <div className="bg-gray-50 px-5 py-3">
+      {/* <div className="bg-gray-50 px-5 py-3">
         <div className="text-sm">
           <Link
             to={linkPath}
@@ -44,7 +50,7 @@ export default function SummaryCard({
             {linkLabel}
           </Link>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }
