@@ -17,7 +17,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
   }
 
   return (
-    <header className="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white border-b-1 border-b-gray-300">
+    <header className="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white border-b border-b-gray-300">
       <button
         type="button"
         className="px-4 border-r border-gray-200 text-gray-500 md:hidden"
@@ -28,7 +28,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
       </button>
       <div className="flex-1 px-4 flex justify-between">
         <div className="flex-1 flex items-center">
-          <h1 className="text-base font-semibold text-gray-700">
+          <h1 className="text-base font-medium text-gray-700">
             {/* This will be dynamically set based on the current page */}
             Dashboard
           </h1>
