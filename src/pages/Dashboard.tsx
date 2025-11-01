@@ -5,7 +5,6 @@ import {
   TrendingUp,
   Package,
   ShoppingCart,
-  BarChart2,
 } from "lucide-react";
 import SummaryCard from "../components/SummaryCard";
 import { Link, useNavigate } from "react-router-dom";
@@ -266,7 +265,7 @@ const Dashboard = () => {
           )}
         </SummaryCard>
       </div>
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+      <div className="w-full grid grid-cols-1 gap-5 lg:grid-cols-2">
         {/* Recent Sales -- updated for real API data */}
         <div className="bg-white shadow rounded-lg">
           <div className="px-4 py-5 sm:px-6 flex justify-between items-center">

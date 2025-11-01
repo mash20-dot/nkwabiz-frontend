@@ -12,6 +12,8 @@ import {
 } from "recharts";
 import { Calendar } from "lucide-react";
 import { apiFetch, getToken } from "../utils/api";
+import Button from "../components/Button";
+import { Plus, X } from "lucide-react";
 
 // --- Types ---
 type ExpenseHistoryItem = {
@@ -51,8 +53,10 @@ const ExpensesPage: React.FC = () => {
     if (!data) return [];
     if (Array.isArray(data)) return data as ExpenseHistoryItem[];
     if (Array.isArray(data.expenses_history)) return data.expenses_history;
-    if (Array.isArray((data as any).expenses_history)) return (data as any).expenses_history;
-    if (Array.isArray((data as any).expenses_history)) return (data as any).expenses_history;
+    if (Array.isArray((data as any).expenses_history))
+      return (data as any).expenses_history;
+    if (Array.isArray((data as any).expenses_history))
+      return (data as any).expenses_history;
     // fallback: try other common keys
     if (Array.isArray((data as any).history)) return (data as any).history;
     return [];
@@ -85,7 +89,11 @@ const ExpensesPage: React.FC = () => {
     try {
       const token = getToken();
       if (!token) throw new Error("Not authenticated");
-      const data = await apiFetch("/expenses/track/all", { method: "GET" }, true);
+      const data = await apiFetch(
+        "/expenses/track/all",
+        { method: "GET" },
+        true
+      );
       const items = normalizeExpensesResponse(data);
       setExpensesData(items);
     } catch (err: any) {
@@ -103,7 +111,11 @@ const ExpensesPage: React.FC = () => {
       const token = getToken();
       if (!token) throw new Error("Not authenticated");
       const params = buildFilterParams();
-      const data = await apiFetch(`/expenses/track${params}`, { method: "GET" }, true);
+      const data = await apiFetch(
+        `/expenses/track${params}`,
+        { method: "GET" },
+        true
+      );
 
       let items = normalizeExpensesResponse(data);
 
@@ -172,10 +184,14 @@ const ExpensesPage: React.FC = () => {
         amount: amountNum,
         category: categoryInput.trim() || undefined, // backend accepts empty category
       };
-      await apiFetch("/expenses/add", {
-        method: "POST",
-        body: JSON.stringify(payload),
-      }, true);
+      await apiFetch(
+        "/expenses/add",
+        {
+          method: "POST",
+          body: JSON.stringify(payload),
+        },
+        true
+      );
       // refresh the list — load all (or you can call filtered endpoint depending on current filter)
       // if current filter is 'year' but user expects new item in 'all', calling fetchAllExpenses ensures it's visible
       if (dateRange === "year") {
@@ -196,7 +212,10 @@ const ExpensesPage: React.FC = () => {
   };
 
   // ---- Analytics calculations (based only on current expensesData) ----
-  const totalExpenses = expensesData.reduce((sum, it) => sum + (it.amount || 0), 0);
+  const totalExpenses = expensesData.reduce(
+    (sum, it) => sum + (it.amount || 0),
+    0
+  );
   const totalTransactions = expensesData.length;
   const avgExpense = totalTransactions ? totalExpenses / totalTransactions : 0;
   const entriesCount = expensesData.length;
@@ -207,7 +226,9 @@ const ExpensesPage: React.FC = () => {
     const day = new Date(item.date).toLocaleDateString();
     expensesByDate[day] = (expensesByDate[day] || 0) + (item.amount || 0);
   });
-  const trendChartData = Object.entries(expensesByDate).map(([name, total]) => ({ name, total }));
+  const trendChartData = Object.entries(expensesByDate).map(
+    ([name, total]) => ({ name, total })
+  );
 
   // Top categories
   const categoriesMap: { [key: string]: number } = {};
@@ -221,19 +242,42 @@ const ExpensesPage: React.FC = () => {
     .slice(0, 5);
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
-        <h1 className="text-2xl font-bold text-gray-900">Expenses</h1>
-
-        <div className="flex gap-2">
-          <button
-            className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md bg-white text-gray-700 hover:bg-gray-50"
+    <div className="flex flex-col items-start justify-center gap-6">
+      {/* Page Header */}
+      <div className="w-full flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
+        <h1 className="text-2xl font-medium text-gray-900">Expenses</h1>
+        <div className="flex gap-[1rem]">
+          {/* <Button
+            className="bg-blue-600 border-blue-600 text-white"
             onClick={() => setIsAdding((s) => !s)}
             aria-expanded={isAdding}
           >
+            {isAdding ? (
+              <X className="h-4 w-4 mr-2 text-white" aria-hidden="true" />
+            ) : (
+              <Plus className="h-4 w-4 mr-2 text-white" aria-hidden="true" />
+            )}
             {isAdding ? "Cancel" : "Add Expense"}
-          </button>
+          </Button> */}
+
+          {isAdding ? (
+            <Button
+              onClick={() => setIsAdding((s) => !s)}
+              aria-expanded={isAdding}
+            >
+              <X className="h-4 w-4 mr-2 text-gray-700" aria-hidden="true" />
+              Cancel
+            </Button>
+          ) : (
+            <Button
+              className="bg-blue-600 hover:bg-blue-700 border-blue-600 text-white"
+              onClick={() => setIsAdding((s) => !s)}
+              aria-expanded={isAdding}
+            >
+              <Plus className="h-4 w-4 mr-2 text-white" aria-hidden="true" />
+              Add Expense
+            </Button>
+          )}
         </div>
       </div>
 
@@ -241,7 +285,7 @@ const ExpensesPage: React.FC = () => {
 
       {/* Add form (inline) */}
       {isAdding && (
-        <div className="bg-white shadow rounded-lg p-4">
+        <div className="w-full bg-white shadow rounded-lg p-4">
           <form onSubmit={handleSubmitAdd} className="space-y-3">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <input
@@ -292,7 +336,7 @@ const ExpensesPage: React.FC = () => {
       )}
 
       {/* Filters */}
-      <div className="bg-white shadow rounded-lg p-4">
+      <div className="w-full bg-white shadow rounded-lg p-4">
         <div className="flex items-center space-x-4">
           <span className="text-gray-700">Time Period:</span>
           <div className="flex space-x-2">
@@ -302,7 +346,9 @@ const ExpensesPage: React.FC = () => {
                 setCustomDate("");
               }}
               className={`px-3 py-1 text-sm font-medium rounded-md ${
-                dateRange === "year" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-700"
+                dateRange === "year"
+                  ? "bg-blue-100 text-blue-700"
+                  : "bg-gray-100 text-gray-700"
               }`}
             >
               This Year
@@ -314,7 +360,9 @@ const ExpensesPage: React.FC = () => {
                 setCustomDate("");
               }}
               className={`px-3 py-1 text-sm font-medium rounded-md ${
-                dateRange === "month" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-700"
+                dateRange === "month"
+                  ? "bg-blue-100 text-blue-700"
+                  : "bg-gray-100 text-gray-700"
               }`}
             >
               This Month
@@ -326,7 +374,9 @@ const ExpensesPage: React.FC = () => {
                 setCustomDate("");
               }}
               className={`px-3 py-1 text-sm font-medium rounded-md ${
-                dateRange === "week" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-700"
+                dateRange === "week"
+                  ? "bg-blue-100 text-blue-700"
+                  : "bg-gray-100 text-gray-700"
               }`}
             >
               This Week
@@ -335,7 +385,9 @@ const ExpensesPage: React.FC = () => {
             <button
               onClick={() => setDateRange("custom")}
               className={`px-3 py-1 text-sm font-medium rounded-md ${
-                dateRange === "custom" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-700"
+                dateRange === "custom"
+                  ? "bg-blue-100 text-blue-700"
+                  : "bg-gray-100 text-gray-700"
               }`}
             >
               Choose Date
@@ -354,32 +406,39 @@ const ExpensesPage: React.FC = () => {
       </div>
 
       {/* Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="w-full grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-white shadow rounded-lg p-4 text-center">
           <div className="text-gray-500 text-sm">Total Expenses</div>
-          <div className="text-2xl font-semibold text-gray-800">₵{totalExpenses.toLocaleString()}</div>
+          <div className="text-2xl font-semibold text-gray-800">
+            ₵{totalExpenses.toLocaleString()}
+          </div>
         </div>
 
         <div className="bg-white shadow rounded-lg p-4 text-center">
           <div className="text-gray-500 text-sm">Transactions</div>
-          <div className="text-2xl font-semibold text-gray-800">{totalTransactions}</div>
+          <div className="text-2xl font-semibold text-gray-800">
+            {totalTransactions}
+          </div>
         </div>
 
         <div className="bg-white shadow rounded-lg p-4 text-center">
           <div className="text-gray-500 text-sm">Entries</div>
-          <div className="text-2xl font-semibold text-gray-800">{entriesCount}</div>
+          <div className="text-2xl font-semibold text-gray-800">
+            {entriesCount}
+          </div>
         </div>
 
         <div className="bg-white shadow rounded-lg p-4 text-center">
           <div className="text-gray-500 text-sm">Avg. Expense</div>
           <div className="text-2xl font-semibold text-gray-800">
-            ₵{avgExpense.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+            ₵
+            {avgExpense.toLocaleString(undefined, { maximumFractionDigits: 2 })}
           </div>
         </div>
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Expense Trend */}
         <div className="bg-white shadow rounded-lg p-4">
           <div className="flex items-center mb-2">
@@ -392,7 +451,13 @@ const ExpensesPage: React.FC = () => {
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip />
-              <Line type="monotone" dataKey="total" stroke="#2563eb" strokeWidth={2} dot={{ r: 3 }} />
+              <Line
+                type="monotone"
+                dataKey="total"
+                stroke="#2563eb"
+                strokeWidth={2}
+                dot={{ r: 3 }}
+              />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -415,7 +480,7 @@ const ExpensesPage: React.FC = () => {
       </div>
 
       {/* Expense Table */}
-      <div className="bg-white shadow rounded-lg p-4 overflow-x-auto">
+      <div className="w-full bg-white shadow rounded-lg p-4 overflow-x-auto">
         <table className="min-w-full table-auto">
           <thead>
             <tr className="text-left bg-gray-100">
@@ -434,8 +499,13 @@ const ExpensesPage: React.FC = () => {
               </tr>
             ) : (
               expensesData.map((exp) => (
-                <tr key={exp.expense_id ?? `${exp.date}-${exp.amount}`} className="border-b">
-                  <td className="p-2">{new Date(exp.date).toLocaleDateString()}</td>
+                <tr
+                  key={exp.expense_id ?? `${exp.date}-${exp.amount}`}
+                  className="border-b"
+                >
+                  <td className="p-2">
+                    {new Date(exp.date).toLocaleDateString()}
+                  </td>
                   <td className="p-2">{exp.description}</td>
                   <td className="p-2">{exp.category || "-"}</td>
                   <td className="p-2">₵{(exp.amount || 0).toLocaleString()}</td>
@@ -447,7 +517,11 @@ const ExpensesPage: React.FC = () => {
       </div>
 
       {/* Loading */}
-      {loading && <div className="py-8 text-center text-gray-500">Loading expenses...</div>}
+      {loading && (
+        <div className="py-8 text-center text-gray-500">
+          Loading expenses...
+        </div>
+      )}
     </div>
   );
 };
