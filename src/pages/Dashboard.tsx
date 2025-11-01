@@ -19,6 +19,7 @@ import {
   MonthlySalesSummaryResponse,
 } from "../utils/salesApi";
 import SaleModal from "../components/SaleModal";
+import Button from "../components/Button";
 
 type DashboardProduct = {
   product_name: string;
@@ -179,7 +180,22 @@ const Dashboard = () => {
       />
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
         <h1 className="text-2xl font-medium text-gray-900">Dashboard</h1>
-        <div></div>
+        <div className="flex gap-[1rem]">
+          <Button onClick={() => setSaleModalOpen(true)}>
+            <ShoppingCart
+              className="h-4 w-4 mr-2 text-gray-600"
+              aria-hidden="true"
+            />
+            Add Sale
+          </Button>
+          <Button
+            className="bg-blue-600 text-white"
+            onClick={() => navigate("/products?add=true")}
+          >
+            <Package className="h-4 w-4 mr-2 text-white" aria-hidden="true" />
+            Add New Product
+          </Button>
+        </div>
       </div>
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {/* Sales Today Card */}
@@ -418,75 +434,6 @@ const Dashboard = () => {
                 </tbody>
               </table>
             </div>
-          </div>
-        </div>
-      </div>
-      {/* Quick Actions */}
-      <div className="bg-white shadow rounded-lg">
-        <div className="px-4 py-5 sm:px-6">
-          <h3 className="text-lg leading-6 font-medium text-gray-900">
-            Quick Actions
-          </h3>
-        </div>
-        <div className="border-t border-gray-200 px-4 py-5 sm:p-6">
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            <button
-              type="button"
-              onClick={() => setSaleModalOpen(true)}
-              className="relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
-            >
-              <div className="flex-shrink-0">
-                <ShoppingCart
-                  className="h-6 w-6 text-blue-600"
-                  aria-hidden="true"
-                />
-              </div>
-              <div className="flex-1 min-w-0">
-                <span className="absolute inset-0" aria-hidden="true" />
-                <p className="text-sm font-medium text-gray-900">
-                  Record New Sale
-                </p>
-                <p className="text-sm text-gray-500">Add a new transaction</p>
-              </div>
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate("/products?add=true")}
-              className="relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
-            >
-              <div className="flex-shrink-0">
-                <Package className="h-6 w-6 text-blue-600" aria-hidden="true" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <span className="absolute inset-0" aria-hidden="true" />
-                <p className="text-sm font-medium text-gray-900">
-                  Add New Product
-                </p>
-                <p className="text-sm text-gray-500">
-                  Create a product listing
-                </p>
-              </div>
-            </button>
-            <Link
-              to="/analytics"
-              className="relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
-            >
-              <div className="flex-shrink-0">
-                <BarChart2
-                  className="h-6 w-6 text-blue-600"
-                  aria-hidden="true"
-                />
-              </div>
-              <div className="flex-1 min-w-0">
-                <span className="absolute inset-0" aria-hidden="true" />
-                <p className="text-sm font-medium text-gray-900">
-                  View Analytics
-                </p>
-                <p className="text-sm text-gray-500">
-                  Check business performance
-                </p>
-              </div>
-            </Link>
           </div>
         </div>
       </div>
