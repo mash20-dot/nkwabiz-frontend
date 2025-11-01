@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { signupUser } from "../utils/userApi";
+import Button from "../components/Button";
 
 function validateEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -137,13 +138,13 @@ const Signup = () => {
               </button>
             </div>
             {error && <div className="text-red-500 text-sm">{error}</div>}
-            <button
+            <Button
               type="submit"
-              className="w-full bg-blue-600 text-white py-2 rounded-md flex items-center justify-center"
+              className="w-full bg-blue-600 border-transparent shadow-sm hover:bg-blue-700 text-white rounded-md flex justify-center focus:ring-blue-500"
               disabled={loading}
             >
               {loading ? <Spinner /> : "Sign up"}
-            </button>
+            </Button>
           </form>
           <p className="mt-4 text-center text-sm text-gray-600">
             Already have an account?{" "}

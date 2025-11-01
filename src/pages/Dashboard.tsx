@@ -172,13 +172,13 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col items-start justify-center gap-6">
       <SaleModal
         open={saleModalOpen}
         onClose={() => setSaleModalOpen(false)}
         products={products}
       />
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
+      <div className="w-full flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
         <h1 className="text-2xl font-medium text-gray-900">Dashboard</h1>
         <div className="flex gap-[1rem]">
           <Button onClick={() => setSaleModalOpen(true)}>
@@ -189,7 +189,7 @@ const Dashboard = () => {
             Add Sale
           </Button>
           <Button
-            className="bg-blue-600 text-white"
+            className="bg-blue-600 border-blue-600 text-white"
             onClick={() => navigate("/products?add=true")}
           >
             <Package className="h-4 w-4 mr-2 text-white" aria-hidden="true" />
@@ -197,7 +197,7 @@ const Dashboard = () => {
           </Button>
         </div>
       </div>
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="w-full grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {/* Sales Today Card */}
         <SummaryCard
           linkPath="/sales"

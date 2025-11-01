@@ -8,7 +8,7 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 export default function Button({ children, className, ...rest }: ButtonProps) {
   const generalClass =
-    "inline-flex items-center px-4 py-2 border text-sm font-medium rounded-md  focus:outline-none focus:ring-2 focus:ring-offset-2";
+    "inline-flex items-center px-4 py-2 border text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2";
   const allClasses = classNames(generalClass, className);
 
   return (
