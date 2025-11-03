@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Menu, Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../utils/auth";
+import ProfileCard from "../ProfileCard";
 
 interface HeaderProps {
   sidebarOpen: boolean;
@@ -9,6 +10,8 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
+  const [isProfileActive, setIsProfileActive] = useState<boolean>(false);
+
   const navigate = useNavigate();
 
   function handleLogout() {
@@ -16,8 +19,13 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
     navigate("/login");
   }
 
+  function handleProfileClick() {
+    setIsProfileActive(!isProfileActive);
+  }
+
   return (
     <header className="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white border-b border-b-gray-300">
+      <ProfileCard onClick={handleLogout} isActive={isProfileActive} />
       <button
         type="button"
         className="px-4 border-r border-gray-200 text-gray-500 md:hidden"
@@ -42,7 +50,10 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
           {/* Profile dropdown */}
           <div className="ml-3 relative">
             <div>
-              <button className="max-w-xs bg-white flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+              <button
+                onClick={handleProfileClick}
+                className="max-w-xs bg-white flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
                 <span className="sr-only">Open user menu</span>
                 <div className="h-8 w-8 rounded-full bg-blue-200 flex items-center justify-center">
                   <span className="font-medium text-blue-800">
