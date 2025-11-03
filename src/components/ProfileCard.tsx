@@ -11,15 +11,30 @@ export default function ProfileCard({ onClick, isActive }: ProfileCardProps) {
     <aside
       className={`${
         isActive ? "flex" : "hidden"
-      } px-2 fixed right-4 top-16 w-[240px] bg-white shadow-md border border-gray-200 rounded-sm p-4 text-center`}
+      } px-4 py-6 fixed right-4 top-16 w-[240px] bg-white shadow-md border border-gray-200 rounded-sm p-4 text-center`}
     >
-      <div className="w-full flex flex-col ">
-        <div></div>
-        <div>
-          <div>
-            <Tab tabName="Account Settings" icon={Settings} />
+      <div className="w-full flex flex-col gap-2">
+        <div className="border-b pb-1 border-gray-200">
+          <button className="w-full flex-1 bg-white flex items-center whitespace-nowrap gap-2 text-sm rounded-full focus:outline-none px-3 py-2 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <div className="min-h-5 min-w-5 rounded-full bg-blue-200 flex items-center justify-center">
+              <span className="font-medium text-[0.5rem] text-blue-800">
+                {/* Optionally show user initials or avatar */}
+                SM
+              </span>
+            </div>
+            <span className="font-medium truncate">
+              sakyimustapha5@gmail.com
+            </span>
+          </button>
+        </div>
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-1 items-center justify-between pb-2 border-b border-gray-200">
+            <a href="/settings" className="w-full">
+              <Tab tabName="Account Settings" icon={Settings} />
+            </a>
+
             <Tab tabName="Currency" icon={Banknote}>
-              <ChevronRight className="h-4 w-4 text-gray-500 group-hover:text-gray-500" />
+              <ChevronRight className="h-4 w-4 text-gray-500 group-hover:text-blue-600" />
             </Tab>
           </div>
 

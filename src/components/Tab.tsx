@@ -16,11 +16,16 @@ export default function Tab({
   return (
     <button
       {...rest}
-      className="w-full flex items-center justify-between cursor-pointer py-2 px-3"
+      className="w-full hover:bg-blue-100 rounded-sm group flex items-center justify-between cursor-pointer py-2 px-3"
     >
       <div className="flex items-center gap-2">
-        <Icon className="h-4 w-4 text-gray-600" aria-hidden="true" />
-        <p className="text-sm text-gray-600 font-normal">{tabName}</p>
+        <Icon
+          className="h-5 w-5 group-hover:text-blue-600"
+          aria-hidden="true"
+        />
+        <p className="text-sm group-hover:text-blue-600 font-normal">
+          {tabName}
+        </p>
       </div>
       <div className="flex items-center justify-center">{children}</div>
     </button>
