@@ -1,12 +1,31 @@
 import Tab from "./Tab";
 import { CircleDollarSign, ChevronLeft } from "lucide-react";
+import { useCurrency, Currency } from "../context/CurrencyContext";
+import { useState, useEffect } from "react";
 
 type ProfileCardProps = {
   isActive?: boolean;
   onClick?: () => void;
 };
 
+const currencies: Currency[] = [
+  { code: "CLP", label: "Chilean Peso" },
+  { code: "USD", label: "Dollar" },
+  { code: "NGN", label: "Naira" },
+];
+
 export default function CurrencyCard({ isActive, onClick }: ProfileCardProps) {
+  const { currency, setCurrency } = useCurrency();
+  const [selected, setSelected] = useState<string>(currency.code || "CLP");
+
+  useEffect(() => {
+    setSelected(currency.code);
+  }, [currency]);
+
+  const handleSelect = async (code: Currency["code"], label: string) => {
+    setSelected(code);
+    await setCurrency({ code, label });
+  };
   return (
     <aside
       className={`${
@@ -18,9 +37,15 @@ export default function CurrencyCard({ isActive, onClick }: ProfileCardProps) {
       </div>
       <div className="w-full flex flex-col gap-2">
         <div className="flex flex-col gap-1 items-center justify-between">
-          <Tab tabName="Chile" icon={CircleDollarSign} />
-          <Tab tabName="Dollar" icon={CircleDollarSign} />
-          <Tab tabName="Naira" icon={CircleDollarSign} />
+          {currencies.map(({ code, label }: Currency) => (
+            <Tab
+              key={code}
+              tabName={label}
+              icon={CircleDollarSign}
+              onClick={() => handleSelect(code, label)}
+              isSelected={selected === code}
+            />
+          ))}
         </div>
       </div>
     </aside>

@@ -5,18 +5,22 @@ type TabProps = {
   icon: LucideIcon;
   children?: React.ReactNode;
   onClick?: () => void;
+  isSelected?: boolean;
 };
 
 export default function Tab({
   tabName,
   icon: Icon,
   children,
+  isSelected,
   ...rest
 }: TabProps) {
   return (
     <button
       {...rest}
-      className="w-full hover:bg-blue-100 rounded-sm group flex items-center justify-between cursor-pointer py-2 px-3"
+      className={`w-full hover:bg-blue-100 rounded-sm group flex items-center justify-between cursor-pointer py-2 px-3 ${
+        isSelected ? "bg-blue-100 text-blue-600" : "bg-white"
+      }`}
     >
       <div className="flex items-center gap-2">
         <Icon
