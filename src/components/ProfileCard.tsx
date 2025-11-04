@@ -4,9 +4,14 @@ import { Settings, Banknote, ChevronRight, LogOut } from "lucide-react";
 type ProfileCardProps = {
   onClick?: () => void;
   isActive?: boolean;
+  handleClick?: () => void;
 };
 
-export default function ProfileCard({ onClick, isActive }: ProfileCardProps) {
+export default function ProfileCard({
+  onClick,
+  isActive,
+  handleClick,
+}: ProfileCardProps) {
   return (
     <aside
       className={`${
@@ -33,7 +38,7 @@ export default function ProfileCard({ onClick, isActive }: ProfileCardProps) {
               <Tab tabName="Account Settings" icon={Settings} />
             </a>
 
-            <Tab tabName="Currency" icon={Banknote}>
+            <Tab tabName="Currency" icon={Banknote} onClick={handleClick}>
               <ChevronRight className="h-4 w-4 text-gray-500 group-hover:text-blue-600" />
             </Tab>
           </div>

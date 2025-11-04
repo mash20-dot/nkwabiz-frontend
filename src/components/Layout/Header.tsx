@@ -3,6 +3,7 @@ import { Menu, Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../utils/auth";
 import ProfileCard from "../ProfileCard";
+import CurrencyCard from "../CurrencyCard";
 
 interface HeaderProps {
   sidebarOpen: boolean;
@@ -11,6 +12,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
   const [isProfileActive, setIsProfileActive] = useState<boolean>(false);
+  const [isCurrencyActive, setIsCurrencyActive] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
@@ -20,12 +22,30 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
   }
 
   function handleProfileClick() {
+    if (isCurrencyActive) {
+      setIsCurrencyActive(false);
+    }
     setIsProfileActive(!isProfileActive);
+  }
+
+  function handleBackClick() {
+    setIsCurrencyActive(false);
+    setIsProfileActive(true);
+  }
+
+  function handleCurrencyClick() {
+    setIsProfileActive(false);
+    setIsCurrencyActive(!isCurrencyActive);
   }
 
   return (
     <header className="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white border-b border-b-gray-300">
-      <ProfileCard onClick={handleLogout} isActive={isProfileActive} />
+      <ProfileCard
+        onClick={handleLogout}
+        handleClick={handleCurrencyClick}
+        isActive={isProfileActive}
+      />
+      <CurrencyCard isActive={isCurrencyActive} onClick={handleBackClick} />
       <button
         type="button"
         className="px-4 border-r border-gray-200 text-gray-500 md:hidden"
