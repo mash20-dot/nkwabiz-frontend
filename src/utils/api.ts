@@ -13,7 +13,7 @@ export async function apiFetch(
 ): Promise<any> {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
-    ...options.headers as Record<string, string>,
+    ...(options.headers as Record<string, string>),
   };
   if (auth) {
     const token = getToken();
@@ -27,6 +27,7 @@ export async function apiFetch(
     headers["Authorization"] = `Bearer ${token}`;
   }
   const res = await fetch(`${API_BASE_URL}${path}`, { ...options, headers });
+
   // If token expired, your backend should respond with 401
   if (res.status === 401) {
     useAuthStore.getState().clearAuth();
@@ -34,6 +35,7 @@ export async function apiFetch(
     throw { message: "Session expired. Please log in again." };
   }
   const data = await res.json();
+
   if (!res.ok) throw data;
   return data;
 }

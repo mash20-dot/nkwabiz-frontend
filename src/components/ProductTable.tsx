@@ -42,6 +42,9 @@ export default function ProductTable({
             Stock
           </th>
           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+            Remaining Stock
+          </th>
+          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
             Status
           </th>
           <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
@@ -79,6 +82,9 @@ export default function ProductTable({
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 {product.stock ?? product.initial_stock}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                {product.remaining_stock}
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <span

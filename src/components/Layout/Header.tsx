@@ -1,26 +1,51 @@
-import React from 'react';
-import { Menu, Bell } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { logout } from '../../utils/auth';
+import React, { useState } from "react";
+import { Menu, Bell } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { logout } from "../../utils/auth";
+import ProfileCard from "../ProfileCard";
+// import CurrencyCard from "../CurrencyCard";
 
 interface HeaderProps {
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
 }
 
-const Header: React.FC<HeaderProps> = ({
-  sidebarOpen,
-  setSidebarOpen
-}) => {
+const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
+  const [isProfileActive, setIsProfileActive] = useState<boolean>(false);
+  // const [isCurrencyActive, setIsCurrencyActive] = useState<boolean>(false);
+
   const navigate = useNavigate();
 
   function handleLogout() {
     logout();
-    navigate('/login');
+    navigate("/login");
   }
 
+  function handleProfileClick() {
+    // if (isCurrencyActive) {
+    //   setIsCurrencyActive(false);
+    // }
+    setIsProfileActive(!isProfileActive);
+  }
+
+  // function handleBackClick() {
+  //   setIsCurrencyActive(false);
+  //   setIsProfileActive(true);
+  // }
+
+  // function handleCurrencyClick() {
+  //   setIsProfileActive(false);
+  //   setIsCurrencyActive(!isCurrencyActive);
+  // }
+
   return (
-    <header className="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white shadow">
+    <header className="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white border-b border-b-gray-300">
+      <ProfileCard
+        onClick={handleLogout}
+        // handleClick={handleCurrencyClick}
+        isActive={isProfileActive}
+      />
+      {/* <CurrencyCard isActive={isCurrencyActive} onClick={handleBackClick} /> */}
       <button
         type="button"
         className="px-4 border-r border-gray-200 text-gray-500 md:hidden"
@@ -31,7 +56,7 @@ const Header: React.FC<HeaderProps> = ({
       </button>
       <div className="flex-1 px-4 flex justify-between">
         <div className="flex-1 flex items-center">
-          <h1 className="text-xl font-semibold text-gray-900">
+          <h1 className="text-base font-medium text-gray-700">
             {/* This will be dynamically set based on the current page */}
             Dashboard
           </h1>
@@ -45,7 +70,10 @@ const Header: React.FC<HeaderProps> = ({
           {/* Profile dropdown */}
           <div className="ml-3 relative">
             <div>
-              <button className="max-w-xs bg-white flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+              <button
+                onClick={handleProfileClick}
+                className="max-w-xs bg-white flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
                 <span className="sr-only">Open user menu</span>
                 <div className="h-8 w-8 rounded-full bg-blue-200 flex items-center justify-center">
                   <span className="font-medium text-blue-800">
@@ -57,12 +85,12 @@ const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
           {/* Logout Button */}
-          <button
+          {/* <button
             onClick={handleLogout}
             className="ml-6 px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700"
           >
             Logout
-          </button>
+          </button> */}
         </div>
       </div>
     </header>

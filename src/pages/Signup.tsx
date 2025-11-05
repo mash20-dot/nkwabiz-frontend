@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { Eye, EyeOff } from 'lucide-react';
-import { signupUser } from '../utils/userApi';
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
+import { signupUser } from "../utils/userApi";
+import Button from "../components/Button";
 
 function validateEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -24,7 +25,7 @@ const Signup = () => {
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setForm({ ...form, [e.target.name]: e.target.value });
-    if(e.target.name === "email" && !validateEmail(e.target.value)){
+    if (e.target.name === "email" && !validateEmail(e.target.value)) {
       setError("Invalid email format");
     } else {
       setError("");
@@ -50,22 +51,72 @@ const Signup = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-white flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="text-center text-3xl font-extrabold text-gray-900">Sign Up for NkwaBiz</h2>
-        <p className="mt-2 text-center text-sm text-gray-600">
+        <h2 className="text-center text-xl font-extrabold text-blue-600">
+          NkwaBiz
+        </h2>
+        <p className="mt-2 text-center text-2xl font-medium text-gray-900">
           Create your account and start managing your business
         </p>
       </div>
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+        <div className="px-6 md:px-0 lg:px-0">
           <form className="space-y-4" onSubmit={handleSubmit}>
-            <input name="firstname" type="text" required placeholder="First Name" value={form.firstname} onChange={handleChange} className="w-full px-3 py-2 border rounded" />
-            <input name="lastname" type="text" required placeholder="Last Name" value={form.lastname} onChange={handleChange} className="w-full px-3 py-2 border rounded" />
-            <input name="business_name" type="text" required placeholder="Business Name" value={form.business_name} onChange={handleChange} className="w-full px-3 py-2 border rounded" />
-            <input name="email" type="email" required placeholder="Email" value={form.email} onChange={handleChange} className="w-full px-3 py-2 border rounded" />
-            <input name="phone" type="text" required placeholder="Phone" value={form.phone} onChange={handleChange} className="w-full px-3 py-2 border rounded" />
-            <input name="location" type="text" required placeholder="Location" value={form.location} onChange={handleChange} className="w-full px-3 py-2 border rounded" />
+            <input
+              name="firstname"
+              type="text"
+              required
+              placeholder="First Name"
+              value={form.firstname}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border rounded-md"
+            />
+            <input
+              name="lastname"
+              type="text"
+              required
+              placeholder="Last Name"
+              value={form.lastname}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border rounded-md"
+            />
+            <input
+              name="business_name"
+              type="text"
+              required
+              placeholder="Business Name"
+              value={form.business_name}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border rounded-md"
+            />
+            <input
+              name="email"
+              type="email"
+              required
+              placeholder="Email"
+              value={form.email}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border rounded-md"
+            />
+            <input
+              name="phone"
+              type="text"
+              required
+              placeholder="Phone"
+              value={form.phone}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border rounded-md"
+            />
+            <input
+              name="location"
+              type="text"
+              required
+              placeholder="Location"
+              value={form.location}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border rounded-md"
+            />
             <div className="relative">
               <input
                 name="password"
@@ -74,26 +125,33 @@ const Signup = () => {
                 placeholder="Password"
                 value={form.password}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border rounded"
+                className="w-full px-3 py-2 border rounded-md"
               />
               <button
                 type="button"
                 tabIndex={-1}
                 className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-blue-600"
                 onClick={() => setShowPassword((v) => !v)}
-                style={{ top: '50%', transform: 'translateY(-50%)' }}
+                style={{ top: "50%", transform: "translateY(-50%)" }}
               >
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
             {error && <div className="text-red-500 text-sm">{error}</div>}
-            <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded flex items-center justify-center" disabled={loading}>
+            <Button
+              type="submit"
+              className="w-full bg-blue-600 border-transparent shadow-sm hover:bg-blue-700 text-white rounded-md flex justify-center focus:ring-blue-500"
+              disabled={loading}
+            >
               {loading ? <Spinner /> : "Sign up"}
-            </button>
+            </Button>
           </form>
           <p className="mt-4 text-center text-sm text-gray-600">
             Already have an account?{" "}
-            <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
+            <Link
+              to="/login"
+              className="font-medium text-blue-600 hover:text-blue-500"
+            >
               Sign in
             </Link>
           </p>
@@ -106,8 +164,20 @@ const Signup = () => {
 function Spinner() {
   return (
     <svg className="animate-spin h-5 w-5 mr-3 text-white" viewBox="0 0 24 24">
-      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
-      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+      <circle
+        className="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        strokeWidth="4"
+        fill="none"
+      />
+      <path
+        className="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8v8z"
+      />
     </svg>
   );
 }

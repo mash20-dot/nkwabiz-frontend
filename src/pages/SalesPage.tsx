@@ -7,6 +7,8 @@ import {
   SaleHistoryItem,
 } from "../utils/salesApi";
 import { Toaster, toast } from "react-hot-toast";
+import Button from "../components/Button";
+import { Plus } from "lucide-react";
 
 type Product = {
   product_name: string;
@@ -66,7 +68,7 @@ export default function SalesPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col items-start justify-center gap-6">
       <Toaster position="top-right" />
       <SaleModal
         open={saleModalOpen}
@@ -74,17 +76,22 @@ export default function SalesPage() {
         products={products}
         onSaleRecorded={handleSaleRecorded}
       />
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Sales History</h1>
-        <button
-          className="px-4 py-2 bg-blue-600 text-white rounded"
-          onClick={() => setSaleModalOpen(true)}
-        >
-          Record New Sale
-        </button>
+      {/* Page Header */}
+      <div className="w-full flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
+        <h1 className="text-2xl font-medium text-gray-900">Sales History</h1>
+        <div className="flex gap-[1rem]">
+          <Button
+            className="bg-blue-600 border-blue-600 text-white"
+            onClick={() => setSaleModalOpen(true)}
+          >
+            <Plus className="h-4 w-4 mr-2 text-white" aria-hidden="true" />
+            Record New Sale
+          </Button>
+        </div>
       </div>
+
       {premiumError && <div className="text-red-500 mb-2">{premiumError}</div>}
-      <div className="bg-white shadow rounded-lg">
+      <div className="w-full bg-white shadow rounded-lg">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">

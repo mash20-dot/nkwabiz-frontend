@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -9,11 +9,14 @@ import {
   Settings,
   X,
 } from "lucide-react";
+import { useAuthStore } from "../../store/useAuthStore";
+
 interface SidebarProps {
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
 }
 const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
+  const businessName = useAuthStore((state) => state.businessName);
   const location = useLocation();
   const navigation = [
     {
@@ -47,6 +50,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
       icon: Settings,
     },
   ];
+
   return (
     <>
       {/* Mobile sidebar */}
@@ -67,7 +71,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
         />
         {/* Sidebar */}
         <div
-          className={`relative flex-1 flex flex-col max-w-xs w-full pt-5 pb-4 bg-blue-800 transition ease-in-out duration-300 transform ${
+          className={`relative flex-1 flex flex-col max-w-[240px] pt-5 pb-4 bg-blue-800 transition ease-in-out duration-300 transform ${
             sidebarOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
@@ -98,7 +102,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
                   }`}
                 >
                   <item.icon
-                    className="mr-4 h-6 w-6 text-blue-200"
+                    className="mr-2 h-4 w-4 text-blue-200"
                     aria-hidden="true"
                   />
                   {item.name}
@@ -112,14 +116,17 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
         </div>
       </div>
       {/* Static sidebar for desktop */}
-      <div className="hidden md:flex md:flex-shrink-0">
+      <div className="hidden md:flex md:flex-shrink-0 w-60">
         <div className="flex flex-col w-64">
           <div className="flex flex-col h-0 flex-1">
+            {/* Logo */}
             <div className="flex items-center h-16 flex-shrink-0 px-4 bg-blue-800">
               <Link to="/" className="text-2xl font-bold text-white">
                 NkwaBiz
               </Link>
             </div>
+
+            {/* Navigation */}
             <div className="flex-1 flex flex-col overflow-y-auto bg-blue-800">
               <nav className="flex-1 px-2 py-4 space-y-1">
                 {navigation.map((item) => (
@@ -133,13 +140,23 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
                     }`}
                   >
                     <item.icon
-                      className="mr-3 h-6 w-6 text-blue-200"
+                      className="mr-2 h-4 w-4 text-blue-200"
                       aria-hidden="true"
                     />
                     {item.name}
                   </Link>
                 ))}
               </nav>
+            </div>
+
+            {/* Business Name */}
+            <div className="flex items-center flex-shrink-0 px-4 pb-2 h-16 bg-blue-800">
+              <div className="h-8 w-8 rounded-sm bg-blue-200 text-blue-800 flex items-center font-medium justify-center">
+                {businessName?.slice(0, 2).toUpperCase()}
+              </div>
+              <span className="ml-2 font-medium text-white">
+                {businessName || "Business Name"}
+              </span>
             </div>
           </div>
         </div>

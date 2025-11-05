@@ -5,8 +5,8 @@ import {
   TrendingUp,
   Package,
   ShoppingCart,
-  BarChart2,
 } from "lucide-react";
+import SummaryCard from "../components/SummaryCard";
 import { Link, useNavigate } from "react-router-dom";
 import { getDashboardOverview } from "../utils/productApi";
 import { getStockAlerts } from "../utils/stockApi";
@@ -18,6 +18,7 @@ import {
   MonthlySalesSummaryResponse,
 } from "../utils/salesApi";
 import SaleModal from "../components/SaleModal";
+import Button from "../components/Button";
 
 type DashboardProduct = {
   product_name: string;
@@ -68,7 +69,10 @@ const Dashboard = () => {
   useEffect(() => {
     setLoadingProducts(true);
     getDashboardOverview()
-      .then((data) => setProducts(Array.isArray(data) ? data : []))
+      .then((data) => {
+        console.log("📦 Dashboard overview API response:", data);
+        setProducts(Array.isArray(data) ? data : []);
+      })
       .catch(() => setProducts([]))
       .finally(() => setLoadingProducts(false));
   }, []);
@@ -147,6 +151,8 @@ const Dashboard = () => {
       p.remaining_stock <= Math.max(5, Math.floor(p.initial_stock * 0.1))
   );
 
+  console.log(totalProducts);
+
   // Helper: format date (as "Today, HH:MM AM/PM" if today's date)
   function formatSaleDate(dateStr: string) {
     try {
@@ -170,169 +176,101 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col items-start justify-center gap-6">
       <SaleModal
         open={saleModalOpen}
         onClose={() => setSaleModalOpen(false)}
         products={products}
       />
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {/* Sales Today Card */}
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <DollarSign
-                  className="h-6 w-6 text-green-500"
-                  aria-hidden="true"
-                />
-              </div>
-              <div className="ml-5 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
-                    Sales Today
-                  </dt>
-                  <dd>
-                    <div className="text-lg font-medium text-gray-900">
-                      {loadingSalesToday
-                        ? "..."
-                        : salesToday !== null
-                        ? `₵${salesToday.toLocaleString()}`
-                        : "₵0"}
-                    </div>
-                  </dd>
-                </dl>
-              </div>
-            </div>
-          </div>
-          <div className="bg-gray-50 px-5 py-3">
-            <div className="text-sm">
-              <Link
-                to="/sales"
-                className="font-medium text-blue-700 hover:text-blue-900"
-              >
-                View all
-              </Link>
-            </div>
-          </div>
-        </div>
-        {/* Total Products Card */}
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <Package className="h-6 w-6 text-blue-500" aria-hidden="true" />
-              </div>
-              <div className="ml-5 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
-                    Total Products
-                  </dt>
-                  <dd>
-                    <div className="text-lg font-medium text-gray-900">
-                      {loadingProducts ? "..." : totalProducts}
-                    </div>
-                  </dd>
-                </dl>
-              </div>
-            </div>
-          </div>
-          <div className="bg-gray-50 px-5 py-3">
-            <div className="text-sm">
-              <Link
-                to="/products"
-                className="font-medium text-blue-700 hover:text-blue-900"
-              >
-                View all
-              </Link>
-            </div>
-          </div>
-        </div>
-        {/* Low Stock Items Card */}
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <AlertTriangle
-                  className="h-6 w-6 text-yellow-500"
-                  aria-hidden="true"
-                />
-              </div>
-              <div className="ml-5 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
-                    Low Stock Items
-                  </dt>
-                  <dd>
-                    <div className="text-lg font-medium text-gray-900">
-                      {loadingProducts ? "..." : lowStockItems.length}
-                    </div>
-                  </dd>
-                </dl>
-              </div>
-            </div>
-          </div>
-          <div className="bg-gray-50 px-5 py-3">
-            <div className="text-sm">
-              <Link
-                to="/products"
-                className="font-medium text-blue-700 hover:text-blue-900"
-              >
-                View details
-              </Link>
-            </div>
-          </div>
-        </div>
-        {/* Sales This Month Card */}
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <TrendingUp
-                  className="h-6 w-6 text-indigo-500"
-                  aria-hidden="true"
-                />
-              </div>
-              <div className="ml-5 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
-                    Sales This Month
-                  </dt>
-                  <dd>
-                    <div className="text-lg font-medium text-gray-900">
-                      {monthlyLoading ? (
-                        "..."
-                      ) : monthlyError ? (
-                        <span className="text-red-500">{monthlyError}</span>
-                      ) : monthlySales !== null ? (
-                        `₵${monthlySales.toLocaleString()}`
-                      ) : (
-                        "₵0"
-                      )}
-                    </div>
-                    {!monthlyLoading && monthlyProfit !== null && (
-                      <div className="text-xs text-gray-500">
-                        Profit: ₵{monthlyProfit.toLocaleString()}
-                      </div>
-                    )}
-                  </dd>
-                </dl>
-              </div>
-            </div>
-          </div>
-          <div className="bg-gray-50 px-5 py-3">
-            <div className="text-sm">
-              <Link
-                to="/analytics"
-                className="font-medium text-blue-700 hover:text-blue-900"
-              >
-                View analytics
-              </Link>
-            </div>
-          </div>
+      <div className="w-full flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
+        <h1 className="text-2xl font-medium text-gray-900">Dashboard</h1>
+        <div className="flex gap-[1rem]">
+          <Button onClick={() => setSaleModalOpen(true)}>
+            <ShoppingCart
+              className="h-4 w-4 mr-2 text-gray-600"
+              aria-hidden="true"
+            />
+            Add Sale
+          </Button>
+          <Button
+            className="bg-blue-600 border-blue-600 text-white"
+            onClick={() => navigate("/products?add=true")}
+          >
+            <Package className="h-4 w-4 mr-2 text-white" aria-hidden="true" />
+            Add New Product
+          </Button>
         </div>
       </div>
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+      <div className="w-full grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Sales Today Card */}
+        <SummaryCard
+          linkPath="/sales"
+          title="Sales Today"
+          linkLabel="View all"
+          icon={DollarSign}
+          iconColor="text-green-500"
+        >
+          <div className="text-[1.5rem] font-semibold text-gray-900">
+            {loadingSalesToday
+              ? "..."
+              : salesToday !== null
+              ? `₵${salesToday.toLocaleString()}`
+              : "₵0"}
+          </div>
+        </SummaryCard>
+
+        {/* Total Products Card */}
+        <SummaryCard
+          linkPath="/products"
+          title="Total Products"
+          linkLabel="View all"
+          icon={Package}
+        >
+          <div className="text-[1.5rem] font-semibold text-gray-900">
+            {loadingProducts ? "..." : totalProducts}
+          </div>
+        </SummaryCard>
+
+        {/* Low Stock Items Card */}
+        <SummaryCard
+          linkPath="/products"
+          title="Low Stock Items"
+          linkLabel="View details"
+          icon={AlertTriangle}
+          iconColor="text-yellow-500"
+        >
+          <div className="text-[1.5rem] font-semibold text-gray-900">
+            {loadingProducts ? "..." : lowStockItems.length}
+          </div>
+        </SummaryCard>
+
+        {/* Sales This Month Card */}
+        <SummaryCard
+          linkPath="/analytics"
+          title="Sales This Month"
+          linkLabel="View analytics"
+          icon={TrendingUp}
+          iconColor="text-indigo-500"
+        >
+          <div className="text-[1.5rem] font-semibold text-gray-900">
+            {monthlyLoading ? (
+              "..."
+            ) : monthlyError ? (
+              <span className="text-sm text-red-500">{monthlyError}</span>
+            ) : monthlySales !== null ? (
+              `₵${monthlySales.toLocaleString()}`
+            ) : (
+              "₵0"
+            )}
+          </div>
+          {!monthlyLoading && monthlyProfit !== null && (
+            <div className="text-xs text-gray-500">
+              Profit: ₵{monthlyProfit.toLocaleString()}
+            </div>
+          )}
+        </SummaryCard>
+      </div>
+      <div className="w-full grid grid-cols-1 gap-5 lg:grid-cols-2">
         {/* Recent Sales -- updated for real API data */}
         <div className="bg-white shadow rounded-lg">
           <div className="px-4 py-5 sm:px-6 flex justify-between items-center">
@@ -500,75 +438,6 @@ const Dashboard = () => {
                 </tbody>
               </table>
             </div>
-          </div>
-        </div>
-      </div>
-      {/* Quick Actions */}
-      <div className="bg-white shadow rounded-lg">
-        <div className="px-4 py-5 sm:px-6">
-          <h3 className="text-lg leading-6 font-medium text-gray-900">
-            Quick Actions
-          </h3>
-        </div>
-        <div className="border-t border-gray-200 px-4 py-5 sm:p-6">
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            <button
-              type="button"
-              onClick={() => setSaleModalOpen(true)}
-              className="relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
-            >
-              <div className="flex-shrink-0">
-                <ShoppingCart
-                  className="h-6 w-6 text-blue-600"
-                  aria-hidden="true"
-                />
-              </div>
-              <div className="flex-1 min-w-0">
-                <span className="absolute inset-0" aria-hidden="true" />
-                <p className="text-sm font-medium text-gray-900">
-                  Record New Sale
-                </p>
-                <p className="text-sm text-gray-500">Add a new transaction</p>
-              </div>
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate("/products?add=true")}
-              className="relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
-            >
-              <div className="flex-shrink-0">
-                <Package className="h-6 w-6 text-blue-600" aria-hidden="true" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <span className="absolute inset-0" aria-hidden="true" />
-                <p className="text-sm font-medium text-gray-900">
-                  Add New Product
-                </p>
-                <p className="text-sm text-gray-500">
-                  Create a product listing
-                </p>
-              </div>
-            </button>
-            <Link
-              to="/analytics"
-              className="relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
-            >
-              <div className="flex-shrink-0">
-                <BarChart2
-                  className="h-6 w-6 text-blue-600"
-                  aria-hidden="true"
-                />
-              </div>
-              <div className="flex-1 min-w-0">
-                <span className="absolute inset-0" aria-hidden="true" />
-                <p className="text-sm font-medium text-gray-900">
-                  View Analytics
-                </p>
-                <p className="text-sm text-gray-500">
-                  Check business performance
-                </p>
-              </div>
-            </Link>
           </div>
         </div>
       </div>
