@@ -70,6 +70,7 @@ const Dashboard = () => {
     setLoadingProducts(true);
     getDashboardOverview()
       .then((data) => {
+        console.log("📦 Dashboard overview API response:", data);
         setProducts(Array.isArray(data) ? data : []);
       })
       .catch(() => setProducts([]))
@@ -149,6 +150,8 @@ const Dashboard = () => {
       typeof p.initial_stock === "number" &&
       p.remaining_stock <= Math.max(5, Math.floor(p.initial_stock * 0.1))
   );
+
+  console.log(totalProducts);
 
   // Helper: format date (as "Today, HH:MM AM/PM" if today's date)
   function formatSaleDate(dateStr: string) {
