@@ -50,6 +50,7 @@ const Products: React.FC = () => {
           category: prod.category || getAutoCategory(prod.product_name).label,
         }));
         setProducts(productsWithCategory);
+        console.log(data.products);
       })
       .catch(() => {
         setProducts([]);

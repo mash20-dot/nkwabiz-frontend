@@ -67,7 +67,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
         />
         {/* Sidebar */}
         <div
-          className={`relative flex-1 flex flex-col max-w-xs w-full pt-5 pb-4 bg-blue-800 transition ease-in-out duration-300 transform ${
+          className={`relative flex-1 flex flex-col max-w-[240px] pt-5 pb-4 bg-blue-800 transition ease-in-out duration-300 transform ${
             sidebarOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
@@ -112,7 +112,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
         </div>
       </div>
       {/* Static sidebar for desktop */}
-      <div className="hidden md:flex md:flex-shrink-0">
+      <div className="hidden md:flex md:flex-shrink-0 w-60">
         <div className="flex flex-col w-64">
           <div className="flex flex-col h-0 flex-1">
             <div className="flex items-center h-16 flex-shrink-0 px-4 bg-blue-800">
