@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -9,11 +9,14 @@ import {
   Settings,
   X,
 } from "lucide-react";
+import { getDashboardOverview } from "../../utils/productApi";
+
 interface SidebarProps {
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
 }
 const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
+  const [businessName, setBusinessName] = useState<string>("");
   const location = useLocation();
   const navigation = [
     {
@@ -47,6 +50,19 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
       icon: Settings,
     },
   ];
+
+  useEffect(() => {
+    async function fetchBusinessName() {
+      try {
+        const data = await getDashboardOverview();
+        setBusinessName(data.business_name || "");
+      } catch (error) {
+        console.error("❌ Error fetching business name:", error);
+      }
+    }
+    fetchBusinessName();
+  }, []);
+
   return (
     <>
       {/* Mobile sidebar */}
@@ -115,11 +131,14 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
       <div className="hidden md:flex md:flex-shrink-0 w-60">
         <div className="flex flex-col w-64">
           <div className="flex flex-col h-0 flex-1">
+            {/* Logo */}
             <div className="flex items-center h-16 flex-shrink-0 px-4 bg-blue-800">
               <Link to="/" className="text-2xl font-bold text-white">
                 NkwaBiz
               </Link>
             </div>
+
+            {/* Navigation */}
             <div className="flex-1 flex flex-col overflow-y-auto bg-blue-800">
               <nav className="flex-1 px-2 py-4 space-y-1">
                 {navigation.map((item) => (
@@ -140,6 +159,16 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
                   </Link>
                 ))}
               </nav>
+            </div>
+
+            {/* Business Name */}
+            <div className="flex items-center flex-shrink-0 px-4 h-16 bg-blue-800">
+              <div className="h-8 w-8 rounded-sm bg-blue-200 text-blue-800 flex items-center justify-center">
+                {businessName.slice(0, 2)}
+              </div>
+              <span className="ml-2 font-medium text-white">
+                {businessName.toUpperCase()}
+              </span>
             </div>
           </div>
         </div>

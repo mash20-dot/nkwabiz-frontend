@@ -69,7 +69,9 @@ const Dashboard = () => {
   useEffect(() => {
     setLoadingProducts(true);
     getDashboardOverview()
-      .then((data) => setProducts(Array.isArray(data) ? data : []))
+      .then((data) => {
+        setProducts(Array.isArray(data) ? data : []);
+      })
       .catch(() => setProducts([]))
       .finally(() => setLoadingProducts(false));
   }, []);
