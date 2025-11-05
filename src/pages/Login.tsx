@@ -38,6 +38,7 @@ const Login = () => {
       const data = await loginUser(form.email, form.password);
       setAuth(data.access_token, data.business_name || "");
       // Force reload to ensure all components see updated auth state
+
       window.location.replace("/dashboard");
     } catch (err: any) {
       setError(err.message || "Login failed");

@@ -9,14 +9,14 @@ import {
   Settings,
   X,
 } from "lucide-react";
-import { getDashboardOverview } from "../../utils/productApi";
+import { useAuthStore } from "../../store/useAuthStore";
 
 interface SidebarProps {
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
 }
 const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
-  const [businessName, setBusinessName] = useState<string>("");
+  const businessName = useAuthStore((state) => state.businessName);
   const location = useLocation();
   const navigation = [
     {
@@ -50,18 +50,6 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
       icon: Settings,
     },
   ];
-
-  useEffect(() => {
-    async function fetchBusinessName() {
-      try {
-        const data = await getDashboardOverview();
-        setBusinessName(data.business_name || "");
-      } catch (error) {
-        console.error("❌ Error fetching business name:", error);
-      }
-    }
-    fetchBusinessName();
-  }, []);
 
   return (
     <>
@@ -162,12 +150,12 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
             </div>
 
             {/* Business Name */}
-            <div className="flex items-center flex-shrink-0 px-4 h-16 bg-blue-800">
-              <div className="h-8 w-8 rounded-sm bg-blue-200 text-blue-800 flex items-center justify-center">
-                {businessName.slice(0, 2)}
+            <div className="flex items-center flex-shrink-0 px-4 pb-2 h-16 bg-blue-800">
+              <div className="h-8 w-8 rounded-sm bg-blue-200 text-blue-800 flex items-center font-medium justify-center">
+                {businessName?.slice(0, 2).toUpperCase()}
               </div>
               <span className="ml-2 font-medium text-white">
-                {businessName.toUpperCase()}
+                {businessName || "Business Name"}
               </span>
             </div>
           </div>
