@@ -98,7 +98,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
                   }`}
                 >
                   <item.icon
-                    className="mr-4 h-6 w-6 text-blue-200"
+                    className="mr-2 h-4 w-4 text-blue-200"
                     aria-hidden="true"
                   />
                   {item.name}
@@ -133,7 +133,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
                     }`}
                   >
                     <item.icon
-                      className="mr-3 h-6 w-6 text-blue-200"
+                      className="mr-2 h-4 w-4 text-blue-200"
                       aria-hidden="true"
                     />
                     {item.name}
