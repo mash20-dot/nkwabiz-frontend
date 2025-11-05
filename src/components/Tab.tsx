@@ -19,7 +19,7 @@ export default function Tab({
     <button
       {...rest}
       className={`w-full hover:bg-blue-100 rounded-sm group flex items-center justify-between cursor-pointer py-2 px-3 ${
-        isSelected ? "bg-blue-100 text-blue-600" : "bg-white"
+        isSelected ? "bg-blue-100 text-blue-600" : "bg-white text-gray-600"
       }`}
     >
       <div className="flex items-center gap-2">
