@@ -3,9 +3,8 @@ import { LucideIcon } from "lucide-react";
 import { ChevronRight } from "lucide-react";
 
 type SummaryCardProps = {
-  linkPath: string;
+  linkPath?: string;
   title: string;
-  linkLabel: string;
   icon: LucideIcon;
   iconColor?: string;
   children: React.ReactNode;
@@ -14,7 +13,6 @@ type SummaryCardProps = {
 export default function SummaryCard({
   linkPath,
   title,
-  linkLabel,
   icon: Icon,
   iconColor = "text-blue-500",
   children,
@@ -32,9 +30,11 @@ export default function SummaryCard({
                 />
                 {title}
               </dt>
-              <Link to={linkPath}>
-                <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-gray-500" />
-              </Link>
+              {linkPath && (
+                <Link to={linkPath}>
+                  <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-gray-500" />
+                </Link>
+              )}
             </div>
 
             <dd>{children}</dd>
