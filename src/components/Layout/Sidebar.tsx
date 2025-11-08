@@ -7,7 +7,9 @@ import {
   BarChart2,
   WalletCards,
   Settings,
+  MessageCircle,
   X,
+  Users,
 } from "lucide-react";
 import { useAuthStore } from "../../store/useAuthStore";
 
@@ -43,6 +45,16 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
       name: "Analytics",
       href: "/analytics",
       icon: BarChart2,
+    },
+    {
+      name: "SMS",
+      href: "/smspage",
+      icon: MessageCircle,
+    },
+    {
+      name: "Customers",
+      href: "/customers",
+      icon: Users,
     },
     {
       name: "Settings",
