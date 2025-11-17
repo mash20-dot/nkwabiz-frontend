@@ -9,6 +9,7 @@ export default defineConfig({
     host: "0.0.0.0",
     allowedHosts: [
       "nkwabiz-frontend.onrender.com",
+      "https://nkwabiz-frontend-1.onrender.com",
       "nkwabiz.com"
     ]
   }
