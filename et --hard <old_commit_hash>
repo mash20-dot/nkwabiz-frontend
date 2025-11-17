@@ -1,0 +1,247 @@
+[33mcommit b78ec931717c468d9949cf7ca2c08263801b49a7[m[33m ([m[1;36mHEAD -> [m[1;32mGO[m[33m, [m[1;31morigin/GO[m[33m)[m
+Author: Sakyi Mustapha <sakyimustapha5@gmail.com>
+Date:   Sat Nov 8 00:19:52 2025 +0000
+
+    maintainance mood page
+
+[33mcommit e05f1ef7d9d67d513f55ea29a5a32a56d8ed9c67[m
+Author: Shakirat Akanji <akanjishakirato@gmail.com>
+Date:   Fri Nov 7 16:23:53 2025 +0100
+
+    Update the sidebar to inclue SMS and Customers page
+    Install untitled ui package for tables
+    Design the layout for the SMS page
+
+[33mcommit d8a45e9ee2fabab4d6a4c8b1f47e9dadaf27ecef[m
+Author: Shakirat Akanji <akanjishakirato@gmail.com>
+Date:   Wed Nov 5 17:31:09 2025 +0100
+
+    Update the api end point
+
+[33mcommit 18778ec200518130766912046c803d3837257baf[m
+Author: Shakirat Akanji <akanjishakirato@gmail.com>
+Date:   Wed Nov 5 16:05:42 2025 +0100
+
+    Update business name
+
+[33mcommit cd11f32861f02706414c704b38eaafe215457d5c[m
+Author: Shakirat Akanji <akanjishakirato@gmail.com>
+Date:   Wed Nov 5 14:16:18 2025 +0100
+
+    Update API URL
+
+[33mcommit 8da24ca511bd7c40e909b46b18b1a0ab59a32458[m
+Author: Shakirat Akanji <akanjishakirato@gmail.com>
+Date:   Wed Nov 5 14:15:03 2025 +0100
+
+    Add business name to the Sidebar
+
+[33mcommit c43a8dab761b008935281105e156794c24a2c366[m
+Author: Shakirat Akanji <akanjishakirato@gmail.com>
+Date:   Wed Nov 5 11:50:20 2025 +0100
+
+    Fix Sidebar styling
+
+[33mcommit 9fcb936d7ec76b67e55bb72c5c10a67533251ac4[m
+Author: Shakirat Akanji <akanjishakirato@gmail.com>
+Date:   Wed Nov 5 11:31:02 2025 +0100
+
+    Add remaining stock to the products table
+
+[33mcommit 1fd563e23a0c393347248a194e0d97812062f2bb[m
+Author: Shakirat Akanji <akanjishakirato@gmail.com>
+Date:   Wed Nov 5 08:58:42 2025 +0100
+
+    Disable currency selection  feature
+
+[33mcommit f57630cc76ce5776e8c899c5774be889a3dd60a1[m
+Author: Shakirat Akanji <akanjishakirato@gmail.com>
+Date:   Tue Nov 4 21:28:58 2025 +0100
+
+    Create the currency selection logic
+
+[33mcommit c3d1cdb432e798ed509a31e2c6a93f5cd16ebd07[m
+Author: Shakirat Akanji <akanjishakirato@gmail.com>
+Date:   Tue Nov 4 07:34:36 2025 +0100
+
+    Create and style currency card component
+
+[33mcommit 6a6898afc1e80ee9617f7d1c9c5cabce3cade2f2[m
+Author: Shakirat Akanji <akanjishakirato@gmail.com>
+Date:   Mon Nov 3 13:20:04 2025 +0100
+
+    Style the Profile Card and link account settings to settings page
+
+[33mcommit 99ee2ab0ea4a53f771750df2fa74176a8f593072[m
+Author: Shakirat Akanji <akanjishakirato@gmail.com>
+Date:   Mon Nov 3 11:29:57 2025 +0100
+
+    Add profile card to handle settings, currency, and sign out
+
+[33mcommit 8f8359e03606d5e692ab8f11c0c6a21deac19826[m
+Author: Shakirat Akanji <akanjishakirato@gmail.com>
+Date:   Sat Nov 1 08:08:37 2025 +0100
+
+    Fix all the page headers styling
+
+[33mcommit 4439199cfb62e84c7e36bb2e74280aa4db2121f3[m
+Author: Shakirat Akanji <akanjishakirato@gmail.com>
+Date:   Sat Nov 1 07:04:47 2025 +0100
+
+    Replace the buttons on the Login and Signup pages with the Button component
+    Update the styling for the positioning of the forms when the Add New Product and Add Sale buttons are clicked
+
+[33mcommit f245ed65e220579e22682eab6e4cc1f7a05c5e8f[m
+Author: Shakirat Akanji <akanjishakirato@gmail.com>
+Date:   Sat Nov 1 03:36:30 2025 +0100
+
+    Update Button.tsx components to ensure full customization options
+    Removed quick actions from the dashboard and replaced with buttons.
+
+[33mcommit 2287ad2e45c2de8af190de2179fde131e082d454[m
+Author: Shakirat Akanji <akanjishakirato@gmail.com>
+Date:   Fri Oct 31 16:42:31 2025 +0100
+
+    Add a title to the Dashboard page
+
+[33mcommit ea8b30c3a6afd41d7632028bbbc5d313a66f9c10[m
+Author: Shakirat Akanji <akanjishakirato@gmail.com>
+Date:   Fri Oct 31 09:31:49 2025 +0100
+
+    Update the styling for the Summary cards
+
+[33mcommit fb20cb7ce180b6feddaf16ff7173da573a6081ec[m
+Author: Shakirat Akanji <akanjishakirato@gmail.com>
+Date:   Fri Oct 31 04:13:47 2025 +0100
+
+    Seperate the dashboard summary cards into a seperate component for reusability
+
+[33mcommit a753ea1be774903a290dc0b4c69cd7c9b684590b[m
+Author: Shakirat Akanji <akanjishakirato@gmail.com>
+Date:   Thu Oct 30 17:15:50 2025 +0100
+
+    Fix the routing for the Get Started Button on the Landing Page
+
+[33mcommit 5ae853278b13656bcb44becc721846ff1d879fcc[m
+Author: Shakirat Akanji <akanjishakirato@gmail.com>
+Date:   Thu Oct 30 17:01:59 2025 +0100
+
+    Redesign the header.tsx component
+
+[33mcommit ad0cf3f0e3839a48f2e8af681cfe04f982dae296[m
+Author: Shakirat Akanji <akanjishakirato@gmail.com>
+Date:   Thu Oct 30 15:44:27 2025 +0100
+
+    Remove the Logout Button in Header.tsx
+
+[33mcommit 56b9bf5ecb1e10e5af67308cbc845d1feb2c2272[m
+Author: Shakirat Akanji <akanjishakirato@gmail.com>
+Date:   Thu Oct 30 15:29:52 2025 +0100
+
+    Update the CreateRoot variable in index.tsx
+
+[33mcommit 5d4eee9044f22a46faf623f1021c9fd2f501f134[m
+Author: Shakirat Akanji <akanjishakirato@gmail.com>
+Date:   Thu Oct 30 14:04:08 2025 +0100
+
+    Update the input field and button border-radius on the sign up page
+
+[33mcommit 3e1c9f80b28251c1cf126f9efe6256f04771eefe[m
+Author: Shakirat Akanji <akanjishakirato@gmail.com>
+Date:   Thu Oct 30 13:56:51 2025 +0100
+
+    Update styling for the signup page
+
+[33mcommit 0d45a2098465e30916bb1f2a2bfa5447007a2164[m
+Author: Shakirat Akanji <akanjishakirato@gmail.com>
+Date:   Thu Oct 30 13:39:32 2025 +0100
+
+    Update styling for Login page
+
+[33mcommit 9ab51d5aca8f6929942a0a358d98401e65fafdb9[m
+Author: Shakirat Akanji <akanjishakirato@gmail.com>
+Date:   Thu Oct 30 08:03:35 2025 +0100
+
+    Add nkwabiz-frontend-1.onrender.com to vite.config.ts to allow Render test domain.
+
+[33mcommit bc83f37c4c69e0e0863312635804085d64f86563[m
+Author: Sakyi Mustapha <sakyimustapha5@gmail.com>
+Date:   Thu Oct 23 13:22:30 2025 +0000
+
+    added google verification
+
+[33mcommit 9b900a3d4cfd84b38cc3dd7d350e447f39a34cb0[m
+Author: Sakyi Mustapha <sakyimustapha5@gmail.com>
+Date:   Thu Oct 23 13:07:56 2025 +0000
+
+    moved public folder
+
+[33mcommit c68384e03a487c337643da7914c4a9c7bf7c5698[m
+Author: Sakyi Mustapha <sakyimustapha5@gmail.com>
+Date:   Thu Oct 23 12:52:05 2025 +0000
+
+    added sitemap
+
+[33mcommit a2fea549c184e9f589ac87ffae5af968cd76c72a[m
+Author: Sakyi Mustapha <sakyimustapha5@gmail.com>
+Date:   Wed Oct 22 13:27:55 2025 +0000
+
+    wrapped google analytics tag in an if statement
+
+[33mcommit 5b2de2afc73b5579e391ffa03ca3a2c90b5b0a46[m
+Author: Sakyi Mustapha <sakyimustapha5@gmail.com>
+Date:   Wed Oct 22 12:11:58 2025 +0000
+
+    added analytic tag
+
+[33mcommit 7a52ce6ba3116ca04d2315c19f63d2e042ff141f[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m
+Author: Timex19 <ojooluwatimilehinpeter@yahoo.com>
+Date:   Tue Oct 21 00:39:07 2025 +0100
+
+    Updating the Analytics Page and Adding the Expenses Page
+
+[33mcommit 19cd07c68c493f9c1bab6b12e32c459f435c163d[m
+Author: Timex19 <ojooluwatimilehinpeter@yahoo.com>
+Date:   Tue Oct 21 00:34:06 2025 +0100
+
+    Updating the Analytics Page and Adding the Expenses Page
+
+[33mcommit 9654073706da516e0439f31a8e7c0d095ab76f58[m
+Author: Timex19 <ojooluwatimilehinpeter@yahoo.com>
+Date:   Sat Oct 18 22:32:05 2025 +0100
+
+    Updating codes
+
+[33mcommit 9192fcd9c978a32bf5294b0376ebc07a96f68e1a[m
+Author: Timex19 <ojooluwatimilehinpeter@yahoo.com>
+Date:   Sat Oct 18 17:37:51 2025 +0100
+
+    Updating Analytics Page
+
+[33mcommit 2bdcf5e65e0cbe6e07bf657e6d7a44f58e3dff92[m
+Author: Timex19 <ojooluwatimilehinpeter@yahoo.com>
+Date:   Sat Oct 18 12:24:37 2025 +0100
+
+    Updating Analytics Page
+
+[33mcommit 8ddc03d3f3664b153e4d2a90a78d1cd8f4155ba1[m
+Author: Timex19 <ojooluwatimilehinpeter@yahoo.com>
+Date:   Thu Oct 16 21:28:51 2025 +0100
+
+    Updating the codes
+
+[33mcommit 446b3a22b424b0f2a03541036619c7722ae01b01[m
+Author: Timex19 <ojooluwatimilehinpeter@yahoo.com>
+Date:   Thu Oct 16 01:00:19 2025 +0100
+
+    Updating the codes
+
+[33mcommit 94b928322bd41a4e677742652864e51dfd350409[m
+Author: Timex19 <ojooluwatimilehinpeter@yahoo.com>
+Date:   Thu Oct 16 00:55:32 2025 +0100
+
+    Updating the codes
+
+[33mcommit 01cfe0482e1341f9637ea40bc4026dc3ab20174b[m
+Author: Timex19 <ojooluwatimilehinpeter@yahoo.com>
+Date
