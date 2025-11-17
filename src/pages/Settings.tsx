@@ -1,12 +1,11 @@
-import React from "react";
-import { Save, User, Building, Bell, Lock, CreditCard } from "lucide-react";
+import React from 'react';
+import { Save, User, Building, Bell, Lock, CreditCard } from 'lucide-react';
 const Settings = () => {
-  return (
-    <div className="flex flex-col items-start justify-center gap-6">
-      <div className="w-full flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
-        <h1 className="text-2xl font-medium text-gray-900">Settings</h1>
+  return <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
       </div>
-      <div className="w-full bg-white shadow rounded-lg overflow-hidden">
+      <div className="bg-white shadow rounded-lg overflow-hidden">
         <div className="p-6">
           <div className="flex flex-col md:flex-row md:space-x-6">
             {/* Settings Navigation */}
@@ -47,86 +46,44 @@ const Settings = () => {
                 </div>
                 <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
                   <div className="sm:col-span-3">
-                    <label
-                      htmlFor="first-name"
-                      className="block text-sm font-medium text-gray-700"
-                    >
+                    <label htmlFor="first-name" className="block text-sm font-medium text-gray-700">
                       First name
                     </label>
                     <div className="mt-1">
-                      <input
-                        type="text"
-                        name="first-name"
-                        id="first-name"
-                        defaultValue="Sakyi"
-                        className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                      />
+                      <input type="text" name="first-name" id="first-name" defaultValue="Sakyi" className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md" />
                     </div>
                   </div>
                   <div className="sm:col-span-3">
-                    <label
-                      htmlFor="last-name"
-                      className="block text-sm font-medium text-gray-700"
-                    >
+                    <label htmlFor="last-name" className="block text-sm font-medium text-gray-700">
                       Last name
                     </label>
                     <div className="mt-1">
-                      <input
-                        type="text"
-                        name="last-name"
-                        id="last-name"
-                        defaultValue="Mustapha"
-                        className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                      />
+                      <input type="text" name="last-name" id="last-name" defaultValue="Mustapha" className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md" />
                     </div>
                   </div>
                   <div className="sm:col-span-4">
-                    <label
-                      htmlFor="email"
-                      className="block text-sm font-medium text-gray-700"
-                    >
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                       Email address
                     </label>
                     <div className="mt-1">
-                      <input
-                        id="email"
-                        name="email"
-                        type="email"
-                        defaultValue="sakyimustapha5@gmail.com"
-                        className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                      />
+                      <input id="email" name="email" type="email" defaultValue="sakyimustapha5@gmail.com" className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md" />
                     </div>
                   </div>
                   <div className="sm:col-span-3">
-                    <label
-                      htmlFor="phone"
-                      className="block text-sm font-medium text-gray-700"
-                    >
+                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
                       Phone number
                     </label>
                     <div className="mt-1">
-                      <input
-                        type="text"
-                        name="phone"
-                        id="phone"
-                        defaultValue="+233 55 123 4567"
-                        className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                      />
+                      <input type="text" name="phone" id="phone" defaultValue="+233 55 123 4567" className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md" />
                     </div>
                   </div>
                 </div>
                 <div className="pt-5">
                   <div className="flex justify-end">
-                    <button
-                      type="button"
-                      className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                    >
+                    <button type="button" className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                       Cancel
                     </button>
-                    <button
-                      type="submit"
-                      className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                    >
+                    <button type="submit" className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                       <Save className="h-4 w-4 mr-2" />
                       Save
                     </button>
@@ -217,7 +174,6 @@ const Settings = () => {
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
 export default Settings;

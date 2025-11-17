@@ -1,5 +1,5 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -7,6 +7,9 @@ export default defineConfig({
   preview: {
     port: process.env.PORT ? parseInt(process.env.PORT, 10) : 5173,
     host: "0.0.0.0",
-    allowedHosts: ["nkwabiz-frontend-1.onrender.com", "nkwabiz.com"],
-  },
-});
+    allowedHosts: [
+      "nkwabiz-frontend.onrender.com",
+      "nkwabiz.com"
+    ]
+  }
+})

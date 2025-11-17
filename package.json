@@ -11,7 +11,6 @@
     "start": "vite preview --port $PORT --host 0.0.0.0"
   },
   "dependencies": {
-    "classnames": "^2.5.1",
     "dotenv": "^17.2.3",
     "lucide-react": "0.522.0",
     "react": "^18.3.1",
@@ -36,6 +35,6 @@
     "postcss": "latest",
     "tailwindcss": "3.4.17",
     "typescript": "^5.5.4",
-    "vite": "^7.1.12"
+    "vite": "^7.1.9"
   }
 }

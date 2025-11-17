@@ -18,7 +18,6 @@ import {
   SaleHistoryItem,
 } from "../utils/salesApi";
 import { getToken } from "../utils/api";
-import Button from "../components/Button";
 
 const Analytics = () => {
   const [salesData, setSalesData] = useState<SaleHistoryItem[]>([]);
@@ -121,22 +120,18 @@ const Analytics = () => {
   }
 
   return (
-    <div className="flex flex-col items-start justify-center gap-6">
-      {/* Page Header */}
-      <div className="w-full flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
-        <h1 className="text-2xl font-medium text-gray-900">Analytics</h1>
-        <div className="flex gap-[1rem]">
-          <Button
-            className="bg-blue-600 border-blue-600 text-white"
-            onClick={exportReport}
-            disabled={exportLoading}
-          >
-            <Download className="h-4 w-4 mr-2 text-white" aria-hidden="true" />
-            {exportLoading ? "Exporting..." : "Export Report"}
-          </Button>
-        </div>
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
+        <h1 className="text-2xl font-bold text-gray-900">Analytics</h1>
+        <button
+          className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          onClick={exportReport}
+          disabled={exportLoading}
+        >
+          <Download className="h-4 w-4 mr-2" />
+          {exportLoading ? "Exporting..." : "Export Report"}
+        </button>
       </div>
-
       {error && <div className="text-red-500">{error}</div>}
       {exportError && <div className="text-red-500">{exportError}</div>}
       {/* Date Range Selector
@@ -178,7 +173,7 @@ const Analytics = () => {
         </div>
       </div> */}
       {/* Analytics Cards */}
-      <div className="w-full grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-white shadow rounded-lg p-4 text-center">
           <div className="text-gray-500 text-sm">Total Sales</div>
           <div className="text-2xl font-semibold text-gray-800">
@@ -208,7 +203,7 @@ const Analytics = () => {
         </div>
       </div>
       {/* Charts */}
-      <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Sales Trend */}
         <div className="bg-white shadow rounded-lg p-4">
           <div className="flex items-center mb-2">

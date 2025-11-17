@@ -17,54 +17,31 @@ export interface Product {
 }
 
 // Endpoints
-export async function createProduct(
-  product: Omit<Product, "id" | "status" | "category" | "price" | "stock">
-) {
-  return apiFetch(
-    "/product_view/product/post_product",
-    {
-      method: "POST",
-      body: JSON.stringify(product),
-    },
-    true
-  );
+export async function createProduct(product: Omit<Product, "id" | "status" | "category" | "price" | "stock">) {
+  return apiFetch("/product_view/product/post_product", {
+    method: "POST",
+    body: JSON.stringify(product),
+  }, true);
 }
 
-export async function updateProduct(
-  productId: number,
-  updates: Partial<Product>
-) {
-  return apiFetch(
-    `/product_view/product/${productId}`,
-    {
-      method: "PUT",
-      body: JSON.stringify(updates),
-    },
-    true
-  );
+export async function updateProduct(productId: number, updates: Partial<Product>) {
+  return apiFetch(`/product_view/product/${productId}`, {
+    method: "PUT",
+    body: JSON.stringify(updates),
+  }, true);
 }
 
 export async function archiveProduct(productId: number) {
-  return apiFetch(
-    `/product_view/product/${productId}/archive`,
-    {
-      method: "POST",
-    },
-    true
-  );
+  return apiFetch(`/product_view/product/${productId}/archive`, {
+    method: "POST"
+  }, true);
 }
 
 export async function searchProductsByName(name: string) {
-  return apiFetch(
-    `/product_view/product/filter?name=${encodeURIComponent(name)}`,
-    {},
-    true
-  );
+  return apiFetch(`/product_view/product/filter?name=${encodeURIComponent(name)}`, {}, true);
 }
 
-export async function getProductsByStatus(
-  status: "active" | "archived" | "all" = "active"
-) {
+export async function getProductsByStatus(status: "active" | "archived" | "all" = "active") {
   return apiFetch(`/product_view/product?status=${status}`, {}, true);
 }
 

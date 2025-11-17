@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getProductsByStatus, archiveProduct } from "../utils/productApi";
 import SaleModal from "../components/SaleModal";
@@ -13,7 +13,7 @@ export default function ProductDetailsPage() {
   useEffect(() => {
     setLoading(true);
     getProductsByStatus("all")
-      .then((data) => {
+      .then(data => {
         const found = data.products?.find((p: any) => p.product_name === name);
         setProduct(found || null);
       })
@@ -42,28 +42,13 @@ export default function ProductDetailsPage() {
         <div>Initial Stock: {product.initial_stock}</div>
         <div>Remaining Stock: {product.remaining_stock}</div>
         <div>Expires: {product.expiration_date}</div>
-        <div>
-          Status:{" "}
-          <span
-            className={
-              product.status === "Archived" ? "text-gray-400" : "text-green-600"
-            }
-          >
-            {product.status}
-          </span>
-        </div>
+        <div>Status: <span className={product.status === "Archived" ? "text-gray-400" : "text-green-600"}>{product.status}</span></div>
         {product.status !== "Archived" && (
-          <button
-            className="bg-red-400 text-white px-4 py-2 rounded mt-2"
-            onClick={handleArchive}
-          >
+          <button className="bg-red-400 text-white px-4 py-2 rounded mt-2" onClick={handleArchive}>
             Archive Product
           </button>
         )}
-        <button
-          className="bg-blue-600 text-white px-4 py-2 rounded mt-2"
-          onClick={() => setSaleModalOpen(true)}
-        >
+        <button className="bg-blue-600 text-white px-4 py-2 rounded mt-2" onClick={() => setSaleModalOpen(true)}>
           Sell Product
         </button>
       </div>
@@ -72,9 +57,7 @@ export default function ProductDetailsPage() {
         onClose={() => setSaleModalOpen(false)}
         products={[product]}
       />
-      <Link to="/products" className="block mt-6 text-blue-700">
-        Back to Products
-      </Link>
+      <Link to="/products" className="block mt-6 text-blue-700">Back to Products</Link>
     </div>
   );
 }

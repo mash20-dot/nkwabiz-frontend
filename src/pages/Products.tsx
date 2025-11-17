@@ -14,7 +14,6 @@ import ProductFormModal from "../components/ProductFormModal";
 import ProductSearchBar from "../components/ProductSearchBar";
 import ProductTable from "../components/ProductTable";
 import { getAutoCategory } from "../utils/categories";
-import Button from "../components/Button";
 
 const Products: React.FC = () => {
   const location = useLocation();
@@ -50,7 +49,6 @@ const Products: React.FC = () => {
           category: prod.category || getAutoCategory(prod.product_name).label,
         }));
         setProducts(productsWithCategory);
-        console.log(data.products);
       })
       .catch(() => {
         setProducts([]);
@@ -177,24 +175,19 @@ const Products: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col items-start justify-center gap-6">
+    <div className="space-y-6">
       <Toaster position="top-right" />
-      {/* page Header */}
-      <div className="w-full flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
-        <h1 className="text-2xl font-medium text-gray-900">Products</h1>
-        <div className="flex gap-[1rem]">
-          <Button
-            className="bg-blue-600 border-blue-600 text-white"
-            onClick={handleAddProduct}
-          >
-            <Plus className="h-4 w-4 mr-2 text-white" aria-hidden="true" />
-            Add New Product
-          </Button>
-        </div>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
+        <h1 className="text-2xl font-bold text-gray-900">Products</h1>
+        <button
+          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          onClick={handleAddProduct}
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Add New Product
+        </button>
       </div>
-
-      {/* Product Status Filter */}
-      <div className="w-full bg-white shadow rounded-lg">
+      <div className="bg-white shadow rounded-lg">
         <div className="border-b border-gray-200">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center px-4 py-4 sm:px-6">
             <div className="flex space-x-4">
