@@ -17,7 +17,7 @@ const Hero = () => {
       >
         {/* Label */}
         <div className={`bg-white px-4 py-2 rounded-lg shadow-lg border-2 border-green-500 whitespace-nowrap transition-all duration-300 ${showLabel ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'}`}>
-          <span className="text-sm font-semibold text-gray-800">Contact us for support</span>
+          <span className="text-sm font-semibold text-gray-800">support team</span>
         </div>
 
         {/* WhatsApp Icon Button */}
