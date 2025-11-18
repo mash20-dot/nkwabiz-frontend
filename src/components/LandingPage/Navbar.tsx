@@ -12,7 +12,7 @@ const Navbar = () => {
           <div className="flex items-center">
             <Link to="/" className="flex-shrink-0 flex items-center py-2">
               <img
-                className="h-20 w-auto object-contain"
+                className="h-22 w-auto object-contain"
                 src="https://i.imgur.com/bFjIgob.png"
                 alt="Nkwabiz-Logo"
               />
