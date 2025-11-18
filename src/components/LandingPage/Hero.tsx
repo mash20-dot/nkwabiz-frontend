@@ -17,7 +17,7 @@ const Hero = () => {
       >
         {/* Label */}
         <div className={`bg-white px-4 py-2 rounded-lg shadow-lg border-2 border-green-500 whitespace-nowrap transition-all duration-300 ${showLabel ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'}`}>
-          <span className="text-sm font-semibold text-gray-800">support team</span>
+          <span className="text-sm font-semibold text-gray-800">contact us for help</span>
         </div>
 
         {/* WhatsApp Icon Button */}
@@ -74,7 +74,7 @@ const Hero = () => {
         </div>
       </div>
       <div className="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
-        <img className="h-56 w-full object-cover sm:h-72 md:h-96 lg:w-full lg:h-full" src="https://plus.unsplash.com/premium_photo-1661962386185-d62972dbfdb9?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=688" alt="African business owner using digital device" />
+        <img className="h-56 w-full object-cover sm:h-72 md:h-96 lg:w-full lg:h-full" src="https://i.imgur.com/qP7YjVk.jpg" alt="African business owner using digital device" />
       </div>
     </div>
   );
