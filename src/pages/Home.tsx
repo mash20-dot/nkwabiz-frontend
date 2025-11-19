@@ -9,19 +9,21 @@ import Testimonials from '../components/LandingPage/Testimonials';
 import FAQ from '../components/LandingPage/FAQ';
 import CTA from '../components/LandingPage/CTA';
 import Footer from '../components/LandingPage/Footer';
+import Youtubesection from '../components/LandingPage/Youtubesection';
 const Home = () => {
   return <div className="flex flex-col min-h-screen">
-      <Navbar />
-      <main className="flex-grow">
-        <Hero />
-        <HowItWorks />
-        <Features />
-        <Benefits />
-        <Testimonials />
-        <FAQ />
-        {/* <CTA /> */}
-      </main>
-      <Footer />
-    </div>;
+    <Navbar />
+    <main className="flex-grow">
+      <Hero />
+      <HowItWorks />
+      <Features />
+      <Youtubesection />
+      <Benefits />
+      <Testimonials />
+      <FAQ />
+      {/* <CTA /> */}
+    </main>
+    <Footer />
+  </div>;
 };
 export default Home;
