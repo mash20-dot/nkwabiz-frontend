@@ -9,7 +9,7 @@ import Testimonials from '../components/LandingPage/Testimonials';
 import FAQ from '../components/LandingPage/FAQ';
 import CTA from '../components/LandingPage/CTA';
 import Footer from '../components/LandingPage/Footer';
-import Youtubesection from '../components/LandingPage/Youtubesection':
+import Youtubesection from '../components/LandingPage/Youtubesection';
 const Home = () => {
   return <div className="flex flex-col min-h-screen">
     <Navbar />
