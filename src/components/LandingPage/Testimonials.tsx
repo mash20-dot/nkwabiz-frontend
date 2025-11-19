@@ -1,25 +1,71 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Star } from 'lucide-react';
+
 const Testimonials = () => {
-  const testimonials = [{
-    content: 'NkwaBiz transformed how I manage my small grocery store. I can now track inventory, monitor sales, and make better business decisions with the analytics dashboard.',
-    author: 'Grace Mensah',
-    role: "Owner, Grace's Groceries",
-    image: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?ixlib=rb-1.2.1&auto=format&fit=crop&w=1400&q=80'
-  }, {
-    content: "Since implementing NkwaBiz, I've reduced stockouts by 60% and increased my monthly revenue by tracking which products sell best. The interface is intuitive even for non-tech users.",
-    author: 'Kwame Osei',
-    role: 'Manager, Kwame General Store',
-    image: 'https://images.unsplash.com/photo-1506634572416-48cdfe530110?ixlib=rb-1.2.1&auto=format&fit=crop&w=1400&q=80'
-  }, {
-    content: 'As a new business owner, I needed something simple yet powerful to manage my shop. NkwaBiz provides exactly what I need without overwhelming me with complicated features.',
-    author: 'Abena Dankwa',
-    role: 'Proprietor, Abena Fashion House',
-    image: 'https://images.unsplash.com/photo-1543269865-cbf427effbad?ixlib=rb-1.2.1&auto=format&fit=crop&w=1400&q=80'
-  }];
-  return <div id="testimonials" className="bg-white py-16">
+  const testimonials = [
+    {
+      content: 'NkwaBiz transformed how I manage my small grocery store. I can now track inventory, monitor sales, and make better business decisions with the analytics dashboard.',
+      author: 'Grace Mensah',
+      role: "Owner, Grace's Groceries",
+      image: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?ixlib=rb-1.2.1&auto=format&fit=crop&w=1400&q=80',
+      rating: 5
+    },
+    {
+      content: "Since implementing NkwaBiz, I've reduced stockouts by 60% and increased my monthly revenue by tracking which products sell best. The interface is intuitive even for non-tech users.",
+      author: 'Kwame Osei',
+      role: 'Manager, Kwame General Store',
+      image: 'https://images.unsplash.com/photo-1506634572416-48cdfe530110?ixlib=rb-1.2.1&auto=format&fit=crop&w=1400&q=80',
+      rating: 5
+    },
+    {
+      content: 'As a new business owner, I needed something simple yet powerful to manage my shop. NkwaBiz provides exactly what I need without overwhelming me with complicated features.',
+      author: 'Abena Dankwa',
+      role: 'Proprietor, Abena Fashion House',
+      image: 'https://images.unsplash.com/photo-1543269865-cbf427effbad?ixlib=rb-1.2.1&auto=format&fit=crop&w=1400&q=80',
+      rating: 5
+    },
+    {
+      content: 'Managing my pharmacy inventory was chaotic before NkwaBiz. Now I can track expiry dates, reorder levels, and sales all in one place. This has saved me so much time!',
+      author: 'Dr. Yaw Amponsah',
+      role: 'Owner, Amponsah Pharmacy',
+      image: 'INSERT_IMAGE_URL_HERE',
+      rating: 5
+    },
+    {
+      content: 'The reporting features are fantastic! I can see which products are moving fast and which are not. This helps me make smarter purchasing decisions for my boutique.',
+      author: 'Esi Quartey',
+      role: 'Proprietor, Esi Elegance Boutique',
+      image: 'INSERT_IMAGE_URL_HERE',
+      rating: 5
+    },
+    {
+      content: "I run three shops and NkwaBiz helps me manage all of them from one dashboard. The sales tracking and inventory management features are game changers for my business.",
+      author: 'Kofi Addai',
+      role: 'CEO, Addai Enterprises',
+      image: 'INSERT_IMAGE_URL_HERE',
+      rating: 5
+    },
+    {
+      content: 'Finally, a business tool that understands the needs of small African businesses! The customer support is excellent and the platform is always improving.',
+      author: 'Akua Frimpong',
+      role: 'Manager, Frimpong Cosmetics',
+      image: 'INSERT_IMAGE_URL_HERE',
+      rating: 5
+    },
+    {
+      content: 'NkwaBiz has made running my hardware store so much easier. I no longer lose track of items or miss reorder dates. My customers are happier because products are always in stock.',
+      author: 'Samuel Boateng',
+      role: 'Owner, Boateng Hardware',
+      image: 'INSERT_IMAGE_URL_HERE',
+      rating: 5
+    }
+  ];
+
+  return (
+    <div id="testimonials" className="bg-gradient-to-b from-white to-gray-50 py-16 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center">
+        <div className="text-center mb-12">
           <h2 className="text-base font-semibold text-blue-600 tracking-wide uppercase">
             Testimonials
           </h2>
@@ -31,38 +77,115 @@ const Testimonials = () => {
             their business operations.
           </p>
         </div>
-        <div className="mt-12">
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-            {testimonials.map((testimonial, index) => <div key={index} className="flex flex-col bg-gray-50 rounded-lg shadow-lg overflow-hidden">
-                <div className="flex-1 p-6 flex flex-col justify-between">
-                  <div className="flex-1">
-                    <p className="text-gray-500 italic">
-                      "{testimonial.content}"
+
+        {/* Scrolling Testimonials Container */}
+        <div className="relative">
+          {/* Gradient overlays for fade effect */}
+          <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-gray-50 to-transparent z-10 pointer-events-none"></div>
+          <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-gray-50 to-transparent z-10 pointer-events-none"></div>
+
+          {/* Scrolling container */}
+          <div className="flex gap-6 animate-scroll-testimonials">
+            {/* First set of testimonials */}
+            {testimonials.map((testimonial, index) => (
+              <div
+                key={`first-${index}`}
+                className="flex-shrink-0 w-96 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 border border-gray-100 hover:scale-105"
+              >
+                <div className="flex gap-1 mb-4">
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                  ))}
+                </div>
+
+                <p className="text-gray-700 italic mb-6 leading-relaxed">
+                  "{testimonial.content}"
+                </p>
+
+                <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
+                  <img
+                    className="h-12 w-12 rounded-full object-cover ring-2 ring-blue-100"
+                    src={testimonial.image}
+                    alt={testimonial.author}
+                  />
+                  <div>
+                    <p className="text-sm font-bold text-gray-900">
+                      {testimonial.author}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      {testimonial.role}
                     </p>
                   </div>
-                  <div className="mt-6 flex items-center">
-                    <div className="flex-shrink-0">
-                      <img className="h-10 w-10 rounded-full object-cover" src={testimonial.image} alt={testimonial.author} />
-                    </div>
-                    <div className="ml-3">
-                      <p className="text-sm font-medium text-gray-900">
-                        {testimonial.author}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        {testimonial.role}
-                      </p>
-                    </div>
+                </div>
+              </div>
+            ))}
+
+            {/* Duplicate set for seamless loop */}
+            {testimonials.map((testimonial, index) => (
+              <div
+                key={`second-${index}`}
+                className="flex-shrink-0 w-96 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 border border-gray-100 hover:scale-105"
+              >
+                <div className="flex gap-1 mb-4">
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                  ))}
+                </div>
+
+                <p className="text-gray-700 italic mb-6 leading-relaxed">
+                  "{testimonial.content}"
+                </p>
+
+                <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
+                  <img
+                    className="h-12 w-12 rounded-full object-cover ring-2 ring-blue-100"
+                    src={testimonial.image}
+                    alt={testimonial.author}
+                  />
+                  <div>
+                    <p className="text-sm font-bold text-gray-900">
+                      {testimonial.author}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      {testimonial.role}
+                    </p>
                   </div>
                 </div>
-              </div>)}
+              </div>
+            ))}
           </div>
         </div>
-        <div className="mt-10 text-center">
-          <Link to="/testimonials" className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
+
+        <div className="mt-12 text-center">
+          <Link
+            to="/testimonials"
+            className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200"
+          >
             Read more success stories
           </Link>
         </div>
       </div>
-    </div>;
+
+      <style jsx>{`
+        @keyframes scroll-testimonials {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-50%);
+          }
+        }
+        
+        .animate-scroll-testimonials {
+          animation: scroll-testimonials 40s linear infinite;
+        }
+        
+        .animate-scroll-testimonials:hover {
+          animation-play-state: paused;
+        }
+      `}</style>
+    </div>
+  );
 };
+
 export default Testimonials;
