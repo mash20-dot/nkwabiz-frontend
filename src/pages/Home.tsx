@@ -16,8 +16,8 @@ const Home = () => {
     <main className="flex-grow">
       <Hero />
       <HowItWorks />
-      <Youtubesection />
       <Features />
+      <Youtubesection />
       <Benefits />
       <Testimonials />
       <FAQ />
