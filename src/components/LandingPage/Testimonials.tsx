@@ -29,35 +29,35 @@ const Testimonials = () => {
       content: 'Managing my pharmacy inventory was chaotic before NkwaBiz. Now I can track expiry dates, reorder levels, and sales all in one place. This has saved me so much time!',
       author: 'Dr. Yaw Amponsah',
       role: 'Owner, Amponsah Pharmacy',
-      image: 'INSERT_IMAGE_URL_HERE',
+      image: 'https://imgur.com/tIO8BB4',
       rating: 5
     },
     {
       content: 'The reporting features are fantastic! I can see which products are moving fast and which are not. This helps me make smarter purchasing decisions for my boutique.',
       author: 'Esi Quartey',
       role: 'Proprietor, Esi Elegance Boutique',
-      image: 'INSERT_IMAGE_URL_HERE',
+      image: 'https://imgur.com/86g6iQ9',
       rating: 5
     },
     {
       content: "I run three shops and NkwaBiz helps me manage all of them from one dashboard. The sales tracking and inventory management features are game changers for my business.",
       author: 'Kofi Addai',
       role: 'CEO, Addai Enterprises',
-      image: 'INSERT_IMAGE_URL_HERE',
+      image: 'https://imgur.com/VFk9okE',
       rating: 5
     },
     {
       content: 'Finally, a business tool that understands the needs of small African businesses! The customer support is excellent and the platform is always improving.',
       author: 'Akua Frimpong',
       role: 'Manager, Frimpong Cosmetics',
-      image: 'INSERT_IMAGE_URL_HERE',
+      image: 'https://imgur.com/PHBUgWa',
       rating: 5
     },
     {
       content: 'NkwaBiz has made running my hardware store so much easier. I no longer lose track of items or miss reorder dates. My customers are happier because products are always in stock.',
       author: 'Samuel Boateng',
       role: 'Owner, Boateng Hardware',
-      image: 'INSERT_IMAGE_URL_HERE',
+      image: 'https://imgur.com/JLs8v0r',
       rating: 5
     }
   ];
