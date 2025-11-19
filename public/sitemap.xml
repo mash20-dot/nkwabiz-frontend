@@ -5,11 +5,11 @@
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://nkwabiz.com/products</loc>
+    <loc>https://nkwabiz.com/about</loc>
     <changefreq>weekly</changefreq>
   </url>
   <url>
-    <loc>https://nkwabiz.com/dashboard</loc>
+    <loc>https://nkwabiz.com/features</loc>
     <changefreq>weekly</changefreq>
   </url>
   <url>
@@ -21,15 +21,7 @@
     <changefreq>weekly</changefreq>
   </url>
   <url>
-    <loc>https://nkwabiz.com/sales</loc>
-    <changefreq>weekly</changefreq>
-  </url>
-  <url>
-    <loc>https://nkwabiz.com/expenses</loc>
-    <changefreq>weekly</changefreq>
-  </url>
-  <url>
-    <loc>https://nkwabiz.com/analytics</loc>
+    <loc>https://nkwabiz.com/testimonials</loc>
     <changefreq>weekly</changefreq>
   </url>
 </urlset>
