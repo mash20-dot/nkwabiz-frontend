@@ -10,7 +10,7 @@ import {
   LineChart,
   Line,
 } from "recharts";
-import { Calendar } from "lucide-react";
+import { Calendar, ChevronDown, ChevronRight } from "lucide-react";
 import { apiFetch, getToken } from "../utils/api";
 import Button from "../components/Button";
 import { Plus, X } from "lucide-react";
@@ -21,10 +21,14 @@ type ExpenseHistoryItem = {
   description: string;
   amount: number;
   category?: string;
-  date: string; // backend can return ISO or RFC date strings (we parse with new Date())
+  date: string;
 };
 
 type DateRangeType = "week" | "month" | "year" | "custom";
+
+type GroupedExpenses = {
+  [category: string]: ExpenseHistoryItem[];
+};
 
 const ExpensesPage: React.FC = () => {
   const [expensesData, setExpensesData] = useState<ExpenseHistoryItem[]>([]);
@@ -32,9 +36,10 @@ const ExpensesPage: React.FC = () => {
   const [error, setError] = useState<string>("");
 
   const [dateRange, setDateRange] = useState<DateRangeType>("year");
-  const [customDate, setCustomDate] = useState<string>(""); // "YYYY-MM-DD" from <input type="date" />
+  const [customDate, setCustomDate] = useState<string>("");
 
-  const [isAdding, setIsAdding] = useState<boolean>(false);
+  const [isAddingNewCategory, setIsAddingNewCategory] = useState<boolean>(false);
+  const [addingToCategory, setAddingToCategory] = useState<string | null>(null);
   const [addSubmitting, setAddSubmitting] = useState<boolean>(false);
   const [addError, setAddError] = useState<string>("");
 
@@ -43,26 +48,21 @@ const ExpensesPage: React.FC = () => {
   const [descriptionInput, setDescriptionInput] = useState<string>("");
   const [categoryInput, setCategoryInput] = useState<string>("");
 
-  // Prevent first filter effect from running immediately after mount (we load "all" first)
+  // Track which categories are expanded
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
+    new Set()
+  );
+
   const isInitialMount = useRef<boolean>(true);
 
-  // Utility: normalize backend responses that may be either:
-  // - an array (e.g. route returns `[ ... ]`)
-  // - an object with `expenses_history` or `expenses_history` field
   function normalizeExpensesResponse(data: any): ExpenseHistoryItem[] {
     if (!data) return [];
     if (Array.isArray(data)) return data as ExpenseHistoryItem[];
     if (Array.isArray(data.expenses_history)) return data.expenses_history;
-    if (Array.isArray((data as any).expenses_history))
-      return (data as any).expenses_history;
-    if (Array.isArray((data as any).expenses_history))
-      return (data as any).expenses_history;
-    // fallback: try other common keys
     if (Array.isArray((data as any).history)) return (data as any).history;
     return [];
   }
 
-  // Build query params for /expenses/track — backend currently expects year, month or date (YYYY-MM-DD)
   function buildFilterParams(): string {
     const today = new Date();
     if (dateRange === "year") {
@@ -72,17 +72,14 @@ const ExpensesPage: React.FC = () => {
       return `?year=${today.getFullYear()}&month=${today.getMonth() + 1}`;
     }
     if (dateRange === "custom" && customDate) {
-      // backend expects YYYY-MM-DD (based on your latest conversation)
       return `?date=${customDate}`;
     }
     if (dateRange === "week") {
-      // backend may not support week directly — request the month and filter client-side
       return `?year=${today.getFullYear()}&month=${today.getMonth() + 1}`;
     }
     return "";
   }
 
-  // Fetch all expenses by default when the page loads
   const fetchAllExpenses = async () => {
     setLoading(true);
     setError("");
@@ -103,7 +100,6 @@ const ExpensesPage: React.FC = () => {
     setLoading(false);
   };
 
-  // Fetch filtered expenses using /expenses/track
   const fetchFilteredExpenses = async () => {
     setLoading(true);
     setError("");
@@ -119,11 +115,9 @@ const ExpensesPage: React.FC = () => {
 
       let items = normalizeExpensesResponse(data);
 
-      // If week filter is selected, filter client-side to the current week
       if (dateRange === "week") {
         const now = new Date();
         const start = new Date(now);
-        // Start of week = Sunday (setDate - day)
         start.setDate(now.getDate() - now.getDay());
         start.setHours(0, 0, 0, 0);
         const end = new Date(start);
@@ -144,29 +138,20 @@ const ExpensesPage: React.FC = () => {
     setLoading(false);
   };
 
-  // Initial load: show all expenses
   useEffect(() => {
     fetchAllExpenses();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // When filters change, fetch filtered results (skip the initial mount since we already loaded "all")
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
       return;
     }
-    // For "year" you might want to either call fetchAllExpenses() (to show all) or call track?year=...
-    // We'll call the filtered endpoint so the UI is consistent with the selected period.
     fetchFilteredExpenses();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dateRange, customDate]);
 
-  // ---- Add expense handler (inline form, POST to /expenses/add) ----
-  const handleSubmitAdd = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmitAdd = async (category: string) => {
     setAddError("");
-    // basic validation
     if (!descriptionInput.trim()) {
       setAddError("Description is required.");
       return;
@@ -178,11 +163,10 @@ const ExpensesPage: React.FC = () => {
     }
     setAddSubmitting(true);
     try {
-      // apiFetch will attach auth header if auth=true
       const payload = {
         description: descriptionInput.trim(),
         amount: amountNum,
-        category: categoryInput.trim() || undefined, // backend accepts empty category
+        category: category,
       };
       await apiFetch(
         "/expenses/add",
@@ -192,33 +176,121 @@ const ExpensesPage: React.FC = () => {
         },
         true
       );
-      // refresh the list — load all (or you can call filtered endpoint depending on current filter)
-      // if current filter is 'year' but user expects new item in 'all', calling fetchAllExpenses ensures it's visible
       if (dateRange === "year") {
-        // backend could interpret year filter; to be safe refresh all
         await fetchAllExpenses();
       } else {
         await fetchFilteredExpenses();
       }
-      // reset form
       setDescriptionInput("");
       setAmountInput("");
       setCategoryInput("");
-      setIsAdding(false);
+      setAddingToCategory(null);
+      setIsAddingNewCategory(false);
     } catch (err: any) {
       setAddError(err?.message || "Failed to add expense.");
     }
     setAddSubmitting(false);
   };
 
-  // ---- Analytics calculations (based only on current expensesData) ----
+  const handleSubmitNewCategory = async () => {
+    setAddError("");
+    if (!categoryInput.trim()) {
+      setAddError("Category name is required.");
+      return;
+    }
+    if (!descriptionInput.trim()) {
+      setAddError("Description is required.");
+      return;
+    }
+    const amountNum = parseFloat(amountInput);
+    if (isNaN(amountNum) || amountNum <= 0) {
+      setAddError("Enter a valid amount greater than 0.");
+      return;
+    }
+    setAddSubmitting(true);
+    try {
+      const payload = {
+        description: descriptionInput.trim(),
+        amount: amountNum,
+        category: categoryInput.trim(),
+      };
+      await apiFetch(
+        "/expenses/add",
+        {
+          method: "POST",
+          body: JSON.stringify(payload),
+        },
+        true
+      );
+      if (dateRange === "year") {
+        await fetchAllExpenses();
+      } else {
+        await fetchFilteredExpenses();
+      }
+      // Auto-expand the new category
+      setExpandedCategories(prev => new Set([...prev, categoryInput.trim()]));
+      setDescriptionInput("");
+      setAmountInput("");
+      setCategoryInput("");
+      setIsAddingNewCategory(false);
+    } catch (err: any) {
+      setAddError(err?.message || "Failed to add expense.");
+    }
+    setAddSubmitting(false);
+  };
+
+  const cancelAdding = () => {
+    setIsAddingNewCategory(false);
+    setAddingToCategory(null);
+    setAddError("");
+    setDescriptionInput("");
+    setAmountInput("");
+    setCategoryInput("");
+  };
+
+  // Group expenses by category
+  const groupedExpenses: GroupedExpenses = expensesData.reduce(
+    (acc: GroupedExpenses, expense) => {
+      const category = expense.category || "Uncategorized";
+      if (!acc[category]) {
+        acc[category] = [];
+      }
+      acc[category].push(expense);
+      return acc;
+    },
+    {}
+  );
+
+  // Sort categories alphabetically
+  const sortedCategories = Object.keys(groupedExpenses).sort();
+
+  // Toggle category expansion
+  const toggleCategory = (category: string) => {
+    const newExpanded = new Set(expandedCategories);
+    if (newExpanded.has(category)) {
+      newExpanded.delete(category);
+    } else {
+      newExpanded.add(category);
+    }
+    setExpandedCategories(newExpanded);
+  };
+
+  // Expand all / Collapse all
+  const expandAll = () => {
+    setExpandedCategories(new Set(sortedCategories));
+  };
+
+  const collapseAll = () => {
+    setExpandedCategories(new Set());
+  };
+
+  // Calculate totals
   const totalExpenses = expensesData.reduce(
     (sum, it) => sum + (it.amount || 0),
     0
   );
   const totalTransactions = expensesData.length;
   const avgExpense = totalTransactions ? totalExpenses / totalTransactions : 0;
-  const entriesCount = expensesData.length;
 
   // Trend chart data (grouped by date)
   const expensesByDate: { [key: string]: number } = {};
@@ -231,13 +303,14 @@ const ExpensesPage: React.FC = () => {
   );
 
   // Top categories
-  const categoriesMap: { [key: string]: number } = {};
-  expensesData.forEach((item) => {
-    const cat = item.category || "Uncategorized";
-    categoriesMap[cat] = (categoriesMap[cat] || 0) + (item.amount || 0);
-  });
-  const topCategoriesData = Object.entries(categoriesMap)
-    .map(([name, total]) => ({ name, total }))
+  const topCategoriesData = sortedCategories
+    .map((category) => ({
+      name: category,
+      total: groupedExpenses[category].reduce(
+        (sum, exp) => sum + (exp.amount || 0),
+        0
+      ),
+    }))
     .sort((a, b) => b.total - a.total)
     .slice(0, 5);
 
@@ -247,23 +320,10 @@ const ExpensesPage: React.FC = () => {
       <div className="w-full flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
         <h1 className="text-2xl font-medium text-gray-900">Expenses</h1>
         <div className="flex gap-[1rem]">
-          {/* <Button
-            className="bg-blue-600 border-blue-600 text-white"
-            onClick={() => setIsAdding((s) => !s)}
-            aria-expanded={isAdding}
-          >
-            {isAdding ? (
-              <X className="h-4 w-4 mr-2 text-white" aria-hidden="true" />
-            ) : (
-              <Plus className="h-4 w-4 mr-2 text-white" aria-hidden="true" />
-            )}
-            {isAdding ? "Cancel" : "Add Expense"}
-          </Button> */}
-
-          {isAdding ? (
+          {isAddingNewCategory ? (
             <Button
-              onClick={() => setIsAdding((s) => !s)}
-              aria-expanded={isAdding}
+              onClick={cancelAdding}
+              aria-expanded={isAddingNewCategory}
             >
               <X className="h-4 w-4 mr-2 text-gray-700" aria-hidden="true" />
               Cancel
@@ -271,11 +331,11 @@ const ExpensesPage: React.FC = () => {
           ) : (
             <Button
               className="bg-blue-600 hover:bg-blue-700 border-blue-600 text-white"
-              onClick={() => setIsAdding((s) => !s)}
-              aria-expanded={isAdding}
+              onClick={() => setIsAddingNewCategory(true)}
+              aria-expanded={isAddingNewCategory}
             >
               <Plus className="h-4 w-4 mr-2 text-white" aria-hidden="true" />
-              Add Expense
+              New Category
             </Button>
           )}
         </div>
@@ -283,17 +343,23 @@ const ExpensesPage: React.FC = () => {
 
       {error && <div className="text-red-500">{error}</div>}
 
-      {/* Add form (inline) */}
-      {isAdding && (
-        <div className="w-full bg-white shadow rounded-lg p-4">
-          <form onSubmit={handleSubmitAdd} className="space-y-3">
+      {/* Add New Category form */}
+      {isAddingNewCategory && (
+        <div className="w-full bg-white shadow rounded-lg p-4 border-2 border-blue-200">
+          <h3 className="font-medium text-gray-900 mb-3">Create New Category</h3>
+          <div className="space-y-3">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <input
                 className="border p-2 rounded"
-                placeholder="Description"
+                placeholder="Category name (e.g., Food, Transport)"
+                value={categoryInput}
+                onChange={(e) => setCategoryInput(e.target.value)}
+              />
+              <input
+                className="border p-2 rounded"
+                placeholder="First expense description"
                 value={descriptionInput}
                 onChange={(e) => setDescriptionInput(e.target.value)}
-                required
               />
               <input
                 className="border p-2 rounded"
@@ -302,36 +368,25 @@ const ExpensesPage: React.FC = () => {
                 onChange={(e) => setAmountInput(e.target.value)}
                 type="number"
                 step="0.01"
-                required
-              />
-              <input
-                className="border p-2 rounded"
-                placeholder="Category"
-                value={categoryInput}
-                onChange={(e) => setCategoryInput(e.target.value)}
               />
             </div>
             <div className="flex items-center gap-2">
               <button
-                type="submit"
+                onClick={handleSubmitNewCategory}
                 disabled={addSubmitting}
                 className="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
               >
-                {addSubmitting ? "Adding..." : "Add Expense"}
+                {addSubmitting ? "Creating..." : "Create Category"}
               </button>
               <button
-                type="button"
-                onClick={() => {
-                  setIsAdding(false);
-                  setAddError("");
-                }}
+                onClick={cancelAdding}
                 className="px-4 py-2 border rounded"
               >
                 Cancel
               </button>
             </div>
             {addError && <div className="text-red-500">{addError}</div>}
-          </form>
+          </div>
         </div>
       )}
 
@@ -345,11 +400,10 @@ const ExpensesPage: React.FC = () => {
                 setDateRange("year");
                 setCustomDate("");
               }}
-              className={`px-3 py-1 text-sm font-medium rounded-md ${
-                dateRange === "year"
+              className={`px-3 py-1 text-sm font-medium rounded-md ${dateRange === "year"
                   ? "bg-blue-100 text-blue-700"
                   : "bg-gray-100 text-gray-700"
-              }`}
+                }`}
             >
               This Year
             </button>
@@ -359,11 +413,10 @@ const ExpensesPage: React.FC = () => {
                 setDateRange("month");
                 setCustomDate("");
               }}
-              className={`px-3 py-1 text-sm font-medium rounded-md ${
-                dateRange === "month"
+              className={`px-3 py-1 text-sm font-medium rounded-md ${dateRange === "month"
                   ? "bg-blue-100 text-blue-700"
                   : "bg-gray-100 text-gray-700"
-              }`}
+                }`}
             >
               This Month
             </button>
@@ -373,22 +426,20 @@ const ExpensesPage: React.FC = () => {
                 setDateRange("week");
                 setCustomDate("");
               }}
-              className={`px-3 py-1 text-sm font-medium rounded-md ${
-                dateRange === "week"
+              className={`px-3 py-1 text-sm font-medium rounded-md ${dateRange === "week"
                   ? "bg-blue-100 text-blue-700"
                   : "bg-gray-100 text-gray-700"
-              }`}
+                }`}
             >
               This Week
             </button>
 
             <button
               onClick={() => setDateRange("custom")}
-              className={`px-3 py-1 text-sm font-medium rounded-md ${
-                dateRange === "custom"
+              className={`px-3 py-1 text-sm font-medium rounded-md ${dateRange === "custom"
                   ? "bg-blue-100 text-blue-700"
                   : "bg-gray-100 text-gray-700"
-              }`}
+                }`}
             >
               Choose Date
             </button>
@@ -422,9 +473,9 @@ const ExpensesPage: React.FC = () => {
         </div>
 
         <div className="bg-white shadow rounded-lg p-4 text-center">
-          <div className="text-gray-500 text-sm">Entries</div>
+          <div className="text-gray-500 text-sm">Categories</div>
           <div className="text-2xl font-semibold text-gray-800">
-            {entriesCount}
+            {sortedCategories.length}
           </div>
         </div>
 
@@ -479,41 +530,170 @@ const ExpensesPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Expense Table */}
-      <div className="w-full bg-white shadow rounded-lg p-4 overflow-x-auto">
-        <table className="min-w-full table-auto">
-          <thead>
-            <tr className="text-left bg-gray-100">
-              <th className="p-2">Date</th>
-              <th className="p-2">Description</th>
-              <th className="p-2">Category</th>
-              <th className="p-2">Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            {expensesData.length === 0 ? (
-              <tr>
-                <td colSpan={4} className="p-4 text-center text-gray-500">
-                  No expenses found.
-                </td>
-              </tr>
-            ) : (
-              expensesData.map((exp) => (
-                <tr
-                  key={exp.expense_id ?? `${exp.date}-${exp.amount}`}
-                  className="border-b"
-                >
-                  <td className="p-2">
-                    {new Date(exp.date).toLocaleDateString()}
-                  </td>
-                  <td className="p-2">{exp.description}</td>
-                  <td className="p-2">{exp.category || "-"}</td>
-                  <td className="p-2">₵{(exp.amount || 0).toLocaleString()}</td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+      {/* Grouped Expenses by Category */}
+      <div className="w-full bg-white shadow rounded-lg p-4">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-medium text-gray-800">
+            Expenses by Category
+          </h2>
+          <div className="flex gap-2">
+            <button
+              onClick={expandAll}
+              className="px-3 py-1 text-sm text-blue-600 hover:text-blue-700"
+            >
+              Expand All
+            </button>
+            <button
+              onClick={collapseAll}
+              className="px-3 py-1 text-sm text-gray-600 hover:text-gray-700"
+            >
+              Collapse All
+            </button>
+          </div>
+        </div>
+
+        {sortedCategories.length === 0 ? (
+          <div className="p-4 text-center text-gray-500">
+            No expenses found. Create your first category to get started!
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {sortedCategories.map((category) => {
+              const categoryExpenses = groupedExpenses[category];
+              const categoryTotal = categoryExpenses.reduce(
+                (sum, exp) => sum + (exp.amount || 0),
+                0
+              );
+              const isExpanded = expandedCategories.has(category);
+              const isAddingHere = addingToCategory === category;
+
+              return (
+                <div key={category} className="border rounded-lg">
+                  {/* Category Header */}
+                  <div className="flex items-center justify-between p-4 hover:bg-gray-50">
+                    <button
+                      onClick={() => toggleCategory(category)}
+                      className="flex items-center gap-3 flex-1"
+                    >
+                      {isExpanded ? (
+                        <ChevronDown className="h-5 w-5 text-gray-500" />
+                      ) : (
+                        <ChevronRight className="h-5 w-5 text-gray-500" />
+                      )}
+                      <div className="text-left">
+                        <div className="font-medium text-gray-900">
+                          {category}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {categoryExpenses.length} expense
+                          {categoryExpenses.length !== 1 ? "s" : ""}
+                        </div>
+                      </div>
+                    </button>
+                    <div className="flex items-center gap-3">
+                      <div className="text-right">
+                        <div className="font-semibold text-gray-900">
+                          ₵{categoryTotal.toLocaleString()}
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => {
+                          setAddingToCategory(category);
+                          setIsAddingNewCategory(false);
+                        }}
+                        className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 flex items-center gap-1"
+                      >
+                        <Plus className="h-3 w-3" />
+                        Add
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Add Expense to This Category Form */}
+                  {isAddingHere && (
+                    <div className="border-t bg-green-50 p-4">
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          <input
+                            className="border p-2 rounded"
+                            placeholder="Description"
+                            value={descriptionInput}
+                            onChange={(e) => setDescriptionInput(e.target.value)}
+                          />
+                          <input
+                            className="border p-2 rounded"
+                            placeholder="Amount"
+                            value={amountInput}
+                            onChange={(e) => setAmountInput(e.target.value)}
+                            type="number"
+                            step="0.01"
+                          />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleSubmitAdd(category)}
+                            disabled={addSubmitting}
+                            className="px-4 py-2 bg-green-600 text-white rounded disabled:opacity-50"
+                          >
+                            {addSubmitting ? "Adding..." : "Add to " + category}
+                          </button>
+                          <button
+                            onClick={cancelAdding}
+                            className="px-4 py-2 border rounded"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                        {addError && <div className="text-red-500">{addError}</div>}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Category Expenses */}
+                  {isExpanded && (
+                    <div className="border-t">
+                      <table className="min-w-full">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Date
+                            </th>
+                            <th className="p-3 text-left text-xs font-medium text-gray-500 uppercase">
+                              Description
+                            </th>
+                            <th className="p-3 text-right text-xs font-medium text-gray-500 uppercase">
+                              Amount
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-200">
+                          {categoryExpenses.map((exp) => (
+                            <tr
+                              key={
+                                exp.expense_id ?? `${exp.date}-${exp.amount}`
+                              }
+                              className="hover:bg-gray-50"
+                            >
+                              <td className="p-3 text-sm text-gray-600">
+                                {new Date(exp.date).toLocaleDateString()}
+                              </td>
+                              <td className="p-3 text-sm text-gray-900">
+                                {exp.description}
+                              </td>
+                              <td className="p-3 text-sm text-gray-900 text-right">
+                                ₵{(exp.amount || 0).toLocaleString()}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Loading */}
