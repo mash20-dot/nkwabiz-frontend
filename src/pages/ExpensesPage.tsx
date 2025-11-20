@@ -38,7 +38,8 @@ const ExpensesPage: React.FC = () => {
   const [dateRange, setDateRange] = useState<DateRangeType>("year");
   const [customDate, setCustomDate] = useState<string>("");
 
-  const [isAdding, setIsAdding] = useState<boolean>(false);
+  const [isAddingNewCategory, setIsAddingNewCategory] = useState<boolean>(false);
+  const [addingToCategory, setAddingToCategory] = useState<string | null>(null);
   const [addSubmitting, setAddSubmitting] = useState<boolean>(false);
   const [addError, setAddError] = useState<string>("");
 
@@ -149,14 +150,56 @@ const ExpensesPage: React.FC = () => {
     fetchFilteredExpenses();
   }, [dateRange, customDate]);
 
-  const handleSubmitAdd = async () => {
+  const handleSubmitAdd = async (category: string) => {
     setAddError("");
     if (!descriptionInput.trim()) {
       setAddError("Description is required.");
       return;
     }
+    const amountNum = parseFloat(amountInput);
+    if (isNaN(amountNum) || amountNum <= 0) {
+      setAddError("Enter a valid amount greater than 0.");
+      return;
+    }
+    setAddSubmitting(true);
+    try {
+      const payload = {
+        description: descriptionInput.trim(),
+        amount: amountNum,
+        category: category,
+      };
+      await apiFetch(
+        "/expenses/add",
+        {
+          method: "POST",
+          body: JSON.stringify(payload),
+        },
+        true
+      );
+      if (dateRange === "year") {
+        await fetchAllExpenses();
+      } else {
+        await fetchFilteredExpenses();
+      }
+      setDescriptionInput("");
+      setAmountInput("");
+      setCategoryInput("");
+      setAddingToCategory(null);
+      setIsAddingNewCategory(false);
+    } catch (err: any) {
+      setAddError(err?.message || "Failed to add expense.");
+    }
+    setAddSubmitting(false);
+  };
+
+  const handleSubmitNewCategory = async () => {
+    setAddError("");
     if (!categoryInput.trim()) {
-      setAddError("Category is required.");
+      setAddError("Category name is required.");
+      return;
+    }
+    if (!descriptionInput.trim()) {
+      setAddError("Description is required.");
       return;
     }
     const amountNum = parseFloat(amountInput);
@@ -184,14 +227,25 @@ const ExpensesPage: React.FC = () => {
       } else {
         await fetchFilteredExpenses();
       }
+      // Auto-expand the new category
+      setExpandedCategories(prev => new Set([...prev, categoryInput.trim()]));
       setDescriptionInput("");
       setAmountInput("");
       setCategoryInput("");
-      setIsAdding(false);
+      setIsAddingNewCategory(false);
     } catch (err: any) {
       setAddError(err?.message || "Failed to add expense.");
     }
     setAddSubmitting(false);
+  };
+
+  const cancelAdding = () => {
+    setIsAddingNewCategory(false);
+    setAddingToCategory(null);
+    setAddError("");
+    setDescriptionInput("");
+    setAmountInput("");
+    setCategoryInput("");
   };
 
   // Group expenses by category
@@ -266,10 +320,10 @@ const ExpensesPage: React.FC = () => {
       <div className="w-full flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
         <h1 className="text-2xl font-medium text-gray-900">Expenses</h1>
         <div className="flex gap-[1rem]">
-          {isAdding ? (
+          {isAddingNewCategory ? (
             <Button
-              onClick={() => setIsAdding((s) => !s)}
-              aria-expanded={isAdding}
+              onClick={cancelAdding}
+              aria-expanded={isAddingNewCategory}
             >
               <X className="h-4 w-4 mr-2 text-gray-700" aria-hidden="true" />
               Cancel
@@ -277,11 +331,11 @@ const ExpensesPage: React.FC = () => {
           ) : (
             <Button
               className="bg-blue-600 hover:bg-blue-700 border-blue-600 text-white"
-              onClick={() => setIsAdding((s) => !s)}
-              aria-expanded={isAdding}
+              onClick={() => setIsAddingNewCategory(true)}
+              aria-expanded={isAddingNewCategory}
             >
               <Plus className="h-4 w-4 mr-2 text-white" aria-hidden="true" />
-              Add Expense
+              New Category
             </Button>
           )}
         </div>
@@ -289,20 +343,21 @@ const ExpensesPage: React.FC = () => {
 
       {error && <div className="text-red-500">{error}</div>}
 
-      {/* Add form (inline) */}
-      {isAdding && (
-        <div className="w-full bg-white shadow rounded-lg p-4">
+      {/* Add New Category form */}
+      {isAddingNewCategory && (
+        <div className="w-full bg-white shadow rounded-lg p-4 border-2 border-blue-200">
+          <h3 className="font-medium text-gray-900 mb-3">Create New Category</h3>
           <div className="space-y-3">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <input
                 className="border p-2 rounded"
-                placeholder="Category (required)"
+                placeholder="Category name (e.g., Food, Transport)"
                 value={categoryInput}
                 onChange={(e) => setCategoryInput(e.target.value)}
               />
               <input
                 className="border p-2 rounded"
-                placeholder="Description"
+                placeholder="First expense description"
                 value={descriptionInput}
                 onChange={(e) => setDescriptionInput(e.target.value)}
               />
@@ -317,17 +372,14 @@ const ExpensesPage: React.FC = () => {
             </div>
             <div className="flex items-center gap-2">
               <button
-                onClick={handleSubmitAdd}
+                onClick={handleSubmitNewCategory}
                 disabled={addSubmitting}
                 className="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
               >
-                {addSubmitting ? "Adding..." : "Add Expense"}
+                {addSubmitting ? "Creating..." : "Create Category"}
               </button>
               <button
-                onClick={() => {
-                  setIsAdding(false);
-                  setAddError("");
-                }}
+                onClick={cancelAdding}
                 className="px-4 py-2 border rounded"
               >
                 Cancel
@@ -502,7 +554,7 @@ const ExpensesPage: React.FC = () => {
 
         {sortedCategories.length === 0 ? (
           <div className="p-4 text-center text-gray-500">
-            No expenses found.
+            No expenses found. Create your first category to get started!
           </div>
         ) : (
           <div className="space-y-2">
@@ -513,15 +565,16 @@ const ExpensesPage: React.FC = () => {
                 0
               );
               const isExpanded = expandedCategories.has(category);
+              const isAddingHere = addingToCategory === category;
 
               return (
                 <div key={category} className="border rounded-lg">
                   {/* Category Header */}
-                  <button
-                    onClick={() => toggleCategory(category)}
-                    className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
-                  >
-                    <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-between p-4 hover:bg-gray-50">
+                    <button
+                      onClick={() => toggleCategory(category)}
+                      className="flex items-center gap-3 flex-1"
+                    >
                       {isExpanded ? (
                         <ChevronDown className="h-5 w-5 text-gray-500" />
                       ) : (
@@ -536,13 +589,65 @@ const ExpensesPage: React.FC = () => {
                           {categoryExpenses.length !== 1 ? "s" : ""}
                         </div>
                       </div>
+                    </button>
+                    <div className="flex items-center gap-3">
+                      <div className="text-right">
+                        <div className="font-semibold text-gray-900">
+                          ₵{categoryTotal.toLocaleString()}
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => {
+                          setAddingToCategory(category);
+                          setIsAddingNewCategory(false);
+                        }}
+                        className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 flex items-center gap-1"
+                      >
+                        <Plus className="h-3 w-3" />
+                        Add
+                      </button>
                     </div>
-                    <div className="text-right">
-                      <div className="font-semibold text-gray-900">
-                        ₵{categoryTotal.toLocaleString()}
+                  </div>
+
+                  {/* Add Expense to This Category Form */}
+                  {isAddingHere && (
+                    <div className="border-t bg-green-50 p-4">
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          <input
+                            className="border p-2 rounded"
+                            placeholder="Description"
+                            value={descriptionInput}
+                            onChange={(e) => setDescriptionInput(e.target.value)}
+                          />
+                          <input
+                            className="border p-2 rounded"
+                            placeholder="Amount"
+                            value={amountInput}
+                            onChange={(e) => setAmountInput(e.target.value)}
+                            type="number"
+                            step="0.01"
+                          />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleSubmitAdd(category)}
+                            disabled={addSubmitting}
+                            className="px-4 py-2 bg-green-600 text-white rounded disabled:opacity-50"
+                          >
+                            {addSubmitting ? "Adding..." : "Add to " + category}
+                          </button>
+                          <button
+                            onClick={cancelAdding}
+                            className="px-4 py-2 border rounded"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                        {addError && <div className="text-red-500">{addError}</div>}
                       </div>
                     </div>
-                  </button>
+                  )}
 
                   {/* Category Expenses */}
                   {isExpanded && (
