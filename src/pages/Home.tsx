@@ -14,7 +14,6 @@ import Feedback from '../components/LandingPage/Feedback';
 import FloatingFeedbackButton from '../components/LandingPage/FloatingFeedbackButton';
 const Home = () => {
   return <div className="flex flex-col min-h-screen">
-    <FloatingFeedbackButton />
     <Navbar />
     <main className="flex-grow">
       <Hero />
