@@ -1,8 +1,19 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingBag, BarChart2, DollarSign, Package } from 'lucide-react';
+import { ShoppingBag, BarChart2, DollarSign, Package, ArrowRight } from 'lucide-react';
 
 const Hero = () => {
+  const [isPulsing, setIsPulsing] = useState(true);
+
+  useEffect(() => {
+    // Stop pulsing after 5 seconds
+    const timer = setTimeout(() => {
+      setIsPulsing(false);
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <div className="relative bg-white overflow-hidden">
       <div className="max-w-7xl mx-auto">
@@ -24,7 +35,7 @@ const Hero = () => {
               <div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
                 <div className="rounded-md shadow">
                   <Link to="/login" className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg md:px-10">
-                    Get Started
+                    Sign up
                   </Link>
                 </div>
                 <div className="mt-3 sm:mt-0 sm:ml-3">
@@ -40,6 +51,16 @@ const Hero = () => {
       <div className="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
         <img className="h-56 w-full object-cover sm:h-72 md:h-96 lg:w-full lg:h-full" src="https://i.imgur.com/qP7YjVk.jpg" alt="African business owner using digital device" />
       </div>
+
+      {/* Floating Sign Up Button */}
+      <Link
+        to="/login"
+        className={`fixed left-0 top-1/2 -translate-y-1/2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-3 rounded-r-lg shadow-lg transition-all duration-300 z-50 flex items-center gap-1 group ${isPulsing ? 'animate-pulse' : ''
+          }`}
+      >
+        <span className="text-xs whitespace-nowrap">SIGN UP FREE</span>
+        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+      </Link>
     </div>
   );
 };
