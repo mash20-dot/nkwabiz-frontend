@@ -1,8 +1,23 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingBag, BarChart2, DollarSign, Package } from 'lucide-react';
+import { ShoppingBag, BarChart2, DollarSign, Package, ArrowRight } from 'lucide-react';
 
 const Hero = () => {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const toggleVisibility = () => {
+      if (window.pageYOffset > 300) {
+        setIsVisible(true);
+      } else {
+        setIsVisible(false);
+      }
+    };
+
+    window.addEventListener('scroll', toggleVisibility);
+    return () => window.removeEventListener('scroll', toggleVisibility);
+  }, []);
+
   return (
     <div className="relative bg-white overflow-hidden">
       <div className="max-w-7xl mx-auto">
@@ -24,7 +39,7 @@ const Hero = () => {
               <div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
                 <div className="rounded-md shadow">
                   <Link to="/login" className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 md:py-4 md:text-lg md:px-10">
-                    Get Started
+                    Sign up
                   </Link>
                 </div>
                 <div className="mt-3 sm:mt-0 sm:ml-3">
@@ -40,6 +55,16 @@ const Hero = () => {
       <div className="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
         <img className="h-56 w-full object-cover sm:h-72 md:h-96 lg:w-full lg:h-full" src="https://i.imgur.com/qP7YjVk.jpg" alt="African business owner using digital device" />
       </div>
+
+      {/* Floating Sign Up Button */}
+      <Link
+        to="/login"
+        className={`fixed left-0 top-1/2 -translate-y-1/2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-r-lg shadow-lg transition-all duration-300 z-50 flex items-center gap-2 group ${isVisible ? 'translate-x-0' : '-translate-x-full'
+          }`}
+      >
+        <span className="writing-mode-vertical transform -rotate-180 whitespace-nowrap">Sign Up Free</span>
+        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+      </Link>
     </div>
   );
 };
