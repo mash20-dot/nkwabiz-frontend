@@ -55,12 +55,11 @@ const Hero = () => {
       {/* Floating Sign Up Button */}
       <Link
         to="/login"
-        className={`fixed left-0 top-1/2 -translate-y-1/2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-6 px-4 rounded-r-lg shadow-lg transition-all duration-300 z-50 flex flex-col items-center gap-2 group ${isPulsing ? 'animate-pulse' : ''
+        className={`fixed left-0 top-1/2 -translate-y-1/2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-3 rounded-r-lg shadow-lg transition-all duration-300 z-50 flex items-center gap-1 group ${isPulsing ? 'animate-pulse' : ''
           }`}
-        style={{ writingMode: 'vertical-rl' }}
       >
-        <span className="text-sm tracking-wider">SIGN UP FREE</span>
-        <ArrowRight className="w-5 h-5 rotate-90 group-hover:translate-y-1 transition-transform" />
+        <span className="text-xs whitespace-nowrap">SIGN UP FREE</span>
+        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
       </Link>
     </div>
   );
