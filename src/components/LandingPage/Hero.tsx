@@ -3,19 +3,15 @@ import { Link } from 'react-router-dom';
 import { ShoppingBag, BarChart2, DollarSign, Package, ArrowRight } from 'lucide-react';
 
 const Hero = () => {
-  const [isVisible, setIsVisible] = useState(false);
+  const [isPulsing, setIsPulsing] = useState(true);
 
   useEffect(() => {
-    const toggleVisibility = () => {
-      if (window.pageYOffset > 300) {
-        setIsVisible(true);
-      } else {
-        setIsVisible(false);
-      }
-    };
+    // Stop pulsing after 5 seconds
+    const timer = setTimeout(() => {
+      setIsPulsing(false);
+    }, 5000);
 
-    window.addEventListener('scroll', toggleVisibility);
-    return () => window.removeEventListener('scroll', toggleVisibility);
+    return () => clearTimeout(timer);
   }, []);
 
   return (
@@ -59,11 +55,12 @@ const Hero = () => {
       {/* Floating Sign Up Button */}
       <Link
         to="/login"
-        className={`fixed left-0 top-1/2 -translate-y-1/2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-r-lg shadow-lg transition-all duration-300 z-50 flex items-center gap-2 group ${isVisible ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed left-0 top-1/2 -translate-y-1/2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-6 px-4 rounded-r-lg shadow-lg transition-all duration-300 z-50 flex flex-col items-center gap-2 group ${isPulsing ? 'animate-pulse' : ''
           }`}
+        style={{ writingMode: 'vertical-rl' }}
       >
-        <span className="writing-mode-vertical transform -rotate-180 whitespace-nowrap">Sign Up Free</span>
-        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+        <span className="text-sm tracking-wider">SIGN UP FREE</span>
+        <ArrowRight className="w-5 h-5 rotate-90 group-hover:translate-y-1 transition-transform" />
       </Link>
     </div>
   );
