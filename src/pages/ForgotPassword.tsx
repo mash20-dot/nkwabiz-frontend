@@ -63,9 +63,9 @@ const ForgotPassword = () => {
                         We've sent a password reset link to <strong>{email}</strong>
                     </p>
                     <p className="mt-4 text-center text-sm text-gray-600">
-                        The link will expire in 15 minutes.
+                        The link will expire in 15 minutes. If you don't see the email, check your spam folder.
                     </p>
-                    <div className="mt-6 text-center">
+                    <div className="mt-8 text-center">
                         <Link
                             to="/login"
                             className="font-medium text-blue-600 hover:text-blue-500 inline-flex items-center"
@@ -73,6 +73,17 @@ const ForgotPassword = () => {
                             <ArrowLeft size={16} className="mr-1" />
                             Back to login
                         </Link>
+                    </div>
+                    <div className="mt-4 text-center">
+                        <button
+                            onClick={() => {
+                                setSuccess(false);
+                                setEmail("");
+                            }}
+                            className="text-sm text-gray-500 hover:text-gray-700"
+                        >
+                            Didn't receive the email? Try again
+                        </button>
                     </div>
                 </div>
             </div>
@@ -108,14 +119,22 @@ const ForgotPassword = () => {
                                     name="email"
                                     type="email"
                                     required
+                                    autoComplete="email"
                                     placeholder="your@email.com"
                                     value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    onChange={(e) => {
+                                        setEmail(e.target.value);
+                                        if (error) setError("");
+                                    }}
                                     className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                                 />
                             </div>
                         </div>
-                        {error && <div className="text-red-500 text-sm">{error}</div>}
+                        {error && (
+                            <div className="text-red-500 text-sm bg-red-50 border border-red-200 rounded-md px-3 py-2">
+                                {error}
+                            </div>
+                        )}
                         <div>
                             <Button
                                 type="submit"

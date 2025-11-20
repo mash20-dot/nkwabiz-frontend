@@ -19,28 +19,35 @@ const Login = () => {
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setForm({ ...form, [e.target.name]: e.target.value });
-    if (e.target.name === "email" && !validateEmail(e.target.value)) {
-      setError("Invalid email format");
-    } else {
+    // Only validate email on blur or submit, not while typing
+    if (error) {
       setError("");
     }
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
     if (!validateEmail(form.email)) {
       setError("Invalid email format");
       return;
     }
+
+    if (form.password.length === 0) {
+      setError("Password is required");
+      return;
+    }
+
     setLoading(true);
     setError("");
+
     try {
       const data = await loginUser(form.email, form.password);
       setAuth(data.access_token, data.business_name || "");
       // Force reload to ensure all components see updated auth state
       window.location.replace("/dashboard");
     } catch (err: any) {
-      setError(err.message || "Login failed");
+      setError(err.message || "Login failed. Please check your credentials.");
     } finally {
       setLoading(false);
     }
@@ -116,7 +123,11 @@ const Login = () => {
                 </button>
               </div>
             </div>
-            {error && <div className="text-red-500 text-sm">{error}</div>}
+            {error && (
+              <div className="text-red-500 text-sm bg-red-50 border border-red-200 rounded-md px-3 py-2">
+                {error}
+              </div>
+            )}
             <div>
               <Button
                 type="submit"

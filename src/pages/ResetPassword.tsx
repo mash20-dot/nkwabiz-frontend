@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
-import { Eye, EyeOff, CheckCircle } from "lucide-react";
+import { Eye, EyeOff, CheckCircle, AlertCircle } from "lucide-react";
 import Button from "../components/Button";
 
 const ResetPassword = () => {
@@ -15,10 +15,12 @@ const ResetPassword = () => {
     const [success, setSuccess] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [tokenError, setTokenError] = useState(false);
 
     useEffect(() => {
         if (!token) {
-            setError("Invalid reset link. Please request a new password reset.");
+            setTokenError(true);
+            setError("Invalid or missing reset token. Please request a new password reset link.");
         }
     }, [token]);
 
@@ -36,6 +38,11 @@ const ResetPassword = () => {
             return;
         }
 
+        if (!token) {
+            setError("Invalid reset token. Please request a new password reset link.");
+            return;
+        }
+
         setLoading(true);
 
         try {
@@ -50,6 +57,9 @@ const ResetPassword = () => {
             const data = await response.json();
 
             if (!response.ok) {
+                if (response.status === 400 || response.status === 401) {
+                    throw new Error(data.error || "Invalid or expired reset link. Please request a new one.");
+                }
                 throw new Error(data.error || "Failed to reset password");
             }
 
@@ -62,6 +72,43 @@ const ResetPassword = () => {
         } finally {
             setLoading(false);
         }
+    }
+
+    if (tokenError) {
+        return (
+            <div className="min-h-screen bg-white flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+                <div className="sm:mx-auto sm:w-full sm:max-w-md">
+                    <div className="flex justify-center">
+                        <div className="rounded-full bg-red-100 p-3">
+                            <AlertCircle className="h-8 w-8 text-red-600" />
+                        </div>
+                    </div>
+                    <h2 className="mt-6 text-center text-2xl font-medium text-gray-900">
+                        Invalid Reset Link
+                    </h2>
+                    <p className="mt-2 text-center text-sm text-gray-600">
+                        This password reset link is invalid or has expired.
+                    </p>
+                    <p className="mt-4 text-center text-sm text-gray-600">
+                        Please request a new password reset link.
+                    </p>
+                    <div className="mt-6 flex flex-col items-center space-y-3">
+                        <Link
+                            to="/forgot-password"
+                            className="font-medium text-blue-600 hover:text-blue-500"
+                        >
+                            Request new reset link
+                        </Link>
+                        <Link
+                            to="/login"
+                            className="text-sm text-gray-500 hover:text-gray-700"
+                        >
+                            Back to login
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        );
     }
 
     if (success) {
@@ -77,14 +124,14 @@ const ResetPassword = () => {
                         Password reset successful!
                     </h2>
                     <p className="mt-2 text-center text-sm text-gray-600">
-                        Your password has been successfully reset. You will be redirected to the login page shortly.
+                        Your password has been successfully reset. You will be redirected to the login page in a few seconds.
                     </p>
                     <div className="mt-6 text-center">
                         <Link
                             to="/login"
                             className="font-medium text-blue-600 hover:text-blue-500"
                         >
-                            Go to login
+                            Go to login now
                         </Link>
                     </div>
                 </div>
@@ -121,9 +168,13 @@ const ResetPassword = () => {
                                     name="password"
                                     type={showPassword ? "text" : "password"}
                                     required
+                                    autoComplete="new-password"
                                     placeholder="Enter new password"
                                     value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
+                                    onChange={(e) => {
+                                        setPassword(e.target.value);
+                                        if (error) setError("");
+                                    }}
                                     className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                                 />
                                 <button
@@ -154,9 +205,13 @@ const ResetPassword = () => {
                                     name="confirmPassword"
                                     type={showConfirmPassword ? "text" : "password"}
                                     required
+                                    autoComplete="new-password"
                                     placeholder="Confirm new password"
                                     value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    onChange={(e) => {
+                                        setConfirmPassword(e.target.value);
+                                        if (error) setError("");
+                                    }}
                                     className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                                 />
                                 <button
@@ -171,7 +226,11 @@ const ResetPassword = () => {
                             </div>
                         </div>
 
-                        {error && <div className="text-red-500 text-sm">{error}</div>}
+                        {error && (
+                            <div className="text-red-500 text-sm bg-red-50 border border-red-200 rounded-md px-3 py-2">
+                                {error}
+                            </div>
+                        )}
 
                         <div>
                             <Button
