@@ -30,7 +30,7 @@ const Settings = () => {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch("/password/update-password", {
+      const response = await fetch("https://nkwabiz-backend-testing.onrender.com/password/update-password", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
