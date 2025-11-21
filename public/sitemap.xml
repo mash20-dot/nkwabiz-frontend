@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://nkwabiz.com/</loc>
+    <loc>https://www.nkwabiz.com/</loc>
     <changefreq>daily</changefreq>
   </url>
   <url>
-    <loc>https://nkwabiz.com/about</loc>
+    <loc>https://www.nkwabiz.com/about</loc>
     <changefreq>weekly</changefreq>
   </url>
   <url>
-    <loc>https://nkwabiz.com/features</loc>
+    <loc>https://www.nkwabiz.com/features</loc>
     <changefreq>weekly</changefreq>
   </url>
   <url>
-    <loc>https://nkwabiz.com/signup</loc>
+    <loc>https://www.nkwabiz.com/signup</loc>
     <changefreq>weekly</changefreq>
   </url>
   <url>
-    <loc>https://nkwabiz.com/login</loc>
+    <loc>https://www.nkwabiz.com/login</loc>
     <changefreq>weekly</changefreq>
   </url>
   <url>
-    <loc>https://nkwabiz.com/testimonials</loc>
+    <loc>https://www.nkwabiz.com/testimonials</loc>
     <changefreq>weekly</changefreq>
   </url>
 </urlset>
