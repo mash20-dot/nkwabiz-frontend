@@ -46,7 +46,7 @@ const ResetPassword = () => {
         setLoading(true);
 
         try {
-            const response = await fetch("/api/reset-password", {
+            const response = await fetch("/forgotpassword/reset-password", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
