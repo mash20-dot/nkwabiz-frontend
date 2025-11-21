@@ -11,7 +11,6 @@ import CTA from '../components/LandingPage/CTA';
 import Footer from '../components/LandingPage/Footer';
 import Youtubesection from '../components/LandingPage/Youtubesection';
 import Feedback from '../components/LandingPage/Feedback';
-import FloatingFeedbackButton from '../components/LandingPage/FloatingFeedbackButton';
 
 const Home = () => {
   const pageTitle = "Nkwabiz – Ghana Best Business Management Software";
