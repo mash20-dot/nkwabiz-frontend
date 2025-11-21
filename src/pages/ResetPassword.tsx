@@ -46,7 +46,8 @@ const ResetPassword = () => {
         setLoading(true);
 
         try {
-            const response = await fetch("/forgotpassword/reset-password", {
+            const response = await fetch("https://nkwabiz-backend-1.onrender.com/forgotpassword/reset-password", {
+
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
