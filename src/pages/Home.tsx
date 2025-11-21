@@ -11,10 +11,11 @@ import CTA from '../components/LandingPage/CTA';
 import Footer from '../components/LandingPage/Footer';
 import Youtubesection from '../components/LandingPage/Youtubesection';
 import Feedback from '../components/LandingPage/Feedback';
+import FloatingFeedbackButton from '../components/LandingPage/FloatingFeedbackButton';
 
 const Home = () => {
   const pageTitle = "Nkwabiz – Ghana Best Business Management Software";
-  const pageDescription = "Nkwabiz is a sales, inventory, bulk sms platform helping businesses grow faster and easier.";
+  const pageDescription = "Nkwabiz is a sales, inventory, bulk SMS platform helping businesses grow faster and easier.";
   const pageURL = "https://www.nkwabiz.com/";
   const pageImage = "https://www.nkwabiz.com/og-image.png"; // Replace with your OG image
 
