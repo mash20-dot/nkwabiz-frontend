@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Lock, Eye, EyeOff } from "lucide-react";
+import { apiFetch } from "../utils/api";
 
 const Settings = () => {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -28,35 +29,27 @@ const Settings = () => {
     setLoading(true);
 
     try {
-      const token = localStorage.getItem("token");
-
-      const response = await fetch("https://nkwabiz-backend-testing.onrender.com/password/update-password", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+      const data = await apiFetch(
+        "/password/update-password",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            old_password: oldPassword,
+            new_password: newPassword
+          })
         },
-        body: JSON.stringify({
-          old_password: oldPassword,
-          new_password: newPassword
-        })
-      });
+        true // auth required
+      );
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setSuccess("Password updated successfully!");
-        setOldPassword("");
-        setNewPassword("");
-        setTimeout(() => {
-          setShowPasswordModal(false);
-          setSuccess("");
-        }, 2000);
-      } else {
-        setError(data.message || data.error || "Failed to update password");
-      }
-    } catch (err) {
-      setError("An error occurred. Please try again.");
+      setSuccess(data.message || "Password updated successfully!");
+      setOldPassword("");
+      setNewPassword("");
+      setTimeout(() => {
+        setShowPasswordModal(false);
+        setSuccess("");
+      }, 2000);
+    } catch (err: any) {
+      setError(err.message || err.error || "Failed to update password");
     } finally {
       setLoading(false);
     }
