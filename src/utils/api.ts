@@ -34,7 +34,14 @@ export async function apiFetch(
     window.location.href = "/login";
     throw { message: "Session expired. Please log in again." };
   }
-  const data = await res.json();
+
+  let data;
+  try {
+    const text = await res.text();
+    data = text ? JSON.parse(text) : {};
+  } catch {
+    data = {};
+  }
 
   if (!res.ok) throw data;
   return data;
