@@ -89,7 +89,7 @@ const Settings = () => {
               </p>
             </div>
           </div>
-        />
+
         </div>
       </div>
 
