@@ -26,27 +26,27 @@ const ForgotPassword = () => {
     setError("");
 
     try {
-      const response = await apiFetch("/forgotpassword/forgot-password", {
+      // apiFetch returns the parsed data directly, not the response object
+      const data = await apiFetch("/forgotpassword/forgot-password", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
 
-      // Safely handle empty body
-      if (!response.ok) {
-        let msg = "Failed to send reset email";
-        try {
-          const text = await response.text();
-          msg = JSON.parse(text).error || msg;
-        } catch (e) {
-          console.warn("Failed to parse JSON:", e);
-        }
-        throw new Error(msg);
+      console.log("Backend response:", data); // Debug log
+
+      // Check if backend indicates failure
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      if (data.success === false) {
+        throw new Error(data.message || "Failed to send reset email");
       }
 
       setSuccess(true);
     } catch (err: any) {
-      setError(err.message);
+      console.error("Error:", err); // Debug log
+      setError(err.message || "Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { Eye, EyeOff, CheckCircle, AlertCircle } from "lucide-react";
 import Button from "../components/Button";
+import { apiFetch } from "../utils/api";
 
 const ResetPassword = () => {
     const navigate = useNavigate();
@@ -46,23 +47,21 @@ const ResetPassword = () => {
         setLoading(true);
 
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/forgotpassword/reset-password`, {
-                //const response = await fetch("forgotpassword/reset-password", {
-
+            // apiFetch returns the parsed data directly, not the response object
+            const data = await apiFetch("/forgotpassword/reset-password", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
                 body: JSON.stringify({ token, password }),
             });
 
-            const data = await response.json();
+            console.log("Backend response:", data); // Debug log
 
-            if (!response.ok) {
-                if (response.status === 400 || response.status === 401) {
-                    throw new Error(data.error || "Invalid or expired reset link. Please request a new one.");
-                }
-                throw new Error(data.error || "Failed to reset password");
+            // Check if backend indicates failure
+            if (data.error) {
+                throw new Error(data.error);
+            }
+
+            if (data.success === false) {
+                throw new Error(data.message || "Failed to reset password");
             }
 
             setSuccess(true);
@@ -70,6 +69,7 @@ const ResetPassword = () => {
                 navigate("/login");
             }, 3000);
         } catch (err: any) {
+            console.error("Error:", err); // Debug log
             setError(err.message || "Something went wrong. Please try again.");
         } finally {
             setLoading(false);
