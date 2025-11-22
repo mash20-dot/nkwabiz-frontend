@@ -30,7 +30,7 @@ const AdminBlogDashboard = () => {
             // Check if user is admin
             const userData = await apiFetch("/security/user-info", {}, true);
 
-            if (!userData.is_admin) {
+            if (userData.role !== "admin") {
                 navigate("/dashboard");
                 return;
             }
@@ -177,8 +177,8 @@ const AdminBlogDashboard = () => {
                                             <button
                                                 onClick={() => togglePublish(post.id, post.published)}
                                                 className={`px-2 py-1 text-xs font-semibold rounded-full ${post.published
-                                                        ? "bg-green-100 text-green-800 hover:bg-green-200"
-                                                        : "bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
+                                                    ? "bg-green-100 text-green-800 hover:bg-green-200"
+                                                    : "bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
                                                     }`}
                                             >
                                                 {post.published ? "Published" : "Draft"}

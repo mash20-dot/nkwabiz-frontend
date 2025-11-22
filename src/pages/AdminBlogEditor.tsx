@@ -30,7 +30,7 @@ const AdminBlogEditor = () => {
             // Check if user is admin
             const userData = await apiFetch("/security/user-info", {}, true);
 
-            if (!userData.is_admin) {
+            if (userData.role !== "admin") {
                 navigate("/dashboard");
                 return;
             }
