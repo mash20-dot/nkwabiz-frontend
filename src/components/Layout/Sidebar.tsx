@@ -30,7 +30,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
   async function checkAdminStatus() {
     try {
       const userData = await apiFetch("/security/user-info", {}, true);
-      setIsAdmin(userData.is_admin || false);
+      setIsAdmin(userData.role === "admin");
     } catch (err) {
       console.error("Failed to check admin status:", err);
       setIsAdmin(false);
@@ -93,8 +93,8 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
         {/* Backdrop */}
         <div
           className={`fixed inset-0 bg-gray-600 ${sidebarOpen
-              ? "opacity-75 transition-opacity ease-linear duration-300"
-              : "opacity-0 transition-opacity ease-linear duration-300"
+            ? "opacity-75 transition-opacity ease-linear duration-300"
+            : "opacity-0 transition-opacity ease-linear duration-300"
             }`}
           onClick={() => setSidebarOpen(false)}
         />
@@ -124,10 +124,10 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
                   key={item.name}
                   to={item.href}
                   className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${location.pathname === item.href ||
-                      (item.href === "/admin/blog" &&
-                        location.pathname.startsWith("/admin/blog"))
-                      ? "bg-blue-900 text-white"
-                      : "text-blue-100 hover:bg-blue-700"
+                    (item.href === "/admin/blog" &&
+                      location.pathname.startsWith("/admin/blog"))
+                    ? "bg-blue-900 text-white"
+                    : "text-blue-100 hover:bg-blue-700"
                     }`}
                   onClick={() => setSidebarOpen(false)}
                 >
@@ -164,10 +164,10 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
                     key={item.name}
                     to={item.href}
                     className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${location.pathname === item.href ||
-                        (item.href === "/admin/blog" &&
-                          location.pathname.startsWith("/admin/blog"))
-                        ? "bg-blue-900 text-white"
-                        : "text-blue-100 hover:bg-blue-700"
+                      (item.href === "/admin/blog" &&
+                        location.pathname.startsWith("/admin/blog"))
+                      ? "bg-blue-900 text-white"
+                      : "text-blue-100 hover:bg-blue-700"
                       }`}
                   >
                     <item.icon
