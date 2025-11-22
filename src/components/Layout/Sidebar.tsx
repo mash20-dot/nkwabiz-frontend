@@ -8,16 +8,35 @@ import {
   WalletCards,
   Settings,
   X,
+  FileText,
 } from "lucide-react";
 import { useAuthStore } from "../../store/useAuthStore";
+import { apiFetch } from "../../utils/api";
 
 interface SidebarProps {
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
 }
+
 const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
   const businessName = useAuthStore((state) => state.businessName);
   const location = useLocation();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    checkAdminStatus();
+  }, []);
+
+  async function checkAdminStatus() {
+    try {
+      const userData = await apiFetch("/security/user-info", {}, true);
+      setIsAdmin(userData.is_admin || false);
+    } catch (err) {
+      console.error("Failed to check admin status:", err);
+      setIsAdmin(false);
+    }
+  }
+
   const navigation = [
     {
       name: "Dashboard",
@@ -51,29 +70,38 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
     },
   ];
 
+  // Add Blog Admin link only if user is admin
+  const allNavigation = isAdmin
+    ? [
+      ...navigation,
+      {
+        name: "Blog Admin",
+        href: "/admin/blog",
+        icon: FileText,
+      },
+    ]
+    : navigation;
+
   return (
     <>
       {/* Mobile sidebar */}
       <div
-        className={`fixed inset-0 z-40 flex md:hidden ${
-          sidebarOpen ? "visible" : "invisible"
-        }`}
+        className={`fixed inset-0 z-40 flex md:hidden ${sidebarOpen ? "visible" : "invisible"
+          }`}
         aria-hidden="true"
       >
         {/* Backdrop */}
         <div
-          className={`fixed inset-0 bg-gray-600 ${
-            sidebarOpen
+          className={`fixed inset-0 bg-gray-600 ${sidebarOpen
               ? "opacity-75 transition-opacity ease-linear duration-300"
               : "opacity-0 transition-opacity ease-linear duration-300"
-          }`}
+            }`}
           onClick={() => setSidebarOpen(false)}
         />
         {/* Sidebar */}
         <div
-          className={`relative flex-1 flex flex-col max-w-[240px] pt-5 pb-4 bg-blue-800 transition ease-in-out duration-300 transform ${
-            sidebarOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
+          className={`relative flex-1 flex flex-col max-w-[240px] pt-5 pb-4 bg-blue-800 transition ease-in-out duration-300 transform ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
+            }`}
         >
           <div className="absolute top-0 right-0 -mr-12 pt-2">
             <button
@@ -91,15 +119,17 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
           </div>
           <div className="mt-5 flex-1 h-0 overflow-y-auto">
             <nav className="px-2 space-y-1">
-              {navigation.map((item) => (
+              {allNavigation.map((item) => (
                 <Link
                   key={item.name}
                   to={item.href}
-                  className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${
-                    location.pathname === item.href
+                  className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${location.pathname === item.href ||
+                      (item.href === "/admin/blog" &&
+                        location.pathname.startsWith("/admin/blog"))
                       ? "bg-blue-900 text-white"
                       : "text-blue-100 hover:bg-blue-700"
-                  }`}
+                    }`}
+                  onClick={() => setSidebarOpen(false)}
                 >
                   <item.icon
                     className="mr-2 h-4 w-4 text-blue-200"
@@ -129,15 +159,16 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
             {/* Navigation */}
             <div className="flex-1 flex flex-col overflow-y-auto bg-blue-800">
               <nav className="flex-1 px-2 py-4 space-y-1">
-                {navigation.map((item) => (
+                {allNavigation.map((item) => (
                   <Link
                     key={item.name}
                     to={item.href}
-                    className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
-                      location.pathname === item.href
+                    className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${location.pathname === item.href ||
+                        (item.href === "/admin/blog" &&
+                          location.pathname.startsWith("/admin/blog"))
                         ? "bg-blue-900 text-white"
                         : "text-blue-100 hover:bg-blue-700"
-                    }`}
+                      }`}
                   >
                     <item.icon
                       className="mr-2 h-4 w-4 text-blue-200"

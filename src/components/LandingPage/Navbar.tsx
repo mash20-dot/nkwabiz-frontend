@@ -39,6 +39,12 @@ const Navbar = () => {
               Features
             </Link>
             <Link
+              to="/blog"
+              className="text-gray-900 hover:text-blue-600 px-3 py-2 text-sm font-medium"
+            >
+              Blog
+            </Link>
+            <Link
               to="/testimonials"
               className="text-gray-900 hover:text-blue-600 px-3 py-2 text-sm font-medium"
             >
@@ -84,6 +90,7 @@ const Navbar = () => {
             <Link
               to="/"
               className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50"
+              onClick={() => setIsMenuOpen(false)}
             >
               Home
             </Link>
@@ -102,6 +109,13 @@ const Navbar = () => {
               Features
             </Link>
             <Link
+              to="/blog"
+              className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Blog
+            </Link>
+            <Link
               to="/testimonials"
               className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50"
               onClick={() => setIsMenuOpen(false)}
@@ -118,12 +132,14 @@ const Navbar = () => {
             <Link
               to="/login"
               className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50"
+              onClick={() => setIsMenuOpen(false)}
             >
               Login
             </Link>
             <Link
-              to="/login"
+              to="/signup"
               className="block w-full text-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              onClick={() => setIsMenuOpen(false)}
             >
               Get Started
             </Link>
