@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Menu, Bell } from "lucide-react";
+import { Menu, Bell, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../utils/auth";
 import { apiFetch } from "../../utils/api";
@@ -13,7 +13,6 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
   const [isProfileActive, setIsProfileActive] = useState<boolean>(false);
   const [userFirstName, setUserFirstName] = useState<string>("");
-  const [userInitials, setUserInitials] = useState<string>("SM");
 
   const navigate = useNavigate();
 
@@ -23,9 +22,6 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
       .then((data) => {
         if (data.firstname) {
           setUserFirstName(data.firstname);
-          // Get initials from first name and last name
-          const initials = data.firstname.charAt(0) + (data.lastname?.charAt(0) || "");
-          setUserInitials(initials.toUpperCase());
         }
       })
       .catch((err) => {
@@ -86,10 +82,8 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
               aria-expanded={isProfileActive}
             >
               <span className="sr-only">Open user menu</span>
-              <div className="h-8 w-8 rounded-full bg-blue-200 flex items-center justify-center">
-                <span className="font-medium text-blue-800 text-xs">
-                  {userInitials}
-                </span>
+              <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
+                <User className="h-5 w-5 text-gray-600" />
               </div>
               {/* Dropdown arrow indicator */}
               <svg
