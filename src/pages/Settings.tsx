@@ -1,14 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { Lock, Eye, EyeOff, DollarSign } from "lucide-react";
+import React, { useState } from "react";
+import { Lock, Eye, EyeOff } from "lucide-react";
 import { apiFetch } from "../utils/api";
-import { useAuthStore } from "../store/useAuthStore";
-import CurrencySelector from "../components/CurrencySelector";
-import { getCurrencyInfo } from "../utils/currencyUtils";
 
 const Settings = () => {
-  const currency = useAuthStore((state) => state.currency);
-  const setCurrency = useAuthStore((state) => state.setCurrency);
-
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -17,16 +11,6 @@ const Settings = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-
-  // Currency state
-  const [selectedCurrency, setSelectedCurrency] = useState(currency || "GHS");
-  const [currencyLoading, setCurrencyLoading] = useState(false);
-  const [currencyError, setCurrencyError] = useState("");
-  const [currencySuccess, setCurrencySuccess] = useState("");
-
-  useEffect(() => {
-    setSelectedCurrency(currency || "GHS");
-  }, [currency]);
 
   const handlePasswordUpdate = async () => {
     setError("");
@@ -71,80 +55,10 @@ const Settings = () => {
     }
   };
 
-  const handleCurrencyUpdate = async () => {
-    setCurrencyError("");
-    setCurrencySuccess("");
-    setCurrencyLoading(true);
-
-    try {
-      const data = await apiFetch(
-        "/user/update-currency",
-        {
-          method: "PUT",
-          body: JSON.stringify({ currency: selectedCurrency })
-        },
-        true
-      );
-
-      setCurrency(selectedCurrency);
-      setCurrencySuccess("Currency updated successfully! Refresh to see changes.");
-
-      // Optionally reload after 2 seconds to update all prices
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000);
-    } catch (err: any) {
-      setCurrencyError(err.message || "Failed to update currency");
-    } finally {
-      setCurrencyLoading(false);
-    }
-  };
-
-  const currencyInfo = getCurrencyInfo();
-
   return (
     <div className="flex flex-col items-start justify-center gap-6">
       <div className="w-full flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
         <h1 className="text-2xl font-medium text-gray-900">Settings</h1>
-      </div>
-
-      {/* Currency Settings Card - Disabled */}
-      <div className="w-full bg-white shadow rounded-lg overflow-hidden opacity-60">
-        <div className="p-6">
-          <div className="space-y-6">
-            <div>
-              <div className="flex items-center space-x-2 mb-2">
-                <DollarSign className="h-5 w-5 text-gray-400" />
-                <h3 className="text-lg font-medium leading-6 text-gray-900">
-                  Currency Preferences
-                </h3>
-              </div>
-              <p className="text-sm text-gray-500">
-                Currency is set during signup and cannot be changed.
-              </p>
-            </div>
-
-            <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
-              <div className="flex items-center">
-                <span className="text-2xl mr-3">{currencyInfo.flag}</span>
-                <div>
-                  <p className="text-sm font-medium text-gray-900">
-                    Current Currency: {currencyInfo.name}
-                  </p>
-                  <p className="text-xs text-gray-600">
-                    Symbol: {currencyInfo.symbol} • Code: {currencyInfo.code}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
-              <p className="text-sm text-yellow-800">
-                ℹ️ Currency can only be set during account creation and cannot be modified later.
-              </p>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Password Settings Card */}
