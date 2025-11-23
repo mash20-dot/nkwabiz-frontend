@@ -14,6 +14,7 @@ import { Calendar, ChevronDown, ChevronRight } from "lucide-react";
 import { apiFetch, getToken } from "../utils/api";
 import Button from "../components/Button";
 import { Plus, X } from "lucide-react";
+import { formatCurrency } from "../utils/currencyUtils";
 
 // --- Types ---
 type ExpenseHistoryItem = {
@@ -401,8 +402,8 @@ const ExpensesPage: React.FC = () => {
                 setCustomDate("");
               }}
               className={`px-3 py-1 text-sm font-medium rounded-md ${dateRange === "year"
-                  ? "bg-blue-100 text-blue-700"
-                  : "bg-gray-100 text-gray-700"
+                ? "bg-blue-100 text-blue-700"
+                : "bg-gray-100 text-gray-700"
                 }`}
             >
               This Year
@@ -414,8 +415,8 @@ const ExpensesPage: React.FC = () => {
                 setCustomDate("");
               }}
               className={`px-3 py-1 text-sm font-medium rounded-md ${dateRange === "month"
-                  ? "bg-blue-100 text-blue-700"
-                  : "bg-gray-100 text-gray-700"
+                ? "bg-blue-100 text-blue-700"
+                : "bg-gray-100 text-gray-700"
                 }`}
             >
               This Month
@@ -427,8 +428,8 @@ const ExpensesPage: React.FC = () => {
                 setCustomDate("");
               }}
               className={`px-3 py-1 text-sm font-medium rounded-md ${dateRange === "week"
-                  ? "bg-blue-100 text-blue-700"
-                  : "bg-gray-100 text-gray-700"
+                ? "bg-blue-100 text-blue-700"
+                : "bg-gray-100 text-gray-700"
                 }`}
             >
               This Week
@@ -437,8 +438,8 @@ const ExpensesPage: React.FC = () => {
             <button
               onClick={() => setDateRange("custom")}
               className={`px-3 py-1 text-sm font-medium rounded-md ${dateRange === "custom"
-                  ? "bg-blue-100 text-blue-700"
-                  : "bg-gray-100 text-gray-700"
+                ? "bg-blue-100 text-blue-700"
+                : "bg-gray-100 text-gray-700"
                 }`}
             >
               Choose Date
@@ -461,7 +462,7 @@ const ExpensesPage: React.FC = () => {
         <div className="bg-white shadow rounded-lg p-4 text-center">
           <div className="text-gray-500 text-sm">Total Expenses</div>
           <div className="text-2xl font-semibold text-gray-800">
-            ₵{totalExpenses.toLocaleString()}
+            {formatCurrency(totalExpenses)}
           </div>
         </div>
 
@@ -482,8 +483,7 @@ const ExpensesPage: React.FC = () => {
         <div className="bg-white shadow rounded-lg p-4 text-center">
           <div className="text-gray-500 text-sm">Avg. Expense</div>
           <div className="text-2xl font-semibold text-gray-800">
-            ₵
-            {avgExpense.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+            {formatCurrency(avgExpense)}
           </div>
         </div>
       </div>
@@ -593,7 +593,7 @@ const ExpensesPage: React.FC = () => {
                     <div className="flex items-center gap-3">
                       <div className="text-right">
                         <div className="font-semibold text-gray-900">
-                          ₵{categoryTotal.toLocaleString()}
+                          {formatCurrency(categoryTotal)}
                         </div>
                       </div>
                       <button
@@ -681,7 +681,7 @@ const ExpensesPage: React.FC = () => {
                                 {exp.description}
                               </td>
                               <td className="p-3 text-sm text-gray-900 text-right">
-                                ₵{(exp.amount || 0).toLocaleString()}
+                                {formatCurrency(exp.amount || 0)}
                               </td>
                             </tr>
                           ))}
