@@ -20,7 +20,13 @@ export default function AddToHomeScreenPrompt() {
         if (isIOS && !isInStandaloneMode) {
             // Check if user has dismissed the prompt before
             const iosDismissed = localStorage.getItem('ios-pwa-prompt-dismissed');
-            if (!iosDismissed) {
+            const dismissedTime = localStorage.getItem('ios-pwa-prompt-dismissed-time');
+
+            // Show prompt again after 7 days
+            const sevenDays = 7 * 24 * 60 * 60 * 1000;
+            const shouldShowAgain = dismissedTime && (Date.now() - parseInt(dismissedTime)) > sevenDays;
+
+            if (!iosDismissed || shouldShowAgain) {
                 // Show after 2 seconds delay
                 setTimeout(() => setShowIOSPrompt(true), 2000);
             }
@@ -51,6 +57,7 @@ export default function AddToHomeScreenPrompt() {
     const handleIOSDismiss = () => {
         setShowIOSPrompt(false);
         localStorage.setItem('ios-pwa-prompt-dismissed', 'true');
+        localStorage.setItem('ios-pwa-prompt-dismissed-time', Date.now().toString());
     };
 
     // Android/Chrome Prompt
