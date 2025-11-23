@@ -19,7 +19,6 @@ const Login = () => {
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setForm({ ...form, [e.target.name]: e.target.value });
-    // Only validate email on blur or submit, not while typing
     if (error) {
       setError("");
     }
@@ -43,7 +42,12 @@ const Login = () => {
 
     try {
       const data = await loginUser(form.email, form.password);
-      setAuth(data.access_token, data.business_name || "");
+      // Save auth with currency (THIS IS THE KEY CHANGE)
+      setAuth(
+        data.access_token,
+        data.business_name || "",
+        data.currency || "GHS" // ← Save currency from backend
+      );
       // Force reload to ensure all components see updated auth state
       window.location.replace("/dashboard");
     } catch (err: any) {
