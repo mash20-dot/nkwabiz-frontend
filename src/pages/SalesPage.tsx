@@ -36,14 +36,29 @@ const Sales: React.FC = () => {
   useEffect(() => {
     setLoading(true);
     getSalesHistory()
-      .then((data: SaleHistoryItem[]) => setSales(data))
+      .then((data) => {
+        console.log("💰 Sales history response:", data);
+        // Handle different response formats
+        const salesArray = Array.isArray(data)
+          ? data
+          : Array.isArray(data.sales_history)
+            ? data.sales_history
+            : [];
+        console.log("💰 Sales array:", salesArray);
+        setSales(salesArray);
+      })
+      .catch((err) => {
+        console.error("❌ Failed to fetch sales:", err);
+        setSales([]);
+      })
       .finally(() => setLoading(false));
 
     // Fetch products for the sale modal
     setProductsLoading(true);
     getDashboardOverview()
       .then((data) => {
-        setProducts(Array.isArray(data) ? data : []);
+        const productsArray = Array.isArray(data) ? data : (Array.isArray(data.products) ? data.products : []);
+        setProducts(productsArray);
       })
       .catch(() => setProducts([]))
       .finally(() => setProductsLoading(false));
@@ -58,14 +73,16 @@ const Sales: React.FC = () => {
     total_price: number;
     date: string;
   }) => {
-    // Add new sale to the top of sales list
-    setSales(prev => [{
+    // Add new sale to the top of sales list with proper type
+    const newSale: SaleHistoryItem = {
+      sale_id: `temp_${Date.now()}`,
       product_name: saleData.product_name,
       quantity: saleData.quantity,
       total_price: saleData.total_price,
-      date: saleData.date,
-      sale_id: `sale_${Date.now()}`, // Temporary ID
-    }, ...prev]);
+      date: new Date(saleData.date).toLocaleString(),
+      status: "Completed",
+    };
+    setSales(prev => [newSale, ...prev]);
   };
 
   return (
