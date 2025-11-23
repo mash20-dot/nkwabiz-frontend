@@ -56,43 +56,51 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
         <span className="sr-only">Open sidebar</span>
         <Menu className="h-6 w-6" aria-hidden="true" />
       </button>
-      <div className="flex-1 px-4 flex justify-between">
+      <div className="flex-1 px-4 flex justify-between items-center">
         <div className="flex-1 flex items-center">
           <h1 className="text-base font-medium text-gray-700">
             Dashboard
           </h1>
         </div>
-        <div className="ml-4 flex items-center md:ml-6">
-          {/* Notification button */}
-          <button className="p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-            <span className="sr-only">View notifications</span>
-            <Bell className="h-6 w-6" aria-hidden="true" />
-          </button>
-
-          {/* User greeting - Hidden on small screens, shown on medium+ */}
+        <div className="flex items-center space-x-2 md:space-x-3">
+          {/* User greeting - Shows on all screens */}
           {userFirstName && (
-            <div className="hidden md:flex items-center ml-4 mr-2">
-              <span className="text-sm text-gray-700">
+            <div className="flex items-center mr-1">
+              <span className="text-sm text-gray-700 whitespace-nowrap">
                 Hi, <span className="font-semibold">{userFirstName}</span>
               </span>
             </div>
           )}
 
+          {/* Notification button */}
+          <button className="p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <span className="sr-only">View notifications</span>
+            <Bell className="h-5 w-5 sm:h-6 sm:w-6" aria-hidden="true" />
+          </button>
+
           {/* Profile dropdown */}
-          <div className="ml-3 relative">
-            <div>
-              <button
-                onClick={handleProfileClick}
-                className="max-w-xs bg-white flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          <div className="relative">
+            <button
+              onClick={handleProfileClick}
+              className="flex items-center space-x-1 max-w-xs bg-white text-sm rounded-full hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors p-1"
+              aria-expanded={isProfileActive}
+            >
+              <span className="sr-only">Open user menu</span>
+              <div className="h-8 w-8 rounded-full bg-blue-200 flex items-center justify-center">
+                <span className="font-medium text-blue-800 text-xs">
+                  {userInitials}
+                </span>
+              </div>
+              {/* Dropdown arrow indicator */}
+              <svg
+                className={`h-4 w-4 text-gray-400 transition-transform ${isProfileActive ? 'rotate-180' : ''}`}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
               >
-                <span className="sr-only">Open user menu</span>
-                <div className="h-8 w-8 rounded-full bg-blue-200 flex items-center justify-center">
-                  <span className="font-medium text-blue-800 text-xs">
-                    {userInitials}
-                  </span>
-                </div>
-              </button>
-            </div>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
           </div>
         </div>
       </div>
