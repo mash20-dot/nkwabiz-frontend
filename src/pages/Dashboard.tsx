@@ -18,6 +18,7 @@ import {
 } from "../utils/salesApi";
 import SaleModal from "../components/SaleModal";
 import Button from "../components/Button";
+import { formatCurrency } from "../utils/currencyUtils";
 
 type DashboardProduct = {
   product_name: string;
@@ -243,7 +244,7 @@ const Dashboard = () => {
         {/* Sales Today */}
         <StatsCard
           title="Sales Today"
-          value={salesToday !== null ? `GH₵${salesToday.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "GH₵0.00"}
+          value={salesToday !== null ? formatCurrency(salesToday) : formatCurrency(0)}
           icon={DollarSign}
           iconBgColor="bg-green-50"
           iconColor="text-green-600"
@@ -277,12 +278,12 @@ const Dashboard = () => {
             monthlyError
               ? "Error"
               : monthlySales !== null
-                ? `GH₵${monthlySales.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-                : "GH₵0.00"
+                ? formatCurrency(monthlySales)
+                : formatCurrency(0)
           }
           subtitle={
             !monthlyLoading && monthlyProfit !== null
-              ? `Profit: GH₵${monthlyProfit.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+              ? `Profit: ${formatCurrency(monthlyProfit)}`
               : undefined
           }
           icon={TrendingUp}
@@ -346,7 +347,7 @@ const Dashboard = () => {
                           {sale.quantity}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          ₵{sale.total_price?.toLocaleString()}
+                          {formatCurrency(sale.total_price)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           {formatSaleDate(sale.date)}

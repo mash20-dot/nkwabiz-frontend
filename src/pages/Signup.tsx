@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { signupUser } from "../utils/userApi";
 import Button from "../components/Button";
+import CurrencySelector from "../components/LandingPage/CurrencySelector";
 
 function validateEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -18,6 +19,7 @@ const Signup = () => {
     phone: "",
     location: "",
     password: "",
+    currency: "GHS", // Default currency
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -30,6 +32,10 @@ const Signup = () => {
     } else {
       setError("");
     }
+  }
+
+  function handleCurrencyChange(currency: string) {
+    setForm({ ...form, currency });
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -70,7 +76,7 @@ const Signup = () => {
               placeholder="First Name"
               value={form.firstname}
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-md"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             />
             <input
               name="lastname"
@@ -79,7 +85,7 @@ const Signup = () => {
               placeholder="Last Name"
               value={form.lastname}
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-md"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             />
             <input
               name="business_name"
@@ -88,7 +94,7 @@ const Signup = () => {
               placeholder="Business Name"
               value={form.business_name}
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-md"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             />
             <input
               name="email"
@@ -97,7 +103,7 @@ const Signup = () => {
               placeholder="Email"
               value={form.email}
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-md"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             />
             <input
               name="phone"
@@ -106,7 +112,7 @@ const Signup = () => {
               placeholder="Phone"
               value={form.phone}
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-md"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             />
             <input
               name="location"
@@ -115,8 +121,17 @@ const Signup = () => {
               placeholder="Location"
               value={form.location}
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-md"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             />
+
+            {/* Currency Selector */}
+            <CurrencySelector
+              value={form.currency}
+              onChange={handleCurrencyChange}
+              label="Preferred Currency"
+              required
+            />
+
             <div className="relative">
               <input
                 name="password"
@@ -125,7 +140,7 @@ const Signup = () => {
                 placeholder="Password"
                 value={form.password}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-md"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               />
               <button
                 type="button"
