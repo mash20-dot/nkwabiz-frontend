@@ -16,6 +16,8 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
 
   const navigate = useNavigate();
 
+
+
   useEffect(() => {
     // Fetch user info
     apiFetch("/security/user-info", {}, true)
