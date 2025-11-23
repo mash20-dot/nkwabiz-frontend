@@ -29,7 +29,6 @@ export default function SaleModal({
     setError("");
     try {
       const result = await makeSale(productName, quantity);
-      toast.success(result.message || "Sale successful!");
 
       // Find the product to get price
       const product = products.find(p => p.product_name === productName);
@@ -45,9 +44,18 @@ export default function SaleModal({
         });
       }
 
+      // Show success toast
+      toast.success(result.message || "Sale recorded successfully!");
+
+      // Reset form
       setProductName("");
       setQuantity(1);
-      onClose();
+
+      // Close modal after a brief delay to ensure toast is visible
+      setTimeout(() => {
+        onClose();
+      }, 300);
+
     } catch (err: any) {
       setError(err.error || err.message || "Could not complete sale");
       toast.error(err.error || err.message || "Could not complete sale");
@@ -101,7 +109,7 @@ export default function SaleModal({
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 rounded font-semibold mt-2"
+            className="w-full bg-blue-600 text-white py-2 rounded font-semibold mt-2 disabled:opacity-50"
           >
             {loading ? "Processing..." : "Make Sale"}
           </button>
