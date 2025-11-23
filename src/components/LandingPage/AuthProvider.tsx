@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { isAuthenticated } from '../../utils/auth';
+import { apiFetch } from '../../utils/api';
+import { useAuthStore } from '../../store/useAuthStore';
 interface AuthProviderProps {
     children: React.ReactNode;
 }
@@ -9,12 +11,13 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     const [isChecking, setIsChecking] = useState(true);
     const navigate = useNavigate();
     const location = useLocation();
+    const setCurrency = useAuthStore((state) => state.setCurrency);
 
     useEffect(() => {
         checkAuth();
     }, []);
 
-    const checkAuth = () => {
+    const checkAuth = async () => {
         const authenticated = isAuthenticated();
         const currentPath = location.pathname;
 
@@ -36,6 +39,16 @@ export default function AuthProvider({ children }: AuthProviderProps) {
         const isAuthRoute = ['/login', '/signup'].includes(currentPath);
 
         if (authenticated) {
+            // Fetch user info to get currency
+            try {
+                const userData = await apiFetch("/security/user-info", {}, true);
+                if (userData.currency) {
+                    setCurrency(userData.currency);
+                }
+            } catch (error) {
+                console.error("Failed to fetch user info:", error);
+            }
+
             // User is logged in
             if (isAuthRoute || currentPath === '/') {
                 // Redirect to dashboard if on login/signup/home
