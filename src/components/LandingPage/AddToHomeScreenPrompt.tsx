@@ -23,8 +23,7 @@ export default function AddToHomeScreenPrompt() {
             const dismissedTime = localStorage.getItem('ios-pwa-prompt-dismissed-time');
 
             // Show prompt again after 7 days
-            //const sevenDays = 7 * 24 * 60 * 60 * 1000;
-            const sevenDays = 60 * 1000;
+            const sevenDays = 7 * 24 * 60 * 60 * 1000;
             const shouldShowAgain = dismissedTime && (Date.now() - parseInt(dismissedTime)) > sevenDays;
 
             if (!iosDismissed || shouldShowAgain) {
@@ -64,25 +63,63 @@ export default function AddToHomeScreenPrompt() {
     // Android/Chrome Prompt
     if (showAndroidPrompt) {
         return (
-            <div className="fixed bottom-20 left-4 right-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 rounded-lg shadow-2xl z-50 animate-slide-up">
-                <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                        <h3 className="font-bold text-lg mb-1">Install Nkwabiz App</h3>
-                        <p className="text-sm text-blue-100">Get the full app experience on your device</p>
+            <div className="fixed bottom-20 left-4 right-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white p-5 rounded-xl shadow-2xl z-50 animate-slide-up">
+                <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-start space-x-3">
+                        <div className="bg-white/20 p-2 rounded-lg">
+                            <Smartphone size={24} className="text-white" />
+                        </div>
+                        <div className="flex-1">
+                            <h3 className="font-bold text-lg mb-1">Install Nkwabiz App</h3>
+                            <p className="text-sm text-blue-100">
+                                Experience the full power of Nkwabiz as a native app
+                            </p>
+                        </div>
                     </div>
                     <button
                         onClick={() => setShowAndroidPrompt(false)}
-                        className="ml-2 text-blue-100 hover:text-white"
+                        className="ml-2 text-blue-100 hover:text-white flex-shrink-0"
                     >
                         <X size={20} />
                     </button>
                 </div>
+
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 mt-4">
+                    <p className="text-white font-semibold text-sm mb-3">Why Install?</p>
+
+                    <div className="space-y-2">
+                        <div className="flex items-start space-x-2">
+                            <span className="text-white">✓</span>
+                            <span className="text-sm text-white">Access instantly from your home screen</span>
+                        </div>
+                        <div className="flex items-start space-x-2">
+                            <span className="text-white">✓</span>
+                            <span className="text-sm text-white">Works offline - manage business anytime</span>
+                        </div>
+                        <div className="flex items-start space-x-2">
+                            <span className="text-white">✓</span>
+                            <span className="text-sm text-white">Faster performance and native app feel</span>
+                        </div>
+                        <div className="flex items-start space-x-2">
+                            <span className="text-white">✓</span>
+                            <span className="text-sm text-white">Get updates automatically</span>
+                        </div>
+                    </div>
+                </div>
+
                 <button
                     onClick={handleAndroidAdd}
-                    className="mt-3 w-full bg-white text-blue-600 font-semibold py-2 px-4 rounded-md hover:bg-blue-50 transition-colors"
+                    className="mt-4 w-full bg-white text-blue-600 font-semibold py-3 px-4 rounded-lg hover:bg-blue-50 transition-colors shadow-lg"
                 >
-                    Install App
+                    Install App Now
                 </button>
+
+                <div className="mt-3 pt-3 border-t border-white/20">
+                    <div className="flex items-center justify-center space-x-2 text-xs text-blue-100">
+                        <span>🚀</span>
+                        <span>Free • No App Store Required • Install in Seconds</span>
+                    </div>
+                </div>
             </div>
         );
     }
