@@ -13,21 +13,40 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
   const [isProfileActive, setIsProfileActive] = useState<boolean>(false);
   const [userFirstName, setUserFirstName] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
 
   const navigate = useNavigate();
 
-
-
   useEffect(() => {
     // Fetch user info
+    setLoading(true);
+    console.log("Environment:", window.location.hostname); // Debug: check environment
+    console.log("Fetching from /security/user-info"); // Debug log
+
     apiFetch("/security/user-info", {}, true)
       .then((data) => {
-        if (data.firstname) {
-          setUserFirstName(data.firstname);
+        console.log("User info response:", data); // Debug log
+        console.log("Response keys:", Object.keys(data)); // Debug: see all available keys
+
+        // Try different possible field names
+        const firstName = data.firstname || data.firstName || data.first_name || data.name;
+
+        if (firstName) {
+          setUserFirstName(firstName);
+          console.log("First name set to:", firstName); // Debug log
+        } else {
+          console.warn("No firstname found in response. Full data:", JSON.stringify(data));
+          setError("Name not found in response");
         }
       })
       .catch((err) => {
         console.error("Failed to fetch user info:", err);
+        console.error("Error details:", JSON.stringify(err)); // More detailed error
+        setError(err.message || "Failed to fetch user info");
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, []);
 
@@ -62,11 +81,23 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
         </div>
         <div className="flex items-center space-x-2 md:space-x-3">
           {/* User greeting - Shows on all screens */}
-          {userFirstName && (
+          {loading ? (
+            <div className="flex items-center mr-1">
+              <span className="text-sm text-gray-400">Loading...</span>
+            </div>
+          ) : error ? (
+            <div className="flex items-center mr-1">
+              <span className="text-sm text-red-500">{error}</span>
+            </div>
+          ) : userFirstName ? (
             <div className="flex items-center mr-1">
               <span className="text-sm text-gray-700 whitespace-nowrap">
                 Hi, <span className="font-semibold">{userFirstName}</span>
               </span>
+            </div>
+          ) : (
+            <div className="flex items-center mr-1">
+              <span className="text-sm text-gray-400">No name</span>
             </div>
           )}
 
