@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Share, X } from 'lucide-react';
+import { Share, X, Smartphone } from 'lucide-react';
 
 export default function AddToHomeScreenPrompt() {
     const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
@@ -59,8 +59,8 @@ export default function AddToHomeScreenPrompt() {
             <div className="fixed bottom-20 left-4 right-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 rounded-lg shadow-2xl z-50 animate-slide-up">
                 <div className="flex items-start justify-between">
                     <div className="flex-1">
-                        <h3 className="font-bold text-lg mb-1">Install Nkwabiz</h3>
-                        <p className="text-sm text-blue-100">Add to your home screen for quick access</p>
+                        <h3 className="font-bold text-lg mb-1">Install Nkwabiz App</h3>
+                        <p className="text-sm text-blue-100">Get the full app experience on your device</p>
                     </div>
                     <button
                         onClick={() => setShowAndroidPrompt(false)}
@@ -79,33 +79,87 @@ export default function AddToHomeScreenPrompt() {
         );
     }
 
-    // iOS Safari Prompt
+    // iOS Safari Prompt - More app-focused messaging
     if (showIOSPrompt) {
         return (
-            <div className="fixed bottom-20 left-4 right-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 rounded-lg shadow-2xl z-50 animate-slide-up">
+            <div className="fixed bottom-20 left-4 right-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white p-5 rounded-xl shadow-2xl z-50 animate-slide-up">
                 <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1">
-                        <h3 className="font-bold text-lg mb-1">Install Nkwabiz</h3>
-                        <p className="text-sm text-blue-100">Add to your home screen for the best experience</p>
+                    <div className="flex items-start space-x-3">
+                        <div className="bg-white/20 p-2 rounded-lg">
+                            <Smartphone size={24} className="text-white" />
+                        </div>
+                        <div className="flex-1">
+                            <h3 className="font-bold text-lg mb-1">Install Nkwabiz App</h3>
+                            <p className="text-sm text-blue-100">
+                                Experience the full power of Nkwabiz as a native app
+                            </p>
+                        </div>
                     </div>
                     <button
                         onClick={handleIOSDismiss}
-                        className="ml-2 text-blue-100 hover:text-white"
+                        className="ml-2 text-blue-100 hover:text-white flex-shrink-0"
                     >
                         <X size={20} />
                     </button>
                 </div>
 
-                <div className="bg-white/10 rounded-lg p-3 backdrop-blur-sm">
-                    <div className="flex items-center space-x-3 text-sm">
-                        <span className="text-blue-100">1. Tap the</span>
-                        <div className="flex items-center bg-white/20 px-2 py-1 rounded">
-                            <Share size={16} />
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 mt-4">
+                    <p className="text-white font-semibold text-sm mb-3">Quick Install Guide:</p>
+
+                    <div className="space-y-3">
+                        {/* Step 1 */}
+                        <div className="flex items-start space-x-3">
+                            <div className="flex-shrink-0 w-6 h-6 bg-white rounded-full flex items-center justify-center text-blue-600 font-bold text-xs">
+                                1
+                            </div>
+                            <div className="flex-1">
+                                <div className="flex items-center space-x-2">
+                                    <span className="text-sm text-white">Tap the</span>
+                                    <div className="flex items-center bg-white/30 px-2 py-1 rounded border border-white/20">
+                                        <Share size={14} className="text-white" />
+                                    </div>
+                                    <span className="text-sm text-white font-semibold">Share</span>
+                                    <span className="text-sm text-white">button below</span>
+                                </div>
+                            </div>
                         </div>
-                        <span className="text-blue-100">Share button</span>
+
+                        {/* Step 2 */}
+                        <div className="flex items-start space-x-3">
+                            <div className="flex-shrink-0 w-6 h-6 bg-white rounded-full flex items-center justify-center text-blue-600 font-bold text-xs">
+                                2
+                            </div>
+                            <div className="flex-1">
+                                <span className="text-sm text-white">
+                                    Scroll down and tap <span className="font-bold">"Add to Home Screen"</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* Step 3 */}
+                        <div className="flex items-start space-x-3">
+                            <div className="flex-shrink-0 w-6 h-6 bg-white rounded-full flex items-center justify-center text-blue-600 font-bold text-xs">
+                                3
+                            </div>
+                            <div className="flex-1">
+                                <span className="text-sm text-white">
+                                    Tap <span className="font-bold">"Add"</span> to install the app
+                                </span>
+                            </div>
+                        </div>
                     </div>
-                    <div className="mt-2 text-sm text-blue-100">
-                        2. Scroll and tap <strong>"Add to Home Screen"</strong>
+                </div>
+
+                <div className="mt-4 pt-3 border-t border-white/20">
+                    <div className="flex items-center space-x-2 text-xs text-blue-100">
+                        <span>✓</span>
+                        <span>Works offline</span>
+                        <span>•</span>
+                        <span>✓</span>
+                        <span>Faster performance</span>
+                        <span>•</span>
+                        <span>✓</span>
+                        <span>Native app feel</span>
                     </div>
                 </div>
             </div>
