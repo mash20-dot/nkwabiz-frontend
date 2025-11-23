@@ -6,16 +6,13 @@ import SaleModal from "../components/SaleModal";
 import { formatCurrency } from "../utils/currencyUtils";
 
 type SaleHistoryItem = {
-  sale_id?: string;
-  id?: string;
+  sale_id: number;
   product_name: string;
-  date: string;
-  customer?: string;
-  items?: number;
-  quantity?: number;
-  total?: string;
-  total_price?: number;
-  status?: string;
+  quantity: number;
+  unit_price: number;
+  total_price: number;
+  profit: number;
+  date?: string;
 };
 
 type Product = {
@@ -73,14 +70,19 @@ const Sales: React.FC = () => {
     total_price: number;
     date: string;
   }) => {
+    // Find the product to get unit price
+    const product = products.find(p => p.product_name === saleData.product_name);
+    const unitPrice = product?.selling_price || (saleData.total_price / saleData.quantity);
+    const profit = product ? (unitPrice * saleData.quantity) - ((product.selling_price || 0) * saleData.quantity) : 0;
+
     // Add new sale to the top of sales list with proper type
     const newSale: SaleHistoryItem = {
-      sale_id: `temp_${Date.now()}`,
+      sale_id: Date.now(), // Temporary ID
       product_name: saleData.product_name,
       quantity: saleData.quantity,
+      unit_price: unitPrice,
       total_price: saleData.total_price,
-      date: new Date(saleData.date).toLocaleString(),
-      status: "Completed",
+      profit: profit,
     };
     setSales(prev => [newSale, ...prev]);
   };
@@ -109,52 +111,44 @@ const Sales: React.FC = () => {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sale ID</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date & Time</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Items</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Quantity</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Unit Price</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Profit</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {loading ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-4 text-center text-gray-500">Loading...</td>
+                  <td colSpan={6} className="px-6 py-4 text-center text-gray-500">Loading...</td>
                 </tr>
               ) : filteredSales.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-4 text-center text-gray-500">No sales found</td>
+                  <td colSpan={6} className="px-6 py-4 text-center text-gray-500">No sales found</td>
                 </tr>
               ) : (
                 filteredSales.map((sale, idx) => (
-                  <tr key={idx}>
+                  <tr key={sale.sale_id || idx} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {sale.sale_id || sale.id}
+                      #{sale.sale_id}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {sale.product_name}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {sale.date}
+                      {sale.quantity}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {sale.customer || "N/A"}
+                      {formatCurrency(sale.unit_price)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {sale.items || sale.quantity || "N/A"}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
-                      {typeof sale.total_price === "number"
-                        ? formatCurrency(sale.total_price)
-                        : sale.total || "N/A"}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                        {sale.status || "Completed"}
-                      </span>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">
+                      {formatCurrency(sale.total_price)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <button className="text-blue-600 hover:text-blue-900">
-                        View Details
-                      </button>
+                      <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                        {formatCurrency(sale.profit)}
+                      </span>
                     </td>
                   </tr>
                 ))
