@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { ShoppingCart, Download, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { getSalesHistory } from "../utils/salesApi";
+import { getDashboardOverview } from "../utils/productApi";
 import SaleModal from "../components/SaleModal";
 import { formatCurrency } from "../utils/currencyUtils";
 
@@ -19,25 +20,33 @@ type SaleHistoryItem = {
 
 type Product = {
   product_name: string;
+  selling_price: number;
+  initial_stock: number;
+  expiration_date: string;
   remaining_stock: number;
 };
 
 const Sales: React.FC = () => {
   const [sales, setSales] = useState<SaleHistoryItem[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [productsLoading, setProductsLoading] = useState<boolean>(false);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
-  // Always provide products for SaleModal!
-  const [products] = useState<Product[]>([
-    // You can fetch from API, here are dummy products for error-free usage:
-    { product_name: "Rice", remaining_stock: 20 },
-    { product_name: "Sugar", remaining_stock: 15 },
-  ]);
 
   useEffect(() => {
     setLoading(true);
     getSalesHistory()
       .then((data: SaleHistoryItem[]) => setSales(data))
       .finally(() => setLoading(false));
+
+    // Fetch products for the sale modal
+    setProductsLoading(true);
+    getDashboardOverview()
+      .then((data) => {
+        setProducts(Array.isArray(data) ? data : []);
+      })
+      .catch(() => setProducts([]))
+      .finally(() => setProductsLoading(false));
   }, []);
 
   const filteredSales = sales; // Add filtering logic if needed
@@ -46,19 +55,13 @@ const Sales: React.FC = () => {
     <div className="flex flex-col items-start justify-center gap-6">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
         <h1 className="text-2xl font-bold text-gray-900">Sales</h1>
-        <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
-          <button className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md bg-white text-gray-700 hover:bg-gray-50">
-            <Download className="h-4 w-4 mr-2" />
-            Export to Excel
-          </button>
-          <button
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
-            onClick={() => setModalOpen(true)}
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Record New Sale
-          </button>
-        </div>
+        <button
+          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
+          onClick={() => setModalOpen(true)}
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Record New Sale
+        </button>
       </div>
       <SaleModal
         open={modalOpen}
