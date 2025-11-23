@@ -89,7 +89,7 @@ const Sales: React.FC = () => {
 
   return (
     <div className="flex flex-col items-start justify-center gap-6">
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
+      <div className="w-full flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
         <h1 className="text-2xl font-bold text-gray-900">Sales</h1>
         <button
           className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
@@ -105,7 +105,7 @@ const Sales: React.FC = () => {
         products={products}
         onSaleComplete={handleSaleComplete}
       />
-      <div className="bg-white shadow rounded-lg">
+      <div className="w-full bg-white shadow rounded-lg">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
