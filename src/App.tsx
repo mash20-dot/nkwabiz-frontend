@@ -30,6 +30,7 @@ import BlogPost from './pages/BlogPost';
 
 // PWA Add to Home Screen Prompt
 import AddToHomeScreenPrompt from './components/LandingPage/AddToHomeScreenPrompt';
+import UpdatePrompt from './components/LandingPage/UpdatePrompt';
 
 
 const WhatsAppButton: React.FC = (): JSX.Element | null => {
@@ -79,6 +80,9 @@ const WhatsAppButton: React.FC = (): JSX.Element | null => {
 export function App() {
   return (
     <Router>
+      {/* PWA Update Prompt - Shows when new version is available */}
+      <UpdatePrompt />
+
       {/* PWA Add to Home Screen Prompt */}
       <AddToHomeScreenPrompt />
 
