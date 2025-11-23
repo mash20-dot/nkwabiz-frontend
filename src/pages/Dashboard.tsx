@@ -53,18 +53,18 @@ const StatsCard = ({
   loading?: boolean;
 }) => {
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
-      <div className="flex items-start justify-between mb-4">
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 hover:shadow-md transition-shadow">
+      <div className="flex items-start justify-between mb-3 sm:mb-4">
         <div className="flex-1">
-          <p className="text-sm font-medium text-gray-600 mb-1">{title}</p>
+          <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">{title}</p>
         </div>
-        <div className={`${iconBgColor} p-3 rounded-xl`}>
-          <Icon className={`w-5 h-5 ${iconColor}`} />
+        <div className={`${iconBgColor} p-2 sm:p-3 rounded-xl`}>
+          <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${iconColor}`} />
         </div>
       </div>
 
       <div className="space-y-1">
-        <h3 className="text-3xl font-bold text-gray-900">
+        <h3 className="text-2xl sm:text-3xl font-bold text-gray-900">
           {loading ? "..." : value}
         </h3>
         {subtitle && (
@@ -238,8 +238,8 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Modern Stats Cards */}
-      <div className="w-full grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      {/* Modern Stats Cards - 2x2 on mobile, 4 columns on desktop */}
+      <div className="w-full grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-5">
         {/* Sales Today */}
         <StatsCard
           title="Sales Today"
