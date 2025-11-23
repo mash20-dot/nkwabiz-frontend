@@ -23,7 +23,8 @@ export default function AddToHomeScreenPrompt() {
             const dismissedTime = localStorage.getItem('ios-pwa-prompt-dismissed-time');
 
             // Show prompt again after 7 days
-            const sevenDays = 7 * 24 * 60 * 60 * 1000;
+            //const sevenDays = 7 * 24 * 60 * 60 * 1000;
+            const sevenDays = 60 * 1000; // 1 minute (for testing)
             const shouldShowAgain = dismissedTime && (Date.now() - parseInt(dismissedTime)) > sevenDays;
 
             if (!iosDismissed || shouldShowAgain) {
