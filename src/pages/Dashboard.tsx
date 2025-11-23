@@ -112,9 +112,16 @@ const Dashboard = () => {
     getDashboardOverview()
       .then((data) => {
         console.log("📦 Dashboard overview API response:", data);
-        setProducts(Array.isArray(data) ? data : []);
+        console.log("📦 Is array?", Array.isArray(data));
+        console.log("📦 Has products?", data?.products);
+        const productsArray = Array.isArray(data) ? data : (Array.isArray(data.products) ? data.products : []);
+        console.log("📦 Final products array:", productsArray);
+        setProducts(productsArray);
       })
-      .catch(() => setProducts([]))
+      .catch((err) => {
+        console.error("❌ Failed to fetch products:", err);
+        setProducts([]);
+      })
       .finally(() => setLoadingProducts(false));
   }, []);
 
@@ -213,12 +220,36 @@ const Dashboard = () => {
     }
   }
 
+  // Handle new sale - add to list immediately
+  const handleSaleComplete = (saleData: {
+    product_name: string;
+    quantity: number;
+    total_price: number;
+    date: string;
+  }) => {
+    // Add new sale to the top of recent sales list
+    setRecentSales(prev => [saleData, ...prev]);
+
+    // Update sales today
+    if (salesToday !== null) {
+      setSalesToday(salesToday + saleData.total_price);
+    } else {
+      setSalesToday(saleData.total_price);
+    }
+
+    // Update monthly sales if available
+    if (monthlySales !== null) {
+      setMonthlySales(monthlySales + saleData.total_price);
+    }
+  };
+
   return (
     <div className="flex flex-col items-start justify-center gap-6">
       <SaleModal
         open={saleModalOpen}
         onClose={() => setSaleModalOpen(false)}
         products={products}
+        onSaleComplete={handleSaleComplete}
       />
 
       {/* Header */}

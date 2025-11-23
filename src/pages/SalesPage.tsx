@@ -51,6 +51,23 @@ const Sales: React.FC = () => {
 
   const filteredSales = sales; // Add filtering logic if needed
 
+  // Handle new sale - add to list immediately
+  const handleSaleComplete = (saleData: {
+    product_name: string;
+    quantity: number;
+    total_price: number;
+    date: string;
+  }) => {
+    // Add new sale to the top of sales list
+    setSales(prev => [{
+      product_name: saleData.product_name,
+      quantity: saleData.quantity,
+      total_price: saleData.total_price,
+      date: saleData.date,
+      sale_id: `sale_${Date.now()}`, // Temporary ID
+    }, ...prev]);
+  };
+
   return (
     <div className="flex flex-col items-start justify-center gap-6">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
@@ -67,6 +84,7 @@ const Sales: React.FC = () => {
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         products={products}
+        onSaleComplete={handleSaleComplete}
       />
       <div className="bg-white shadow rounded-lg">
         <div className="overflow-x-auto">
