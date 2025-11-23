@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Lock, Eye, EyeOff, DollarSign } from "lucide-react";
 import { apiFetch } from "../utils/api";
 import { useAuthStore } from "../store/useAuthStore";
-import CurrencySelector from "../components/LandingPage/CurrencySelector";
+import CurrencySelector from "../components/CurrencySelector";
 import { getCurrencyInfo } from "../utils/currencyUtils";
 
 const Settings = () => {
@@ -108,8 +108,8 @@ const Settings = () => {
         <h1 className="text-2xl font-medium text-gray-900">Settings</h1>
       </div>
 
-      {/* Currency Settings Card */}
-      <div className="w-full bg-white shadow rounded-lg overflow-hidden">
+      {/* Currency Settings Card - Disabled */}
+      <div className="w-full bg-white shadow rounded-lg overflow-hidden opacity-60">
         <div className="p-6">
           <div className="space-y-6">
             <div>
@@ -120,7 +120,7 @@ const Settings = () => {
                 </h3>
               </div>
               <p className="text-sm text-gray-500">
-                Choose your preferred currency for all prices and transactions.
+                Currency is set during signup and cannot be changed.
               </p>
             </div>
 
@@ -129,7 +129,7 @@ const Settings = () => {
                 <span className="text-2xl mr-3">{currencyInfo.flag}</span>
                 <div>
                   <p className="text-sm font-medium text-gray-900">
-                    Current: {currencyInfo.name}
+                    Current Currency: {currencyInfo.name}
                   </p>
                   <p className="text-xs text-gray-600">
                     Symbol: {currencyInfo.symbol} • Code: {currencyInfo.code}
@@ -138,34 +138,10 @@ const Settings = () => {
               </div>
             </div>
 
-            <div>
-              <CurrencySelector
-                value={selectedCurrency}
-                onChange={setSelectedCurrency}
-                label="Select Currency"
-              />
-            </div>
-
-            {currencyError && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-                {currencyError}
-              </div>
-            )}
-
-            {currencySuccess && (
-              <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
-                {currencySuccess}
-              </div>
-            )}
-
-            <div>
-              <button
-                onClick={handleCurrencyUpdate}
-                disabled={currencyLoading || selectedCurrency === currency}
-                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {currencyLoading ? "Updating..." : "Update Currency"}
-              </button>
+            <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+              <p className="text-sm text-yellow-800">
+                ℹ️ Currency can only be set during account creation and cannot be modified later.
+              </p>
             </div>
           </div>
         </div>
