@@ -141,8 +141,8 @@ const Analytics = () => {
       {error && <div className="text-red-500">{error}</div>}
       {exportError && <div className="text-red-500">{exportError}</div>}
 
-      {/* Analytics Cards */}
-      <div className="w-full grid grid-cols-1 md:grid-cols-4 gap-4">
+      {/* Analytics Cards - 2x2 grid layout matching dashboard */}
+      <div className="w-full grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-5">
         <div className="bg-white shadow rounded-lg p-4 text-center">
           <div className="text-gray-500 text-sm">Total Sales</div>
           <div className="text-2xl font-semibold text-gray-800">
