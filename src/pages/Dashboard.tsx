@@ -6,7 +6,6 @@ import {
   Package,
   ShoppingCart,
 } from "lucide-react";
-import SummaryCard from "../components/SummaryCard";
 import { Link, useNavigate } from "react-router-dom";
 import { getDashboardOverview } from "../utils/productApi";
 import { getStockAlerts } from "../utils/stockApi";
@@ -33,6 +32,47 @@ type RecentSale = {
   quantity: number;
   total_price: number;
   date: string;
+};
+
+// Modern Stats Card Component
+const StatsCard = ({
+  title,
+  value,
+  subtitle,
+  icon: Icon,
+  iconBgColor,
+  iconColor,
+  loading,
+}: {
+  title: string;
+  value: string | number;
+  subtitle?: string;
+  icon: any;
+  iconBgColor: string;
+  iconColor: string;
+  loading?: boolean;
+}) => {
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
+      <div className="flex items-start justify-between mb-4">
+        <div className="flex-1">
+          <p className="text-sm font-medium text-gray-600 mb-1">{title}</p>
+        </div>
+        <div className={`${iconBgColor} p-3 rounded-xl`}>
+          <Icon className={`w-5 h-5 ${iconColor}`} />
+        </div>
+      </div>
+
+      <div className="space-y-1">
+        <h3 className="text-3xl font-bold text-gray-900">
+          {loading ? "..." : value}
+        </h3>
+        {subtitle && (
+          <p className="text-xs text-gray-500">{subtitle}</p>
+        )}
+      </div>
+    </div>
+  );
 };
 
 const Dashboard = () => {
@@ -151,8 +191,6 @@ const Dashboard = () => {
       p.remaining_stock <= Math.max(5, Math.floor(p.initial_stock * 0.1))
   );
 
-  console.log(totalProducts);
-
   // Helper: format date (as "Today, HH:MM AM/PM" if today's date)
   function formatSaleDate(dateStr: string) {
     try {
@@ -163,7 +201,6 @@ const Dashboard = () => {
         saleDate.getMonth() === today.getMonth() &&
         saleDate.getFullYear() === today.getFullYear()
       ) {
-        // Format as "Today, HH:MM AM/PM"
         return `Today, ${saleDate.toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
@@ -182,96 +219,82 @@ const Dashboard = () => {
         onClose={() => setSaleModalOpen(false)}
         products={products}
       />
+
+      {/* Header */}
       <div className="w-full flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
         <h1 className="text-2xl font-medium text-gray-900">Dashboard</h1>
-        <div className="flex gap-[1rem]">
+        <div className="flex gap-3">
           <Button onClick={() => setSaleModalOpen(true)}>
-            <ShoppingCart
-              className="h-4 w-4 mr-2 text-gray-600"
-              aria-hidden="true"
-            />
+            <ShoppingCart className="h-4 w-4 mr-2" />
             Add Sale
           </Button>
           <Button
             className="bg-blue-600 border-blue-600 text-white"
             onClick={() => navigate("/products?add=true")}
           >
-            <Package className="h-4 w-4 mr-2 text-white" aria-hidden="true" />
-            Add New Product
+            <Package className="h-4 w-4 mr-2" />
+            Add Product
           </Button>
         </div>
       </div>
+
+      {/* Modern Stats Cards */}
       <div className="w-full grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {/* Sales Today Card */}
-        <SummaryCard
-          linkPath="/sales"
+        {/* Sales Today */}
+        <StatsCard
           title="Sales Today"
-          linkLabel="View all"
+          value={salesToday !== null ? `GH₵${salesToday.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "GH₵0.00"}
           icon={DollarSign}
-          iconColor="text-green-500"
-        >
-          <div className="text-[1.5rem] font-semibold text-gray-900">
-            {loadingSalesToday
-              ? "..."
-              : salesToday !== null
-              ? `₵${salesToday.toLocaleString()}`
-              : "₵0"}
-          </div>
-        </SummaryCard>
+          iconBgColor="bg-green-50"
+          iconColor="text-green-600"
+          loading={loadingSalesToday}
+        />
 
-        {/* Total Products Card */}
-        <SummaryCard
-          linkPath="/products"
+        {/* Total Products */}
+        <StatsCard
           title="Total Products"
-          linkLabel="View all"
+          value={`+${totalProducts}`}
           icon={Package}
-        >
-          <div className="text-[1.5rem] font-semibold text-gray-900">
-            {loadingProducts ? "..." : totalProducts}
-          </div>
-        </SummaryCard>
+          iconBgColor="bg-blue-50"
+          iconColor="text-blue-600"
+          loading={loadingProducts}
+        />
 
-        {/* Low Stock Items Card */}
-        <SummaryCard
-          linkPath="/products"
+        {/* Low Stock Items */}
+        <StatsCard
           title="Low Stock Items"
-          linkLabel="View details"
+          value={`+${lowStockItems.length}`}
           icon={AlertTriangle}
-          iconColor="text-yellow-500"
-        >
-          <div className="text-[1.5rem] font-semibold text-gray-900">
-            {loadingProducts ? "..." : lowStockItems.length}
-          </div>
-        </SummaryCard>
+          iconBgColor="bg-yellow-50"
+          iconColor="text-yellow-600"
+          loading={loadingProducts}
+        />
 
-        {/* Sales This Month Card */}
-        <SummaryCard
-          linkPath="/analytics"
+        {/* Sales This Month */}
+        <StatsCard
           title="Sales This Month"
-          linkLabel="View analytics"
+          value={
+            monthlyError
+              ? "Error"
+              : monthlySales !== null
+                ? `GH₵${monthlySales.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                : "GH₵0.00"
+          }
+          subtitle={
+            !monthlyLoading && monthlyProfit !== null
+              ? `Profit: GH₵${monthlyProfit.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+              : undefined
+          }
           icon={TrendingUp}
-          iconColor="text-indigo-500"
-        >
-          <div className="text-[1.5rem] font-semibold text-gray-900">
-            {monthlyLoading ? (
-              "..."
-            ) : monthlyError ? (
-              <span className="text-sm text-red-500">{monthlyError}</span>
-            ) : monthlySales !== null ? (
-              `₵${monthlySales.toLocaleString()}`
-            ) : (
-              "₵0"
-            )}
-          </div>
-          {!monthlyLoading && monthlyProfit !== null && (
-            <div className="text-xs text-gray-500">
-              Profit: ₵{monthlyProfit.toLocaleString()}
-            </div>
-          )}
-        </SummaryCard>
+          iconBgColor="bg-purple-50"
+          iconColor="text-purple-600"
+          loading={monthlyLoading}
+        />
       </div>
+
+      {/* Tables Section */}
       <div className="w-full grid grid-cols-1 gap-5 lg:grid-cols-2">
-        {/* Recent Sales -- updated for real API data */}
+        {/* Recent Sales */}
         <div className="bg-white shadow rounded-lg">
           <div className="px-4 py-5 sm:px-6 flex justify-between items-center">
             <h3 className="text-lg leading-6 font-medium text-gray-900">
@@ -345,6 +368,7 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
+
         {/* Low Stock Alerts */}
         <div className="bg-white shadow rounded-lg">
           <div className="px-4 py-5 sm:px-6 flex justify-between items-center">
@@ -423,11 +447,10 @@ const Dashboard = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span
-                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                              item.remaining_stock === 0
+                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${item.remaining_stock === 0
                                 ? "bg-red-100 text-red-800"
                                 : "bg-yellow-100 text-yellow-800"
-                            }`}
+                              }`}
                           >
                             {item.remaining_stock === 0 ? "Critical" : "Low"}
                           </span>
