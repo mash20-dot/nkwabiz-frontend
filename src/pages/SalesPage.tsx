@@ -13,6 +13,7 @@ type SaleHistoryItem = {
   total_price: number;
   profit: number;
   date?: string;
+  time?: string;
 };
 
 type Product = {
@@ -42,7 +43,10 @@ const Sales: React.FC = () => {
             ? data.sales_history
             : [];
         console.log("💰 Sales array:", salesArray);
-        setSales(salesArray);
+
+        // Sort by sale_id descending (newest first)
+        const sortedSales = salesArray.sort((a: SaleHistoryItem, b: SaleHistoryItem) => b.sale_id - a.sale_id);
+        setSales(sortedSales);
       })
       .catch((err) => {
         console.error("❌ Failed to fetch sales:", err);
@@ -75,6 +79,10 @@ const Sales: React.FC = () => {
     const unitPrice = product?.selling_price || (saleData.total_price / saleData.quantity);
     const profit = product ? (unitPrice * saleData.quantity) - ((product.selling_price || 0) * saleData.quantity) : 0;
 
+    const now = new Date();
+    const dateStr = now.toLocaleDateString();
+    const timeStr = now.toLocaleTimeString();
+
     // Add new sale to the top of sales list with proper type
     const newSale: SaleHistoryItem = {
       sale_id: Date.now(), // Temporary ID
@@ -83,6 +91,8 @@ const Sales: React.FC = () => {
       unit_price: unitPrice,
       total_price: saleData.total_price,
       profit: profit,
+      date: dateStr,
+      time: timeStr,
     };
     setSales(prev => [newSale, ...prev]);
   };
@@ -111,6 +121,7 @@ const Sales: React.FC = () => {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sale ID</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date & Time</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Quantity</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Unit Price</th>
@@ -121,17 +132,23 @@ const Sales: React.FC = () => {
             <tbody className="bg-white divide-y divide-gray-200">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-4 text-center text-gray-500">Loading...</td>
+                  <td colSpan={7} className="px-6 py-4 text-center text-gray-500">Loading...</td>
                 </tr>
               ) : filteredSales.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-4 text-center text-gray-500">No sales found</td>
+                  <td colSpan={7} className="px-6 py-4 text-center text-gray-500">No sales found</td>
                 </tr>
               ) : (
                 filteredSales.map((sale, idx) => (
                   <tr key={sale.sale_id || idx} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       #{sale.sale_id}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <div className="flex flex-col">
+                        <span className="font-medium text-gray-900">{sale.date || 'N/A'}</span>
+                        <span className="text-xs text-gray-500">{sale.time || ''}</span>
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {sale.product_name}
