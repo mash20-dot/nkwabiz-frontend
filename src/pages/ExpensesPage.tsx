@@ -457,32 +457,32 @@ const ExpensesPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Cards */}
-      <div className="w-full grid grid-cols-1 md:grid-cols-4 gap-4">
+      {/* Cards - 2x2 on mobile, 4 columns on desktop */}
+      <div className="w-full grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-5">
         <div className="bg-white shadow rounded-lg p-4 text-center">
-          <div className="text-gray-500 text-sm">Total Expenses</div>
-          <div className="text-2xl font-semibold text-gray-800">
+          <div className="text-xs sm:text-sm text-gray-500 mb-1">Total Expenses</div>
+          <div className="text-xl sm:text-2xl font-semibold text-gray-800">
             {formatCurrency(totalExpenses)}
           </div>
         </div>
 
         <div className="bg-white shadow rounded-lg p-4 text-center">
-          <div className="text-gray-500 text-sm">Transactions</div>
-          <div className="text-2xl font-semibold text-gray-800">
+          <div className="text-xs sm:text-sm text-gray-500 mb-1">Transactions</div>
+          <div className="text-xl sm:text-2xl font-semibold text-gray-800">
             {totalTransactions}
           </div>
         </div>
 
         <div className="bg-white shadow rounded-lg p-4 text-center">
-          <div className="text-gray-500 text-sm">Categories</div>
-          <div className="text-2xl font-semibold text-gray-800">
+          <div className="text-xs sm:text-sm text-gray-500 mb-1">Categories</div>
+          <div className="text-xl sm:text-2xl font-semibold text-gray-800">
             {sortedCategories.length}
           </div>
         </div>
 
         <div className="bg-white shadow rounded-lg p-4 text-center">
-          <div className="text-gray-500 text-sm">Avg. Expense</div>
-          <div className="text-2xl font-semibold text-gray-800">
+          <div className="text-xs sm:text-sm text-gray-500 mb-1">Avg. Expense</div>
+          <div className="text-xl sm:text-2xl font-semibold text-gray-800">
             {formatCurrency(avgExpense)}
           </div>
         </div>
