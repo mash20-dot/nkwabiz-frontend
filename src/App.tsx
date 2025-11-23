@@ -28,14 +28,18 @@ import AdminBlogEditor from './pages/AdminBlogEditor';
 import BlogList from './pages/BlogList';
 import BlogPost from './pages/BlogPost';
 
+// PWA Add to Home Screen Prompt
+import AddToHomeScreenPrompt from './components/LandingPage/AddToHomeScreenPrompt';
 
-// WhatsApp Button Component
-const WhatsAppButton = () => {
+
+const WhatsAppButton: React.FC = (): JSX.Element | null => {
   const [showLabel, setShowLabel] = useState(true);
   const location = useLocation();
 
-  // Only show on landing pages (public routes)
-  const landingPages = ['/', '/about', '/features', '/testimonials', '/pricing', '/login', '/signup', '/forgot-password', '/reset-password', '/blog'];
+  const landingPages = [
+    '/', '/about', '/features', '/testimonials', '/pricing',
+    '/login', '/signup', '/forgot-password', '/reset-password', '/blog'
+  ];
   const shouldShow = landingPages.includes(location.pathname) || location.pathname.startsWith('/blog/');
 
   if (!shouldShow) return null;
@@ -55,11 +59,8 @@ const WhatsAppButton = () => {
 
       {/* WhatsApp Icon Button */}
       <div className="relative">
-        {/* Pulse animation rings */}
-        <span className="absolute inset-0 rounded-full bg-green-500 animate-ping opacity-75"></span>
-        <span className="absolute inset-0 rounded-full bg-green-500 animate-pulse"></span>
-
-        {/* Main button */}
+        <span className="absolute inset-0 rounded-full bg-green-500 animate-ping opacity-75" />
+        <span className="absolute inset-0 rounded-full bg-green-500 animate-pulse" />
         <div className="relative bg-green-500 hover:bg-green-600 p-4 rounded-full shadow-2xl transition-all duration-300 hover:scale-110">
           <svg
             className="w-8 h-8 text-white"
@@ -78,6 +79,9 @@ const WhatsAppButton = () => {
 export function App() {
   return (
     <Router>
+      {/* PWA Add to Home Screen Prompt */}
+      <AddToHomeScreenPrompt />
+
       {/* WhatsApp Button - only shows on landing pages */}
       <WhatsAppButton />
 
@@ -93,9 +97,14 @@ export function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
 
-        {/* PUBLIC BLOG ROUTES - Anyone can access */}
+        {/* PUBLIC BLOG ROUTES */}
         <Route path="/blog" element={<BlogList />} />
         <Route path="/blog/:postId" element={<BlogPost />} />
+
+        {/* ADMIN BLOG ROUTES - Protected */}
+        <Route path="/admin/blog" element={isAuthenticated() ? <Layout><AdminBlogDashboard /></Layout> : <Navigate to="/login" />} />
+        <Route path="/admin/blog/new" element={isAuthenticated() ? <Layout><AdminBlogEditor /></Layout> : <Navigate to="/login" />} />
+        <Route path="/admin/blog/edit/:postId" element={isAuthenticated() ? <Layout><AdminBlogEditor /></Layout> : <Navigate to="/login" />} />
 
         {/* Protected routes */}
         <Route path="/dashboard" element={isAuthenticated() ? <Layout><Dashboard /></Layout> : <Navigate to="/login" />} />
@@ -108,12 +117,9 @@ export function App() {
         <Route path="/notifications" element={isAuthenticated() ? <Layout><NotificationsPage /></Layout> : <Navigate to="/login" />} />
         <Route path="/suppliers" element={isAuthenticated() ? <Layout><SupplierPage /></Layout> : <Navigate to="/login" />} />
         <Route path="/reports" element={isAuthenticated() ? <Layout><ReportsPage /></Layout> : <Navigate to="/login" />} />
-
-        {/* ADMIN BLOG ROUTES - Admin only (protected) */}
-        <Route path="/admin/blog" element={isAuthenticated() ? <Layout><AdminBlogDashboard /></Layout> : <Navigate to="/login" />} />
-        <Route path="/admin/blog/new" element={isAuthenticated() ? <Layout><AdminBlogEditor /></Layout> : <Navigate to="/login" />} />
-        <Route path="/admin/blog/edit/:postId" element={isAuthenticated() ? <Layout><AdminBlogEditor /></Layout> : <Navigate to="/login" />} />
       </Routes>
     </Router>
   );
 }
+
+export default App;
