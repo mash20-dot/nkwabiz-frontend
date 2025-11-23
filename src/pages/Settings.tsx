@@ -38,7 +38,7 @@ const Settings = () => {
             new_password: newPassword
           })
         },
-        true // auth required
+        true
       );
 
       setSuccess(data.message || "Password updated successfully!");
@@ -61,6 +61,7 @@ const Settings = () => {
         <h1 className="text-2xl font-medium text-gray-900">Settings</h1>
       </div>
 
+      {/* Password Settings Card */}
       <div className="w-full bg-white shadow rounded-lg overflow-hidden">
         <div className="p-6">
           <div className="space-y-6">
@@ -82,14 +83,7 @@ const Settings = () => {
                 Update Password
               </button>
             </div>
-
-            <div className="mt-8 pt-8 border-t border-gray-200">
-              <p className="text-sm text-gray-500 italic">
-                More setting options coming soon...
-              </p>
-            </div>
           </div>
-
         </div>
       </div>
 

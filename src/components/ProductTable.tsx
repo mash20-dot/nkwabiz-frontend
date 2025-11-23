@@ -2,6 +2,7 @@ import React from "react";
 import { Edit, Archive } from "lucide-react";
 import { Product } from "../utils/productApi";
 import { CATEGORY_LIST } from "../utils/categories";
+import { formatCurrency } from "../utils/currencyUtils";
 
 function getCategoryIcon(label: string) {
   const cat = CATEGORY_LIST.find((c) => c.label === label);
@@ -62,16 +63,18 @@ export default function ProductTable({
                 {product.product_name}
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
-                {product.price ?? `₵${product.selling_price?.toFixed(2)}`}
+                {typeof product.selling_price === "number"
+                  ? formatCurrency(product.selling_price)
+                  : product.price}
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 {typeof product.amount_spent === "number"
-                  ? `₵${product.amount_spent.toFixed(2)}`
+                  ? formatCurrency(product.amount_spent)
                   : "-"}
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 {product.supplier_info &&
-                product.supplier_info.trim() !== "" ? (
+                  product.supplier_info.trim() !== "" ? (
                   product.supplier_info
                 ) : (
                   <span className="text-gray-400 italic">N/A</span>
@@ -92,10 +95,10 @@ export default function ProductTable({
                     product.status === "Low Stock"
                       ? "text-yellow-600 font-semibold"
                       : product.status === "Out of Stock"
-                      ? "text-red-600 font-semibold"
-                      : product.status === "Archived"
-                      ? "text-gray-400 font-semibold"
-                      : "text-green-600 font-semibold"
+                        ? "text-red-600 font-semibold"
+                        : product.status === "Archived"
+                          ? "text-gray-400 font-semibold"
+                          : "text-green-600 font-semibold"
                   }
                 >
                   {product.status}

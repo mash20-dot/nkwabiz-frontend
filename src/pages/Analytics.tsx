@@ -19,6 +19,7 @@ import {
 } from "../utils/salesApi";
 import { getToken } from "../utils/api";
 import Button from "../components/Button";
+import { formatCurrency } from "../utils/currencyUtils";
 
 const Analytics = () => {
   const [salesData, setSalesData] = useState<SaleHistoryItem[]>([]);
@@ -139,50 +140,13 @@ const Analytics = () => {
 
       {error && <div className="text-red-500">{error}</div>}
       {exportError && <div className="text-red-500">{exportError}</div>}
-      {/* Date Range Selector
-      <div className="bg-white shadow rounded-lg p-4">
-        <div className="flex items-center space-x-4">
-          <span className="text-gray-700">Time Period:</span>
-          <div className="flex space-x-2">
-            <button
-              onClick={() => setDateRange("year")}
-              className={`px-3 py-1 text-sm font-medium rounded-md ${
-                dateRange === "year"
-                  ? "bg-blue-100 text-blue-700"
-                  : "bg-gray-100 text-gray-700"
-              }`}
-            >
-              This Year
-            </button>
-            <button
-              onClick={() => setDateRange("month")}
-              className={`px-3 py-1 text-sm font-medium rounded-md ${
-                dateRange === "month"
-                  ? "bg-blue-100 text-blue-700"
-                  : "bg-gray-100 text-gray-700"
-              }`}
-            >
-              This Month
-            </button>
-            <button
-              onClick={() => setDateRange("week")}
-              className={`px-3 py-1 text-sm font-medium rounded-md ${
-                dateRange === "week"
-                  ? "bg-blue-100 text-blue-700"
-                  : "bg-gray-100 text-gray-700"
-              }`}
-            >
-              This Week
-            </button>
-          </div>
-        </div>
-      </div> */}
-      {/* Analytics Cards */}
-      <div className="w-full grid grid-cols-1 md:grid-cols-4 gap-4">
+
+      {/* Analytics Cards - 2x2 grid layout matching dashboard */}
+      <div className="w-full grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-5">
         <div className="bg-white shadow rounded-lg p-4 text-center">
           <div className="text-gray-500 text-sm">Total Sales</div>
           <div className="text-2xl font-semibold text-gray-800">
-            ₵{totalSales.toLocaleString()}
+            {formatCurrency(totalSales)}
           </div>
         </div>
         <div className="bg-white shadow rounded-lg p-4 text-center">
@@ -200,13 +164,11 @@ const Analytics = () => {
         <div className="bg-white shadow rounded-lg p-4 text-center">
           <div className="text-gray-500 text-sm">Avg. Sale Value</div>
           <div className="text-2xl font-semibold text-gray-800">
-            ₵
-            {avgSaleValue.toLocaleString(undefined, {
-              maximumFractionDigits: 2,
-            })}
+            {formatCurrency(avgSaleValue)}
           </div>
         </div>
       </div>
+
       {/* Charts */}
       <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Sales Trend */}
@@ -231,6 +193,7 @@ const Analytics = () => {
             </LineChart>
           </ResponsiveContainer>
         </div>
+
         {/* Top Products */}
         <div className="bg-white shadow rounded-lg p-4">
           <div className="flex items-center mb-2">

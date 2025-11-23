@@ -6,12 +6,17 @@ export default function SaleModal({
   open,
   onClose,
   products,
-  onSaleRecorded,
+  onSaleComplete,
 }: {
   open: boolean;
   onClose: () => void;
-  products: { product_name: string; remaining_stock: number }[];
-  onSaleRecorded?: (message?: string) => void;
+  products: { product_name: string; remaining_stock: number; selling_price?: number }[];
+  onSaleComplete?: (saleData: {
+    product_name: string;
+    quantity: number;
+    total_price: number;
+    date: string;
+  }) => void;
 }) {
   const [productName, setProductName] = useState("");
   const [quantity, setQuantity] = useState(1);
@@ -24,14 +29,36 @@ export default function SaleModal({
     setError("");
     try {
       const result = await makeSale(productName, quantity);
-      toast.success(result.message || "Sale successful!");
-      if (onSaleRecorded) onSaleRecorded(result.message || "Sale successful!");
-      onClose();
+
+      // Find the product to get price
+      const product = products.find(p => p.product_name === productName);
+      const totalPrice = product?.selling_price ? product.selling_price * quantity : 0;
+
+      // Pass the new sale data back to parent for optimistic update
+      if (onSaleComplete) {
+        onSaleComplete({
+          product_name: productName,
+          quantity: quantity,
+          total_price: totalPrice,
+          date: new Date().toISOString(),
+        });
+      }
+
+      // Show success toast
+      toast.success(result.message || "Sale recorded successfully!");
+
+      // Reset form
+      setProductName("");
+      setQuantity(1);
+
+      // Close modal after a brief delay to ensure toast is visible
+      setTimeout(() => {
+        onClose();
+      }, 300);
+
     } catch (err: any) {
       setError(err.error || err.message || "Could not complete sale");
       toast.error(err.error || err.message || "Could not complete sale");
-      if (onSaleRecorded)
-        onSaleRecorded(err.error || err.message || "Could not complete sale");
     } finally {
       setLoading(false);
     }
@@ -82,7 +109,7 @@ export default function SaleModal({
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 rounded font-semibold mt-2"
+            className="w-full bg-blue-600 text-white py-2 rounded font-semibold mt-2 disabled:opacity-50"
           >
             {loading ? "Processing..." : "Make Sale"}
           </button>
