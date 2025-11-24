@@ -25,7 +25,14 @@ const BlogList = () => {
     async function fetchPosts() {
         try {
             const data = await apiFetch("/blog/posts");
-            console.log("Fetched posts:", data); // Debug log
+            console.log("=== BLOG LIST DEBUG ===");
+            console.log("Full API response:", data);
+            console.log("Posts array:", data.posts);
+            if (data.posts && data.posts.length > 0) {
+                console.log("First post:", data.posts[0]);
+                console.log("First post topic:", data.posts[0].topic);
+            }
+            console.log("======================");
             setPosts(data.posts || []);
         } catch (err: any) {
             setError(err.message || "Failed to load blog posts");
@@ -78,9 +85,11 @@ const BlogList = () => {
                         // Fix Imgur URLs - convert page URL to direct image URL
                         let imageUrl = post.image;
                         if (imageUrl && imageUrl.includes('imgur.com/') && !imageUrl.includes('i.imgur.com')) {
-                            const imgurId = imageUrl.split('imgur.com/')[1].split(/[?#]/)[0];
+                            const imgurId = imageUrl.split('imgur.com/')[1].split(/[?#.]/)[0];
                             imageUrl = `https://i.imgur.com/${imgurId}.jpg`;
                         }
+
+                        console.log("Rendering post:", post.id, "Topic:", post.topic, "Image:", imageUrl);
 
                         return (
                             <article
@@ -95,16 +104,18 @@ const BlogList = () => {
                                             src={imageUrl}
                                             alt={post.topic || "Blog post image"}
                                             className="w-full h-full object-cover"
+                                            onLoad={() => console.log("Image loaded successfully:", imageUrl)}
                                             onError={(e) => {
                                                 console.error("Image failed to load:", imageUrl);
-                                                console.log("Original image URL:", post.image);
+                                                console.log("Original image URL from backend:", post.image);
                                                 const parent = e.currentTarget.parentElement;
                                                 if (parent) {
                                                     parent.innerHTML = `
-                                                        <div class="w-full h-full flex items-center justify-center bg-gray-100">
-                                                            <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <div class="w-full h-full flex flex-col items-center justify-center bg-gray-100 p-4">
+                                                            <svg class="w-12 h-12 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                                             </svg>
+                                                            <p class="text-xs text-gray-500 text-center">Image failed to load</p>
                                                         </div>
                                                     `;
                                                 }
@@ -119,42 +130,53 @@ const BlogList = () => {
 
                                 {/* Content */}
                                 <div className="p-6">
-                                    {/* Topic */}
-                                    <h2 className="text-xl font-semibold text-gray-900 mb-2 overflow-hidden"
+                                    {/* Topic - CRITICAL: This should display */}
+                                    <h2
+                                        className="text-xl font-semibold text-gray-900 mb-2"
                                         style={{
                                             display: '-webkit-box',
                                             WebkitLineClamp: 2,
                                             WebkitBoxOrient: 'vertical',
+                                            overflow: 'hidden',
                                             minHeight: '3.5rem'
-                                        }}>
-                                        {post.topic || "Untitled Post"}
+                                        }}
+                                    >
+                                        {post.topic ? post.topic : "⚠️ No Topic Found"}
                                     </h2>
 
+                                    {/* Debug info - remove this after fixing */}
+                                    {!post.topic && (
+                                        <div className="text-xs text-red-500 mb-2 p-2 bg-red-50 rounded">
+                                            DEBUG: Topic is missing. Post ID: {post.id}
+                                        </div>
+                                    )}
+
                                     {/* Excerpt */}
-                                    <p className="text-gray-600 mb-4 overflow-hidden"
+                                    <p
+                                        className="text-gray-600 mb-4"
                                         style={{
                                             display: '-webkit-box',
                                             WebkitLineClamp: 3,
-                                            WebkitBoxOrient: 'vertical'
-                                        }}>
+                                            WebkitBoxOrient: 'vertical',
+                                            overflow: 'hidden'
+                                        }}
+                                    >
                                         {post.excerpt || "No description available."}
                                     </p>
 
                                     {/* Meta Info */}
-                                    <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                                        <div className="flex items-center space-x-4">
-                                            <div className="flex items-center">
-                                                <User size={16} className="mr-1" />
-                                                <span>{post.author || "Anonymous"}</span>
-                                            </div>
-                                            <div className="flex items-center">
-                                                <Calendar size={16} className="mr-1" />
-                                                <span>
-                                                    {post.created_at
-                                                        ? new Date(post.created_at).toLocaleDateString()
-                                                        : "No date"}
-                                                </span>
-                                            </div>
+                                    <div className="flex items-center text-sm text-gray-500 mb-4 flex-wrap gap-4">
+                                        <div className="flex items-center">
+                                            <User size={16} className="mr-1" />
+                                            <span>{post.author || "Anonymous"}</span>
+                                        </div>
+                                        <div className="flex items-center">
+                                            <Calendar size={16} className="mr-1" />
+                                            <span>
+                                                {post.created_at
+                                                    ? new Date(post.created_at).toLocaleDateString()
+                                                    : "No date"}
+                                            </span>
                                         </div>
                                     </div>
 
