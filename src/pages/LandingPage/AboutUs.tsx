@@ -1,9 +1,10 @@
-import React from 'react';
-import Navbar from '../components/LandingPage/Navbar';
-import Footer from '../components/LandingPage/Footer';
-import { Users, Award, Globe, Clock, Heart } from 'lucide-react';
+import React from "react";
+import Navbar from "../../components/LandingPage/Navbar";
+import Footer from "../../components/LandingPage/Footer";
+import { Users, Award, Globe, Clock, Heart } from "lucide-react";
 const AboutUs = () => {
-  return <div className="flex flex-col min-h-screen">
+  return (
+    <div className="flex flex-col min-h-screen">
       <Navbar />
       <main className="flex-grow">
         {/* Hero Section */}
@@ -45,7 +46,11 @@ const AboutUs = () => {
                 </p>
               </div>
               <div className="mt-10 lg:mt-0">
-                <img className="rounded-lg shadow-xl" src="https://images.unsplash.com/photo-1739292774739-ee38cd9a5735?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170" alt="Team discussing business strategy" />
+                <img
+                  className="rounded-lg shadow-xl"
+                  src="https://images.unsplash.com/photo-1739292774739-ee38cd9a5735?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170"
+                  alt="Team discussing business strategy"
+                />
               </div>
             </div>
           </div>
@@ -123,23 +128,38 @@ const AboutUs = () => {
               </p>
             </div>
             <div className="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {[{
-              name: 'Nkwabiz',
-              role: 'Founder & CEO',
-              image: 'https://i.postimg.cc/pLyJhZmB/51327299afe18483f5ae04d029ae31aa-high.webp',
-              bio: 'Former small business owner with 15 years of experience in retail management.'
-            }, {
-              name: 'Ama Owusu',
-              role: 'Head of Product',
-              image: 'https://images.unsplash.com/photo-1531384441138-2736e62e0919?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-              bio: 'Product designer with expertise in creating intuitive user experiences for diverse users.'
-            }, {
-              name: 'Kwame Boateng',
-              role: 'Chief Technology Officer',
-              image: 'https://images.unsplash.com/photo-1524660988542-c440de9c0fde?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-              bio: 'Software engineer passionate about building technology solutions for local challenges.'
-            }].map(person => <div key={person.name} className="bg-white rounded-lg shadow-lg overflow-hidden">
-                  <img className="w-full h-64 object-cover" src={person.image} alt={person.name} />
+              {[
+                {
+                  name: "Nkwabiz",
+                  role: "Founder & CEO",
+                  image:
+                    "https://i.postimg.cc/pLyJhZmB/51327299afe18483f5ae04d029ae31aa-high.webp",
+                  bio: "Former small business owner with 15 years of experience in retail management.",
+                },
+                {
+                  name: "Ama Owusu",
+                  role: "Head of Product",
+                  image:
+                    "https://images.unsplash.com/photo-1531384441138-2736e62e0919?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+                  bio: "Product designer with expertise in creating intuitive user experiences for diverse users.",
+                },
+                {
+                  name: "Kwame Boateng",
+                  role: "Chief Technology Officer",
+                  image:
+                    "https://images.unsplash.com/photo-1524660988542-c440de9c0fde?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+                  bio: "Software engineer passionate about building technology solutions for local challenges.",
+                },
+              ].map((person) => (
+                <div
+                  key={person.name}
+                  className="bg-white rounded-lg shadow-lg overflow-hidden"
+                >
+                  <img
+                    className="w-full h-64 object-cover"
+                    src={person.image}
+                    alt={person.name}
+                  />
                   <div className="p-6">
                     <h3 className="text-lg font-medium text-gray-900">
                       {person.name}
@@ -147,7 +167,8 @@ const AboutUs = () => {
                     <p className="text-sm text-blue-600">{person.role}</p>
                     <p className="mt-3 text-base text-gray-500">{person.bio}</p>
                   </div>
-                </div>)}
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -189,12 +210,18 @@ const AboutUs = () => {
               </p>
               <div className="mt-8 flex justify-center">
                 <div className="inline-flex rounded-md shadow">
-                  <a href="#" className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                  <a
+                    href="#"
+                    className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                  >
                     Contact us
                   </a>
                 </div>
                 <div className="ml-3 inline-flex">
-                  <a href="#" className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200">
+                  <a
+                    href="#"
+                    className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200"
+                  >
                     Schedule a demo
                   </a>
                 </div>
@@ -204,6 +231,7 @@ const AboutUs = () => {
         </div>
       </main>
       <Footer />
-    </div>;
+    </div>
+  );
 };
 export default AboutUs;

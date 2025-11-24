@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getStockAlerts } from "../utils/stockApi";
+import { getStockAlerts } from "../../utils/stockApi";
 
 type StockAlert = {
   product_name: string;
@@ -36,7 +36,9 @@ export default function NotificationsPage() {
             {alerts.map((alert, idx) => (
               <li key={idx} className="mb-2">
                 <strong>{alert.product_name}</strong> — {alert.message}
-                <span className="ml-2 text-xs text-yellow-700">Stock: {alert.remaining_stock}</span>
+                <span className="ml-2 text-xs text-yellow-700">
+                  Stock: {alert.remaining_stock}
+                </span>
               </li>
             ))}
           </ul>

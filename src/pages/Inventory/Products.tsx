@@ -9,12 +9,12 @@ import {
   archiveProduct,
   searchProductsByName,
   getProductsByStatus,
-} from "../utils/productApi";
-import ProductFormModal from "../components/ProductFormModal";
-import ProductSearchBar from "../components/ProductSearchBar";
-import ProductTable from "../components/ProductTable";
-import { getAutoCategory } from "../utils/categories";
-import Button from "../components/Button";
+} from "../../utils/productApi";
+import ProductFormModal from "../../components/ProductFormModal";
+import ProductSearchBar from "../../components/ProductSearchBar";
+import ProductTable from "../../components/ProductTable";
+import { getAutoCategory } from "../../utils/categories";
+import Button from "../../components/Button";
 
 const Products: React.FC = () => {
   const location = useLocation();

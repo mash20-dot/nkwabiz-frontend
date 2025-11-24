@@ -6,36 +6,36 @@ import {
   Navigate,
   useLocation,
 } from "react-router-dom";
-import Dashboard from "./pages/Dashboard";
-import Products from "./pages/Products";
-import SalesPage from "./pages/SalesPage";
-import Analytics from "./pages/Analytics";
-import Settings from "./pages/Settings";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
-import ForgotPassword from "./pages/ForgotPassword";
-import ResetPassword from "./pages/ResetPassword";
+import Dashboard from "./pages/Inventory/Dashboard";
+import Products from "./pages/Inventory/Products";
+import SalesPage from "./pages/Inventory/SalesPage";
+import Analytics from "./pages/Inventory/Analytics";
+import Settings from "./pages/Inventory/Settings";
+import Login from "./pages/Auth/Login";
+import Signup from "./pages/Auth/Signup";
+import ForgotPassword from "./pages/Auth/ForgotPassword";
+import ResetPassword from "./pages/Auth/ResetPassword";
 import Layout from "./components/Layout/Layout";
-import Home from "./pages/Home";
-import AboutUs from "./pages/AboutUs";
-import FeaturesPage from "./pages/FeaturesPage";
-import TestimonialsPage from "./pages/TestimonialsPage";
-import PricingPage from "./pages/PricingPage";
-import NotificationsPage from "./pages/NotificationsPage";
-import SupplierPage from "./pages/SupplierPage";
-import ReportsPage from "./pages/ReportsPage";
-import ProductDetailsPage from "./pages/ProductDetailsPage";
-import ExpensesPage from "./pages/ExpensesPage";
+import Home from "./pages/LandingPage/Home";
+import AboutUs from "./pages/LandingPage/AboutUs";
+import FeaturesPage from "./pages/LandingPage/FeaturesPage";
+import TestimonialsPage from "./pages/LandingPage/TestimonialsPage";
+import PricingPage from "./pages/LandingPage/PricingPage";
+import NotificationsPage from "./pages/Inventory/NotificationsPage";
+import SupplierPage from "./pages/Inventory/SupplierPage";
+import ReportsPage from "./pages/Inventory/ReportsPage";
+import ProductDetailsPage from "./pages/Inventory/ProductDetailsPage";
+import ExpensesPage from "./pages/Inventory/ExpensesPage";
 import { isAuthenticated } from "./utils/auth";
 
 // Services Page
 import Services from "./pages/Services";
 
 // Blog imports
-import AdminBlogDashboard from "./pages/AdminBlogDashboard";
-import AdminBlogEditor from "./pages/AdminBlogEditor";
-import BlogList from "./pages/BlogList";
-import BlogPost from "./pages/BlogPost";
+import AdminBlogDashboard from "./pages/LandingPage/AdminBlogDashboard";
+import AdminBlogEditor from "./pages/LandingPage/AdminBlogEditor";
+import BlogList from "./pages/LandingPage/BlogList";
+import BlogPost from "./pages/LandingPage/BlogPost";
 
 // PWA Add to Home Screen Prompt
 import AddToHomeScreenPrompt from "./components/LandingPage/AddToHomeScreenPrompt";

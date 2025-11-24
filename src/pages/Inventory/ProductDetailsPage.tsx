@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { getProductsByStatus, archiveProduct } from "../utils/productApi";
-import SaleModal from "../components/SaleModal";
+import { getProductsByStatus, archiveProduct } from "../../utils/productApi";
+import SaleModal from "../../components/SaleModal";
 import { toast } from "react-hot-toast";
 
 export default function ProductDetailsPage() {

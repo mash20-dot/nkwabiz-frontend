@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getSalesHistory, getProductsSold } from "../utils/salesApi";
+import { getSalesHistory, getProductsSold } from "../../utils/salesApi";
 
 type SaleHistoryItem = {
   sale_id?: string;
@@ -31,7 +31,10 @@ export default function ReportsPage() {
         setPremiumError("");
       })
       .catch((err: { message?: string }) => {
-        if (err.message?.includes("premium") || err.message?.includes("expired")) {
+        if (
+          err.message?.includes("premium") ||
+          err.message?.includes("expired")
+        ) {
           setPremiumError(err.message || "");
           getProductsSold()
             .then((data: ProductSoldItem[]) => setBasicSold(data))
@@ -41,7 +44,10 @@ export default function ReportsPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const totalSales = salesHistory.reduce((sum, s) => sum + (s.total_price || 0), 0);
+  const totalSales = salesHistory.reduce(
+    (sum, s) => sum + (s.total_price || 0),
+    0
+  );
   const totalProfit = salesHistory.reduce((sum, s) => sum + (s.profit || 0), 0);
 
   return (

@@ -1,8 +1,8 @@
-import { apiFetch } from "../utils/api";
+import { apiFetch } from "../../utils/api";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Mail } from "lucide-react";
-import Button from "../components/Button";
+import Button from "../../components/Button";
 
 function validateEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);

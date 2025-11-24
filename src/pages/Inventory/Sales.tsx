@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ShoppingCart, Download, Plus } from "lucide-react";
-import { getSalesHistory } from "../utils/salesApi";
-import SaleModal from "../components/SaleModal";
+import { getSalesHistory } from "../../utils/salesApi";
+import SaleModal from "../../components/SaleModal";
 
 type SaleHistoryItem = {
   sale_id?: string;

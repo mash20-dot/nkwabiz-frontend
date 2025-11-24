@@ -11,10 +11,10 @@ import {
   Line,
 } from "recharts";
 import { Calendar, ChevronDown, ChevronRight } from "lucide-react";
-import { apiFetch, getToken } from "../utils/api";
-import Button from "../components/Button";
+import { apiFetch, getToken } from "../../utils/api";
+import Button from "../../components/Button";
 import { Plus, X } from "lucide-react";
-import { formatCurrency } from "../utils/currencyUtils";
+import { formatCurrency } from "../../utils/currencyUtils";
 
 // --- Types ---
 type ExpenseHistoryItem = {
@@ -39,7 +39,8 @@ const ExpensesPage: React.FC = () => {
   const [dateRange, setDateRange] = useState<DateRangeType>("year");
   const [customDate, setCustomDate] = useState<string>("");
 
-  const [isAddingNewCategory, setIsAddingNewCategory] = useState<boolean>(false);
+  const [isAddingNewCategory, setIsAddingNewCategory] =
+    useState<boolean>(false);
   const [addingToCategory, setAddingToCategory] = useState<string | null>(null);
   const [addSubmitting, setAddSubmitting] = useState<boolean>(false);
   const [addError, setAddError] = useState<string>("");
@@ -229,7 +230,7 @@ const ExpensesPage: React.FC = () => {
         await fetchFilteredExpenses();
       }
       // Auto-expand the new category
-      setExpandedCategories(prev => new Set([...prev, categoryInput.trim()]));
+      setExpandedCategories((prev) => new Set([...prev, categoryInput.trim()]));
       setDescriptionInput("");
       setAmountInput("");
       setCategoryInput("");
@@ -322,10 +323,7 @@ const ExpensesPage: React.FC = () => {
         <h1 className="text-2xl font-medium text-gray-900">Expenses</h1>
         <div className="flex gap-[1rem]">
           {isAddingNewCategory ? (
-            <Button
-              onClick={cancelAdding}
-              aria-expanded={isAddingNewCategory}
-            >
+            <Button onClick={cancelAdding} aria-expanded={isAddingNewCategory}>
               <X className="h-4 w-4 mr-2 text-gray-700" aria-hidden="true" />
               Cancel
             </Button>
@@ -347,7 +345,9 @@ const ExpensesPage: React.FC = () => {
       {/* Add New Category form */}
       {isAddingNewCategory && (
         <div className="w-full bg-white shadow rounded-lg p-4 border-2 border-blue-200">
-          <h3 className="font-medium text-gray-900 mb-3">Create New Category</h3>
+          <h3 className="font-medium text-gray-900 mb-3">
+            Create New Category
+          </h3>
           <div className="space-y-3">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <input
@@ -401,10 +401,11 @@ const ExpensesPage: React.FC = () => {
                 setDateRange("year");
                 setCustomDate("");
               }}
-              className={`px-3 py-1 text-sm font-medium rounded-md ${dateRange === "year"
-                ? "bg-blue-100 text-blue-700"
-                : "bg-gray-100 text-gray-700"
-                }`}
+              className={`px-3 py-1 text-sm font-medium rounded-md ${
+                dateRange === "year"
+                  ? "bg-blue-100 text-blue-700"
+                  : "bg-gray-100 text-gray-700"
+              }`}
             >
               This Year
             </button>
@@ -414,10 +415,11 @@ const ExpensesPage: React.FC = () => {
                 setDateRange("month");
                 setCustomDate("");
               }}
-              className={`px-3 py-1 text-sm font-medium rounded-md ${dateRange === "month"
-                ? "bg-blue-100 text-blue-700"
-                : "bg-gray-100 text-gray-700"
-                }`}
+              className={`px-3 py-1 text-sm font-medium rounded-md ${
+                dateRange === "month"
+                  ? "bg-blue-100 text-blue-700"
+                  : "bg-gray-100 text-gray-700"
+              }`}
             >
               This Month
             </button>
@@ -427,20 +429,22 @@ const ExpensesPage: React.FC = () => {
                 setDateRange("week");
                 setCustomDate("");
               }}
-              className={`px-3 py-1 text-sm font-medium rounded-md ${dateRange === "week"
-                ? "bg-blue-100 text-blue-700"
-                : "bg-gray-100 text-gray-700"
-                }`}
+              className={`px-3 py-1 text-sm font-medium rounded-md ${
+                dateRange === "week"
+                  ? "bg-blue-100 text-blue-700"
+                  : "bg-gray-100 text-gray-700"
+              }`}
             >
               This Week
             </button>
 
             <button
               onClick={() => setDateRange("custom")}
-              className={`px-3 py-1 text-sm font-medium rounded-md ${dateRange === "custom"
-                ? "bg-blue-100 text-blue-700"
-                : "bg-gray-100 text-gray-700"
-                }`}
+              className={`px-3 py-1 text-sm font-medium rounded-md ${
+                dateRange === "custom"
+                  ? "bg-blue-100 text-blue-700"
+                  : "bg-gray-100 text-gray-700"
+              }`}
             >
               Choose Date
             </button>
@@ -460,28 +464,36 @@ const ExpensesPage: React.FC = () => {
       {/* Cards - 2x2 on mobile, 4 columns on desktop */}
       <div className="w-full grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-5">
         <div className="bg-white shadow rounded-lg p-4 text-center">
-          <div className="text-xs sm:text-sm text-gray-500 mb-1">Total Expenses</div>
+          <div className="text-xs sm:text-sm text-gray-500 mb-1">
+            Total Expenses
+          </div>
           <div className="text-xl sm:text-2xl font-semibold text-gray-800">
             {formatCurrency(totalExpenses)}
           </div>
         </div>
 
         <div className="bg-white shadow rounded-lg p-4 text-center">
-          <div className="text-xs sm:text-sm text-gray-500 mb-1">Transactions</div>
+          <div className="text-xs sm:text-sm text-gray-500 mb-1">
+            Transactions
+          </div>
           <div className="text-xl sm:text-2xl font-semibold text-gray-800">
             {totalTransactions}
           </div>
         </div>
 
         <div className="bg-white shadow rounded-lg p-4 text-center">
-          <div className="text-xs sm:text-sm text-gray-500 mb-1">Categories</div>
+          <div className="text-xs sm:text-sm text-gray-500 mb-1">
+            Categories
+          </div>
           <div className="text-xl sm:text-2xl font-semibold text-gray-800">
             {sortedCategories.length}
           </div>
         </div>
 
         <div className="bg-white shadow rounded-lg p-4 text-center">
-          <div className="text-xs sm:text-sm text-gray-500 mb-1">Avg. Expense</div>
+          <div className="text-xs sm:text-sm text-gray-500 mb-1">
+            Avg. Expense
+          </div>
           <div className="text-xl sm:text-2xl font-semibold text-gray-800">
             {formatCurrency(avgExpense)}
           </div>
@@ -618,7 +630,9 @@ const ExpensesPage: React.FC = () => {
                             className="border p-2 rounded"
                             placeholder="Description"
                             value={descriptionInput}
-                            onChange={(e) => setDescriptionInput(e.target.value)}
+                            onChange={(e) =>
+                              setDescriptionInput(e.target.value)
+                            }
                           />
                           <input
                             className="border p-2 rounded"
@@ -644,7 +658,9 @@ const ExpensesPage: React.FC = () => {
                             Cancel
                           </button>
                         </div>
-                        {addError && <div className="text-red-500">{addError}</div>}
+                        {addError && (
+                          <div className="text-red-500">{addError}</div>
+                        )}
                       </div>
                     </div>
                   )}

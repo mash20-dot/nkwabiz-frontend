@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
-import { loginUser } from "../utils/userApi";
-import { useAuthStore } from "../store/useAuthStore";
-import Button from "../components/Button";
+import { loginUser } from "../../utils/userApi";
+import { useAuthStore } from "../../store/useAuthStore";
+import Button from "../../components/Button";
 
 function validateEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);

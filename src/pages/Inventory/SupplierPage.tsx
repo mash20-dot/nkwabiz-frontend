@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getProductsByStatus } from "../utils/productApi";
+import { getProductsByStatus } from "../../utils/productApi";
 
 type Product = {
   product_name: string;
@@ -14,30 +14,41 @@ export default function SupplierPage() {
   const [selectedSupplier, setSelectedSupplier] = useState<string>("");
 
   useEffect(() => {
-    getProductsByStatus("all")
-      .then((data: { products: Product[] }) => {
-        setProducts(data.products || []);
-        const supplierList: string[] = Array.from(
-          new Set(
-            (data.products || [])
-              .map((p) => typeof p.supplier_info === "string" ? p.supplier_info : "")
-              .filter((s) => s)
-          )
-        );
-        setSuppliers(supplierList);
-        setSelectedSupplier(supplierList[0] || "");
-      });
+    getProductsByStatus("all").then((data: { products: Product[] }) => {
+      setProducts(data.products || []);
+      const supplierList: string[] = Array.from(
+        new Set(
+          (data.products || [])
+            .map((p) =>
+              typeof p.supplier_info === "string" ? p.supplier_info : ""
+            )
+            .filter((s) => s)
+        )
+      );
+      setSuppliers(supplierList);
+      setSelectedSupplier(supplierList[0] || "");
+    });
   }, []);
 
-  const productsForSupplier = products.filter((p) => p.supplier_info === selectedSupplier);
+  const productsForSupplier = products.filter(
+    (p) => p.supplier_info === selectedSupplier
+  );
 
   return (
     <div className="max-w-3xl mx-auto py-8">
       <h1 className="text-2xl font-bold mb-4">Suppliers</h1>
       <div className="mb-4">
         <label className="font-medium mr-2">Choose supplier:</label>
-        <select value={selectedSupplier} onChange={e => setSelectedSupplier(e.target.value)} className="border px-3 py-1 rounded">
-          {suppliers.map(s => <option key={s} value={s}>{s}</option>)}
+        <select
+          value={selectedSupplier}
+          onChange={(e) => setSelectedSupplier(e.target.value)}
+          className="border px-3 py-1 rounded"
+        >
+          {suppliers.map((s) => (
+            <option key={s} value={s}>
+              {s}
+            </option>
+          ))}
         </select>
       </div>
       <div className="bg-white shadow rounded-lg">
@@ -55,13 +66,22 @@ export default function SupplierPage() {
                 <td className="px-6 py-4">{p.product_name}</td>
                 <td className="px-6 py-4">{p.remaining_stock}</td>
                 <td className="px-6 py-4">
-                  {p.remaining_stock <= Math.max(5, Math.floor(p.initial_stock * 0.1)) ?
+                  {p.remaining_stock <=
+                  Math.max(5, Math.floor(p.initial_stock * 0.1)) ? (
                     <span className="text-yellow-700 font-semibold">Low</span>
-                    : <span className="text-green-700">OK</span>}
+                  ) : (
+                    <span className="text-green-700">OK</span>
+                  )}
                 </td>
               </tr>
             ))}
-            {productsForSupplier.length === 0 && <tr><td className="px-6 py-4" colSpan={3}>No products for this supplier.</td></tr>}
+            {productsForSupplier.length === 0 && (
+              <tr>
+                <td className="px-6 py-4" colSpan={3}>
+                  No products for this supplier.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

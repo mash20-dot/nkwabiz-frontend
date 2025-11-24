@@ -7,18 +7,18 @@ import {
   ShoppingCart,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { getDashboardOverview } from "../utils/productApi";
-import { getStockAlerts } from "../utils/stockApi";
+import { getDashboardOverview } from "../../utils/productApi";
+import { getStockAlerts } from "../../utils/stockApi";
 import {
   getSalesHistoryWithSummary,
   getProductsSold,
   getMonthlySalesSummary,
   MonthlySalesItem,
   MonthlySalesSummaryResponse,
-} from "../utils/salesApi";
-import SaleModal from "../components/SaleModal";
-import Button from "../components/Button";
-import { formatCurrency } from "../utils/currencyUtils";
+} from "../../utils/salesApi";
+import SaleModal from "../../components/SaleModal";
+import Button from "../../components/Button";
+import { formatCurrency } from "../../utils/currencyUtils";
 
 type DashboardProduct = {
   product_name: string;
@@ -57,7 +57,9 @@ const StatsCard = ({
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 hover:shadow-md transition-shadow">
       <div className="flex items-start justify-between mb-3 sm:mb-4">
         <div className="flex-1">
-          <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">{title}</p>
+          <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1">
+            {title}
+          </p>
         </div>
         <div className={`${iconBgColor} p-2 sm:p-3 rounded-xl`}>
           <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${iconColor}`} />
@@ -68,9 +70,7 @@ const StatsCard = ({
         <h3 className="text-2xl sm:text-3xl font-bold text-gray-900">
           {loading ? "..." : value}
         </h3>
-        {subtitle && (
-          <p className="text-xs text-gray-500">{subtitle}</p>
-        )}
+        {subtitle && <p className="text-xs text-gray-500">{subtitle}</p>}
       </div>
     </div>
   );
@@ -114,7 +114,11 @@ const Dashboard = () => {
         console.log("📦 Dashboard overview API response:", data);
         console.log("📦 Is array?", Array.isArray(data));
         console.log("📦 Has products?", data?.products);
-        const productsArray = Array.isArray(data) ? data : (Array.isArray(data.products) ? data.products : []);
+        const productsArray = Array.isArray(data)
+          ? data
+          : Array.isArray(data.products)
+          ? data.products
+          : [];
         console.log("📦 Final products array:", productsArray);
         setProducts(productsArray);
       })
@@ -228,7 +232,7 @@ const Dashboard = () => {
     date: string;
   }) => {
     // Add new sale to the top of recent sales list
-    setRecentSales(prev => [saleData, ...prev]);
+    setRecentSales((prev) => [saleData, ...prev]);
 
     // Update sales today
     if (salesToday !== null) {
@@ -275,7 +279,9 @@ const Dashboard = () => {
         {/* Sales Today */}
         <StatsCard
           title="Sales Today"
-          value={salesToday !== null ? formatCurrency(salesToday) : formatCurrency(0)}
+          value={
+            salesToday !== null ? formatCurrency(salesToday) : formatCurrency(0)
+          }
           icon={DollarSign}
           iconBgColor="bg-green-50"
           iconColor="text-green-600"
@@ -309,8 +315,8 @@ const Dashboard = () => {
             monthlyError
               ? "Error"
               : monthlySales !== null
-                ? formatCurrency(monthlySales)
-                : formatCurrency(0)
+              ? formatCurrency(monthlySales)
+              : formatCurrency(0)
           }
           subtitle={
             !monthlyLoading && monthlyProfit !== null
@@ -479,10 +485,11 @@ const Dashboard = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span
-                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${item.remaining_stock === 0
-                              ? "bg-red-100 text-red-800"
-                              : "bg-yellow-100 text-yellow-800"
-                              }`}
+                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                              item.remaining_stock === 0
+                                ? "bg-red-100 text-red-800"
+                                : "bg-yellow-100 text-yellow-800"
+                            }`}
                           >
                             {item.remaining_stock === 0 ? "Critical" : "Low"}
                           </span>

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
-import { getSalesHistory } from "../utils/salesApi";
-import { getDashboardOverview } from "../utils/productApi";
-import SaleModal from "../components/SaleModal";
-import { formatCurrency } from "../utils/currencyUtils";
+import { getSalesHistory } from "../../utils/salesApi";
+import { getDashboardOverview } from "../../utils/productApi";
+import SaleModal from "../../components/SaleModal";
+import { formatCurrency } from "../../utils/currencyUtils";
 
 type SaleHistoryItem = {
   sale_id: number;
@@ -40,12 +40,14 @@ const Sales: React.FC = () => {
         const salesArray = Array.isArray(data)
           ? data
           : Array.isArray(data.sales_history)
-            ? data.sales_history
-            : [];
+          ? data.sales_history
+          : [];
         console.log("💰 Sales array:", salesArray);
 
         // Sort by sale_id descending (newest first)
-        const sortedSales = salesArray.sort((a: SaleHistoryItem, b: SaleHistoryItem) => b.sale_id - a.sale_id);
+        const sortedSales = salesArray.sort(
+          (a: SaleHistoryItem, b: SaleHistoryItem) => b.sale_id - a.sale_id
+        );
         setSales(sortedSales);
       })
       .catch((err) => {
@@ -58,7 +60,11 @@ const Sales: React.FC = () => {
     setProductsLoading(true);
     getDashboardOverview()
       .then((data) => {
-        const productsArray = Array.isArray(data) ? data : (Array.isArray(data.products) ? data.products : []);
+        const productsArray = Array.isArray(data)
+          ? data
+          : Array.isArray(data.products)
+          ? data.products
+          : [];
         setProducts(productsArray);
       })
       .catch(() => setProducts([]))
@@ -75,9 +81,15 @@ const Sales: React.FC = () => {
     date: string;
   }) => {
     // Find the product to get unit price
-    const product = products.find(p => p.product_name === saleData.product_name);
-    const unitPrice = product?.selling_price || (saleData.total_price / saleData.quantity);
-    const profit = product ? (unitPrice * saleData.quantity) - ((product.selling_price || 0) * saleData.quantity) : 0;
+    const product = products.find(
+      (p) => p.product_name === saleData.product_name
+    );
+    const unitPrice =
+      product?.selling_price || saleData.total_price / saleData.quantity;
+    const profit = product
+      ? unitPrice * saleData.quantity -
+        (product.selling_price || 0) * saleData.quantity
+      : 0;
 
     const now = new Date();
     const dateStr = now.toLocaleDateString();
@@ -94,7 +106,7 @@ const Sales: React.FC = () => {
       date: dateStr,
       time: timeStr,
     };
-    setSales(prev => [newSale, ...prev]);
+    setSales((prev) => [newSale, ...prev]);
   };
 
   return (
@@ -120,23 +132,47 @@ const Sales: React.FC = () => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sale ID</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date & Time</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Quantity</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Unit Price</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Profit</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  Sale ID
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  Date & Time
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  Product
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  Quantity
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  Unit Price
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  Total
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                  Profit
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {loading ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-4 text-center text-gray-500">Loading...</td>
+                  <td
+                    colSpan={7}
+                    className="px-6 py-4 text-center text-gray-500"
+                  >
+                    Loading...
+                  </td>
                 </tr>
               ) : filteredSales.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-4 text-center text-gray-500">No sales found</td>
+                  <td
+                    colSpan={7}
+                    className="px-6 py-4 text-center text-gray-500"
+                  >
+                    No sales found
+                  </td>
                 </tr>
               ) : (
                 filteredSales.map((sale, idx) => (
@@ -146,8 +182,12 @@ const Sales: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       <div className="flex flex-col">
-                        <span className="font-medium text-gray-900">{sale.date || 'N/A'}</span>
-                        <span className="text-xs text-gray-500">{sale.time || ''}</span>
+                        <span className="font-medium text-gray-900">
+                          {sale.date || "N/A"}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {sale.time || ""}
+                        </span>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">

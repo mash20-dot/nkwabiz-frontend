@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Lock, Eye, EyeOff } from "lucide-react";
-import { apiFetch } from "../utils/api";
+import { apiFetch } from "../../utils/api";
 
 const Settings = () => {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -35,8 +35,8 @@ const Settings = () => {
           method: "POST",
           body: JSON.stringify({
             old_password: oldPassword,
-            new_password: newPassword
-          })
+            new_password: newPassword,
+          }),
         },
         true
       );
@@ -106,8 +106,18 @@ const Settings = () => {
                   }}
                   className="text-gray-400 hover:text-gray-500"
                 >
-                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>
@@ -126,7 +136,10 @@ const Settings = () => {
 
               <div className="space-y-4">
                 <div>
-                  <label htmlFor="old-password" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="old-password"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     Old Password
                   </label>
                   <div className="relative">
@@ -153,7 +166,10 @@ const Settings = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="new-password" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label
+                    htmlFor="new-password"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
                     New Password
                   </label>
                   <div className="relative">

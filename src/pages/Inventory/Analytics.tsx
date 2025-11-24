@@ -16,10 +16,10 @@ import {
   getSalesHistory,
   getMonthlySalesSummary,
   SaleHistoryItem,
-} from "../utils/salesApi";
-import { getToken } from "../utils/api";
-import Button from "../components/Button";
-import { formatCurrency } from "../utils/currencyUtils";
+} from "../../utils/salesApi";
+import { getToken } from "../../utils/api";
+import Button from "../../components/Button";
+import { formatCurrency } from "../../utils/currencyUtils";
 
 const Analytics = () => {
   const [salesData, setSalesData] = useState<SaleHistoryItem[]>([]);
