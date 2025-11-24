@@ -20,10 +20,12 @@ const ServiceCard = ({
     >
       <Icon className="w-8 h-8 text-blue-600" />
       <div className="flex flex-col gap-1 justify-center items-center">
-        <span className="text-base font-medium text-gray-700 group-hover:text-blue-600">
+        <span className="text-base text-center font-medium text-gray-700 group-hover:text-blue-600">
           {serviceName}
         </span>
-        <span className="text-sm text-gray-500 font-normal">{description}</span>
+        <span className="text-sm text-center text-gray-500 font-normal">
+          {description}
+        </span>
       </div>
     </div>
   );
