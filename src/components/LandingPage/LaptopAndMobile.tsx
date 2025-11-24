@@ -10,7 +10,7 @@ const LaptopAndMobile = () => {
                     <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12">
 
                         {/* Desktop Screenshot */}
-                        <div className="w-full lg:w-2/3">
+                        <div className="w-full lg:flex-1">
                             <img
                                 src="https://i.imgur.com/7L4i1AZ.png"
                                 alt="NkwaBiz Desktop Dashboard"
@@ -19,7 +19,7 @@ const LaptopAndMobile = () => {
                         </div>
 
                         {/* Mobile Screenshot */}
-                        <div className="w-48 sm:w-56 md:w-64 lg:w-auto lg:flex-shrink-0">
+                        <div className="w-40 sm:w-48 md:w-52 lg:w-56">
                             <img
                                 src="https://i.imgur.com/AOenLgX.png"
                                 alt="NkwaBiz Mobile Dashboard"
