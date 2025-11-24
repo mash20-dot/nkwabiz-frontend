@@ -1,6 +1,4 @@
-import { Link } from "react-router-dom";
 import { LucideIcon } from "lucide-react";
-import { ChevronRight } from "lucide-react";
 
 type SummaryCardProps = {
   title: string;
@@ -28,8 +26,6 @@ export default function SummaryCard({
                 />
                 {title}
               </dt>
-
-              <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-gray-500" />
             </div>
 
             <dd>{children}</dd>

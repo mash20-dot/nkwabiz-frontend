@@ -5,6 +5,66 @@ import SummaryCard from "@/components/SummaryCard";
 import { Table, TableCard } from "@/components/application/table/table";
 import { Badge } from "@/components/base/badges/badges";
 
+type BadgeStatusColor = "success" | "error" | "gray";
+
+type messagesProp = {
+  id: number;
+  title: string;
+  recipients: number;
+  status: string;
+  statusColor: BadgeStatusColor;
+  cost: string;
+  date: string;
+};
+
+const messages: messagesProp[] = [
+  {
+    id: 1,
+    title: "Promo Alert",
+    recipients: 120,
+    status: "Delivered",
+    statusColor: "success",
+    cost: "GHS 18.00",
+    date: "Nov 6, 2025",
+  },
+  {
+    id: 2,
+    title: "Reminder",
+    recipients: 80,
+    status: "Pending",
+    statusColor: "gray",
+    cost: "GHS 12.00",
+    date: "Nov 5, 2025",
+  },
+  {
+    id: 3,
+    title: "Welcome Message",
+    recipients: 40,
+    status: "Failed",
+    statusColor: "error",
+    cost: "GHS 6.00",
+    date: "Nov 4, 2025",
+  },
+  {
+    id: 4,
+    title: "Upcoming Features",
+    recipients: 40,
+    status: "Delivered",
+    statusColor: "success",
+    cost: "GHS 6.00",
+    date: "Nov 2, 2025",
+  },
+  {
+    id: 5,
+    title: "Introducing Our Platform",
+    recipients: 40,
+    status: "Delivered",
+    statusColor: "success",
+    cost: "GHS 6.00",
+    date: "Nov 2, 2025",
+  },
+];
+
 const SmsDashboard = () => {
   const navigate = useNavigate();
 
@@ -25,7 +85,7 @@ const SmsDashboard = () => {
       </div>
 
       {/* SMS Overview */}
-      <div className="w-full grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="w-full grid grid-cols-2 gap-3 md:gap-4 lg:gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {/* Total Messages Card */}
         <SummaryCard
           title="Total Messages"
@@ -64,14 +124,17 @@ const SmsDashboard = () => {
       </div>
 
       {/* Recent Messages Table */}
-      <TableCard.Root className="w-full" size="sm">
+      <TableCard.Root
+        className="w-full bg-white border border-gray-200"
+        size="sm"
+      >
         <TableCard.Header
-          className="font-medium text-gray-800"
+          className="font-medium text-lg bg-white text-gray-800"
           title="Recent Messages"
         />
 
         <Table>
-          <Table.Header>
+          <Table.Header className="border-y border-gray-200">
             <Table.Row>
               <Table.Head>Message</Table.Head>
               <Table.Head>Recipients</Table.Head>
@@ -81,66 +144,27 @@ const SmsDashboard = () => {
             </Table.Row>
           </Table.Header>
 
-          <Table.Body>
-            <Table.Row>
-              <Table.Cell>
-                <span className="font-medium text-primary">Promo Alert</span>
-              </Table.Cell>
-              <Table.Cell>120</Table.Cell>
-              <Table.Cell>
-                <Badge color="success" size="sm">
-                  Delivered
-                </Badge>
-              </Table.Cell>
-              <Table.Cell>GHS 18.00</Table.Cell>
-              <Table.Cell>Nov 6, 2025</Table.Cell>
-            </Table.Row>
-
-            <Table.Row>
-              <Table.Cell>
-                <span className="font-medium text-primary">Reminder</span>
-              </Table.Cell>
-              <Table.Cell>80</Table.Cell>
-              <Table.Cell>
-                <Badge color="gray" size="sm">
-                  Pending
-                </Badge>
-              </Table.Cell>
-              <Table.Cell>GHS 12.00</Table.Cell>
-              <Table.Cell>Nov 5, 2025</Table.Cell>
-            </Table.Row>
-
-            <Table.Row>
-              <Table.Cell>
-                <span className="font-medium text-primary">
-                  Welcome Message
-                </span>
-              </Table.Cell>
-              <Table.Cell>40</Table.Cell>
-              <Table.Cell>
-                <Badge color="error" size="sm">
-                  Failed
-                </Badge>
-              </Table.Cell>
-              <Table.Cell>GHS 6.00</Table.Cell>
-              <Table.Cell>Nov 4, 2025</Table.Cell>
-            </Table.Row>
-
-            <Table.Row>
-              <Table.Cell>
-                <span className="font-medium text-primary">
-                  Welcome Message
-                </span>
-              </Table.Cell>
-              <Table.Cell>40</Table.Cell>
-              <Table.Cell>
-                <Badge color="error" size="sm">
-                  Failed
-                </Badge>
-              </Table.Cell>
-              <Table.Cell>GHS 6.00</Table.Cell>
-              <Table.Cell>Nov 4, 2025</Table.Cell>
-            </Table.Row>
+          <Table.Body items={messages}>
+            {(message) => (
+              <Table.Row
+                key={message.id}
+                className="cursor-pointer bg-white hover:bg-gray-50 border-b border-gray-200 last:border-b-0"
+              >
+                <Table.Cell>
+                  <span className="font-medium text-primary">
+                    {message.title}
+                  </span>
+                </Table.Cell>
+                <Table.Cell>{message.recipients}</Table.Cell>
+                <Table.Cell>
+                  <Badge color={message.statusColor} size="sm">
+                    {message.status}
+                  </Badge>
+                </Table.Cell>
+                <Table.Cell>{message.cost}</Table.Cell>
+                <Table.Cell>{message.date}</Table.Cell>
+              </Table.Row>
+            )}
           </Table.Body>
         </Table>
       </TableCard.Root>
