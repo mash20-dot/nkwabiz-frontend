@@ -74,95 +74,105 @@ const BlogList = () => {
 
                 {/* Posts Grid */}
                 <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                    {posts.map((post) => (
-                        <article
-                            key={post.id}
-                            className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
-                            onClick={() => navigate(`/blog/${post.id}`)}
-                        >
-                            {/* Featured Image */}
-                            <div className="h-48 bg-gray-200 relative overflow-hidden">
-                                {post.image && post.image.trim() !== "" ? (
-                                    <img
-                                        src={post.image}
-                                        alt={post.topic || "Blog post image"}
-                                        className="w-full h-full object-cover"
-                                        onError={(e) => {
-                                            console.error("Image failed to load:", post.image);
-                                            const parent = e.currentTarget.parentElement;
-                                            if (parent) {
-                                                parent.innerHTML = `
-                                                    <div class="w-full h-full flex items-center justify-center">
-                                                        <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                        </svg>
-                                                    </div>
-                                                `;
-                                            }
-                                        }}
-                                    />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center">
-                                        <ImageIcon size={48} className="text-gray-400" />
-                                    </div>
-                                )}
-                            </div>
+                    {posts.map((post) => {
+                        // Fix Imgur URLs - convert page URL to direct image URL
+                        let imageUrl = post.image;
+                        if (imageUrl && imageUrl.includes('imgur.com/') && !imageUrl.includes('i.imgur.com')) {
+                            const imgurId = imageUrl.split('imgur.com/')[1].split(/[?#]/)[0];
+                            imageUrl = `https://i.imgur.com/${imgurId}.jpg`;
+                        }
 
-                            {/* Content */}
-                            <div className="p-6">
-                                {/* Topic - with fallback */}
-                                <h2 className="text-xl font-semibold text-gray-900 mb-2 overflow-hidden"
-                                    style={{
-                                        display: '-webkit-box',
-                                        WebkitLineClamp: 2,
-                                        WebkitBoxOrient: 'vertical',
-                                        minHeight: '3.5rem'
-                                    }}>
-                                    {post.topic || "Untitled Post"}
-                                </h2>
-
-                                {/* Excerpt */}
-                                <p className="text-gray-600 mb-4 overflow-hidden"
-                                    style={{
-                                        display: '-webkit-box',
-                                        WebkitLineClamp: 3,
-                                        WebkitBoxOrient: 'vertical'
-                                    }}>
-                                    {post.excerpt || "No description available."}
-                                </p>
-
-                                {/* Meta Info */}
-                                <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                                    <div className="flex items-center space-x-4">
-                                        <div className="flex items-center">
-                                            <User size={16} className="mr-1" />
-                                            <span>{post.author || "Anonymous"}</span>
+                        return (
+                            <article
+                                key={post.id}
+                                className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+                                onClick={() => navigate(`/blog/${post.id}`)}
+                            >
+                                {/* Featured Image */}
+                                <div className="h-48 bg-gray-200 relative overflow-hidden">
+                                    {imageUrl && imageUrl.trim() !== "" ? (
+                                        <img
+                                            src={imageUrl}
+                                            alt={post.topic || "Blog post image"}
+                                            className="w-full h-full object-cover"
+                                            onError={(e) => {
+                                                console.error("Image failed to load:", imageUrl);
+                                                console.log("Original image URL:", post.image);
+                                                const parent = e.currentTarget.parentElement;
+                                                if (parent) {
+                                                    parent.innerHTML = `
+                                                        <div class="w-full h-full flex items-center justify-center bg-gray-100">
+                                                            <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                            </svg>
+                                                        </div>
+                                                    `;
+                                                }
+                                            }}
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center">
+                                            <ImageIcon size={48} className="text-gray-400" />
                                         </div>
-                                        <div className="flex items-center">
-                                            <Calendar size={16} className="mr-1" />
-                                            <span>
-                                                {post.created_at
-                                                    ? new Date(post.created_at).toLocaleDateString()
-                                                    : "No date"}
-                                            </span>
-                                        </div>
-                                    </div>
+                                    )}
                                 </div>
 
-                                {/* Read More Button */}
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        navigate(`/blog/${post.id}`);
-                                    }}
-                                    className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium"
-                                >
-                                    Read more
-                                    <ArrowRight size={16} className="ml-1" />
-                                </button>
-                            </div>
-                        </article>
-                    ))}
+                                {/* Content */}
+                                <div className="p-6">
+                                    {/* Topic */}
+                                    <h2 className="text-xl font-semibold text-gray-900 mb-2 overflow-hidden"
+                                        style={{
+                                            display: '-webkit-box',
+                                            WebkitLineClamp: 2,
+                                            WebkitBoxOrient: 'vertical',
+                                            minHeight: '3.5rem'
+                                        }}>
+                                        {post.topic || "Untitled Post"}
+                                    </h2>
+
+                                    {/* Excerpt */}
+                                    <p className="text-gray-600 mb-4 overflow-hidden"
+                                        style={{
+                                            display: '-webkit-box',
+                                            WebkitLineClamp: 3,
+                                            WebkitBoxOrient: 'vertical'
+                                        }}>
+                                        {post.excerpt || "No description available."}
+                                    </p>
+
+                                    {/* Meta Info */}
+                                    <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                                        <div className="flex items-center space-x-4">
+                                            <div className="flex items-center">
+                                                <User size={16} className="mr-1" />
+                                                <span>{post.author || "Anonymous"}</span>
+                                            </div>
+                                            <div className="flex items-center">
+                                                <Calendar size={16} className="mr-1" />
+                                                <span>
+                                                    {post.created_at
+                                                        ? new Date(post.created_at).toLocaleDateString()
+                                                        : "No date"}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Read More Button */}
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            navigate(`/blog/${post.id}`);
+                                        }}
+                                        className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium"
+                                    >
+                                        Read more
+                                        <ArrowRight size={16} className="ml-1" />
+                                    </button>
+                                </div>
+                            </article>
+                        );
+                    })}
                 </div>
             </div>
         </div>
