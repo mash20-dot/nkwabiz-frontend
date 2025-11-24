@@ -5,7 +5,7 @@ const YouTubeSection = () => {
     const [isPlaying, setIsPlaying] = useState(false);
 
     const channelUrl = "https://www.youtube.com/@nkwabiz";
-    const videoId = "xxLfTvqDJnc"; // Extracted from the URL
+    const videoId = "7ye9Q_2v1PA"; // Extracted from the URL
 
     const videos = [
         {
@@ -92,7 +92,7 @@ const YouTubeSection = () => {
                                 {/* Action Buttons */}
                                 <div className="flex flex-wrap gap-4">
                                     <a
-                                        href={`https://www.youtube.com/watch?v=${video.id}`}
+                                        href={`https://www.youtube.com/shorts/${video.id}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="inline-flex items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
