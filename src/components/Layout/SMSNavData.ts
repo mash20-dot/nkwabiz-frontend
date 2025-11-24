@@ -1,9 +1,15 @@
-import { Home, MessageSquare, Users, BarChart3, Settings } from "lucide-react";
+import {
+  Home,
+  MessageSquare,
+  Users,
+  WalletCards,
+  Settings,
+} from "lucide-react";
 
 export default [
   { name: "Dashboard", href: "/sms/dashboard", icon: Home },
-  { name: "Send SMS", href: "/sms/send", icon: MessageSquare },
-  { name: "Contacts", href: "/sms/contacts", icon: Users },
-  { name: "History", href: "/sms/history", icon: BarChart3 },
+  { name: "Bulk SMS", href: "/sms/bulksms", icon: MessageSquare },
+  { name: "Customers", href: "/sms/customers", icon: Users },
+  { name: "Wallet", href: "/sms/wallet", icon: WalletCards },
   { name: "Settings", href: "/sms/settings", icon: Settings },
 ];

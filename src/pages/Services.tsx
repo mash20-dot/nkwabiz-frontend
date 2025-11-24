@@ -8,7 +8,7 @@ const ourServices = [
   {
     name: "Bulk SMS",
     description: "Send bulk SMS to your customers",
-    href: "/sms",
+    href: "/sms/dashboard",
     icon: MessagesSquare,
     serviceType: "sms" as const,
   },

@@ -7,6 +7,8 @@ import {
   Navigate,
   useLocation,
 } from "react-router-dom";
+
+// Inventory Service Pages
 import Dashboard from "./pages/Inventory/Dashboard";
 import Products from "./pages/Inventory/Products";
 import SalesPage from "./pages/Inventory/SalesPage";
@@ -28,6 +30,13 @@ import ReportsPage from "./pages/Inventory/ReportsPage";
 import ProductDetailsPage from "./pages/Inventory/ProductDetailsPage";
 import ExpensesPage from "./pages/Inventory/ExpensesPage";
 import { isAuthenticated } from "./utils/auth";
+
+// Bulk SMS Service Pages
+import SmsDashboard from "./pages/BulkSMS/Dashboard";
+import BulkSMS from "./pages/BulkSMS/BulkSms";
+import SettingsPage from "./pages/Inventory/Settings";
+import CustomersPage from "./pages/BulkSMS/Customers";
+import Wallet from "./pages/BulkSMS/Wallet";
 
 // Services Page
 import Services from "./pages/Services";
@@ -172,6 +181,16 @@ export function App() {
             />
 
             {/* Protected routes */}
+
+            {/* Service Selection Page */}
+            <Route
+              path="/services"
+              element={
+                isAuthenticated() ? <Services /> : <Navigate to="/login" />
+              }
+            />
+
+            {/* Inventory Services */}
             <Route
               path="/dashboard"
               element={
@@ -292,10 +311,70 @@ export function App() {
                 )
               }
             />
+
+            {/* Bulk SMS Services */}
             <Route
-              path="/services"
+              path="/sms/dashboard"
               element={
-                isAuthenticated() ? <Services /> : <Navigate to="/login" />
+                isAuthenticated() ? (
+                  <Layout>
+                    <SmsDashboard />
+                  </Layout>
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
+            />
+
+            <Route
+              path="/sms/bulksms"
+              element={
+                isAuthenticated() ? (
+                  <Layout>
+                    <BulkSMS />
+                  </Layout>
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
+            />
+
+            <Route
+              path="/sms/customers"
+              element={
+                isAuthenticated() ? (
+                  <Layout>
+                    <CustomersPage />
+                  </Layout>
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
+            />
+
+            <Route
+              path="/sms/wallet"
+              element={
+                isAuthenticated() ? (
+                  <Layout>
+                    <Wallet />
+                  </Layout>
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
+            />
+
+            <Route
+              path="/sms/settings"
+              element={
+                isAuthenticated() ? (
+                  <Layout>
+                    <SettingsPage />
+                  </Layout>
+                ) : (
+                  <Navigate to="/login" />
+                )
               }
             />
           </Routes>
