@@ -10,7 +10,7 @@ const AdminBlogEditor = () => {
     const isEditMode = !!postId;
 
     const [form, setForm] = useState({
-        title: "",
+        topic: "",
         content: "",
         excerpt: "",
         image: "",
@@ -41,7 +41,7 @@ const AdminBlogEditor = () => {
             if (isEditMode) {
                 const postData = await apiFetch(`/blog/posts/${postId}`, {}, true);
                 setForm({
-                    title: postData.title,
+                    topic: postData.topic,
                     content: postData.content,
                     excerpt: postData.excerpt,
                     image: postData.image || "",
@@ -67,8 +67,8 @@ const AdminBlogEditor = () => {
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
 
-        if (form.title.trim().length < 5) {
-            setError("Title must be at least 5 characters long");
+        if (form.topic.trim().length < 5) {
+            setError("Topic must be at least 5 characters long");
             return;
         }
 
@@ -156,18 +156,18 @@ const AdminBlogEditor = () => {
                 {/* Form */}
                 <div className="bg-white rounded-lg shadow-sm p-6">
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* Title */}
+                        {/* Topic */}
                         <div>
-                            <label htmlFor="title" className="block text-sm font-medium text-gray-700">
-                                Title *
+                            <label htmlFor="topic" className="block text-sm font-medium text-gray-700">
+                                Topic *
                             </label>
                             <input
-                                id="title"
-                                name="title"
+                                id="topic"
+                                name="topic"
                                 type="text"
                                 required
-                                placeholder="Enter post title"
-                                value={form.title}
+                                placeholder="Enter post topic"
+                                value={form.topic}
                                 onChange={handleChange}
                                 className="mt-1 appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                             />

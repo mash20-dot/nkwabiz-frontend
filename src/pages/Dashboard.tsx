@@ -111,15 +111,11 @@ const Dashboard = () => {
     setLoadingProducts(true);
     getDashboardOverview()
       .then((data) => {
-        console.log("📦 Dashboard overview API response:", data);
-        console.log("📦 Is array?", Array.isArray(data));
-        console.log("📦 Has products?", data?.products);
+        
         const productsArray = Array.isArray(data) ? data : (Array.isArray(data.products) ? data.products : []);
-        console.log("📦 Final products array:", productsArray);
         setProducts(productsArray);
       })
       .catch((err) => {
-        console.error("❌ Failed to fetch products:", err);
         setProducts([]);
       })
       .finally(() => setLoadingProducts(false));

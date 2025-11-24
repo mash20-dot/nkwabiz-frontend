@@ -5,7 +5,7 @@ import { apiFetch } from "../utils/api";
 
 interface BlogPost {
     id: number;
-    title: string;
+    topic: string;
     excerpt: string;
     author: string;
     image?: string;
@@ -25,6 +25,7 @@ const BlogList = () => {
     async function fetchPosts() {
         try {
             const data = await apiFetch("/blog/posts");
+            console.log("Fetched posts:", data); // Debug log
             setPosts(data.posts || []);
         } catch (err: any) {
             setError(err.message || "Failed to load blog posts");
@@ -81,13 +82,23 @@ const BlogList = () => {
                         >
                             {/* Featured Image */}
                             <div className="h-48 bg-gray-200 relative overflow-hidden">
-                                {post.image ? (
+                                {post.image && post.image.trim() !== "" ? (
                                     <img
                                         src={post.image}
-                                        alt={post.title}
+                                        alt={post.topic || "Blog post image"}
                                         className="w-full h-full object-cover"
                                         onError={(e) => {
-                                            e.currentTarget.style.display = 'none';
+                                            console.error("Image failed to load:", post.image);
+                                            const parent = e.currentTarget.parentElement;
+                                            if (parent) {
+                                                parent.innerHTML = `
+                                                    <div class="w-full h-full flex items-center justify-center">
+                                                        <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                        </svg>
+                                                    </div>
+                                                `;
+                                            }
                                         }}
                                     />
                                 ) : (
@@ -99,11 +110,25 @@ const BlogList = () => {
 
                             {/* Content */}
                             <div className="p-6">
-                                <h2 className="text-xl font-semibold text-gray-900 mb-2 line-clamp-2">
-                                    {post.title}
+                                {/* Topic - with fallback */}
+                                <h2 className="text-xl font-semibold text-gray-900 mb-2 overflow-hidden"
+                                    style={{
+                                        display: '-webkit-box',
+                                        WebkitLineClamp: 2,
+                                        WebkitBoxOrient: 'vertical',
+                                        minHeight: '3.5rem'
+                                    }}>
+                                    {post.topic || "Untitled Post"}
                                 </h2>
-                                <p className="text-gray-600 mb-4 line-clamp-3">
-                                    {post.excerpt}
+
+                                {/* Excerpt */}
+                                <p className="text-gray-600 mb-4 overflow-hidden"
+                                    style={{
+                                        display: '-webkit-box',
+                                        WebkitLineClamp: 3,
+                                        WebkitBoxOrient: 'vertical'
+                                    }}>
+                                    {post.excerpt || "No description available."}
                                 </p>
 
                                 {/* Meta Info */}
@@ -111,11 +136,15 @@ const BlogList = () => {
                                     <div className="flex items-center space-x-4">
                                         <div className="flex items-center">
                                             <User size={16} className="mr-1" />
-                                            <span>{post.author}</span>
+                                            <span>{post.author || "Anonymous"}</span>
                                         </div>
                                         <div className="flex items-center">
                                             <Calendar size={16} className="mr-1" />
-                                            <span>{new Date(post.created_at).toLocaleDateString()}</span>
+                                            <span>
+                                                {post.created_at
+                                                    ? new Date(post.created_at).toLocaleDateString()
+                                                    : "No date"}
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
