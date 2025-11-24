@@ -11,6 +11,7 @@ import CTA from '../components/LandingPage/CTA';
 import Footer from '../components/LandingPage/Footer';
 import Youtubesection from '../components/LandingPage/Youtubesection';
 import Feedback from '../components/LandingPage/Feedback';
+import LaptopAndMobile from '../components/LandingPage/LaptopAndMobile';
 
 const Home = () => {
   const pageTitle = "Nkwabiz – Ghana Best Business Management Software";
@@ -49,8 +50,9 @@ const Home = () => {
         <main className="flex-grow">
           <Hero />
           <HowItWorks />
-          <Features />
+          <LaptopAndMobile />
           <Youtubesection />
+          <Features />
           <Benefits />
           <Testimonials />
           <FAQ />
