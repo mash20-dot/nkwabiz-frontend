@@ -82,13 +82,13 @@ define(['./workbox-137dedbd'], (function (workbox) { 'use strict';
     "revision": "3ca0b8505b4bec776b69afdba2768812"
   }, {
     "url": "index.html",
-    "revision": "0.6c1rhk8lhr"
+    "revision": "0.ggfb5um1nno"
   }], {});
   workbox.cleanupOutdatedCaches();
   workbox.registerRoute(new workbox.NavigationRoute(workbox.createHandlerBoundToURL("index.html"), {
     allowlist: [/^\/$/]
   }));
-  workbox.registerRoute(/^https:\/\/nkwabiz-backend-testing\.onrender\.com\/.*/i, new workbox.NetworkFirst({
+  workbox.registerRoute(/^https:\/\/saas-tool-mf02\.onrender\.com\/.*/i, new workbox.NetworkFirst({
     "cacheName": "api-cache",
     "networkTimeoutSeconds": 10,
     plugins: [new workbox.ExpirationPlugin({
