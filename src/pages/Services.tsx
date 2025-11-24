@@ -1,21 +1,37 @@
 import { MessagesSquare } from "lucide-react";
 import { Store } from "lucide-react";
 import ServiceCard from "../components/ServiceCard";
+import { useService } from "../context/ServiceContext";
+import { useNavigate } from "react-router-dom";
 
 const ourServices = [
   {
     name: "Bulk SMS",
+    description: "Send bulk SMS to your customers",
     href: "/sms",
     icon: MessagesSquare,
+    serviceType: "sms" as const,
   },
   {
-    name: "Dashboard",
+    name: "Inventory",
+    description: "Manage your products and inventory",
     href: "/dashboard",
     icon: Store,
+    serviceType: "inventory" as const,
   },
 ];
 
 const Services = () => {
+  const navigate = useNavigate();
+  const { setActiveService } = useService();
+
+  const handleServiceClick = (
+    serviceType: "sms" | "inventory",
+    href: string
+  ) => {
+    setActiveService(serviceType);
+    navigate(href);
+  };
   return (
     <div className="w-full h-dvh p-0 md:px-10 lg:px-20 md:py-10 lg:py-10  bg-gray-50">
       <div className="w-full max-w-[1280px] h-full flex flex-col border border-gray-200 bg-white shadow-sm rounded-lg">
@@ -29,7 +45,10 @@ const Services = () => {
             <ServiceCard
               key={index}
               serviceName={service.name}
-              linkPath={service.href}
+              description={service.description}
+              onClick={() =>
+                handleServiceClick(service.serviceType, service.href)
+              }
               icon={service.icon}
             />
           ))}
