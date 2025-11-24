@@ -1,24 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import {
-  LayoutDashboard,
-  Package,
-  ShoppingCart,
-  BarChart2,
-  WalletCards,
-  Settings,
-  X,
-  FileText,
-} from "lucide-react";
+import { LucideIcon, FileText, X } from "lucide-react";
 import { useAuthStore } from "../../store/useAuthStore";
 import { apiFetch } from "../../utils/api";
+
+type NavigationProps = {
+  name: string;
+  href: string;
+  icon: LucideIcon;
+};
 
 interface SidebarProps {
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
+  navigation: NavigationProps[];
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
+const Sidebar: React.FC<SidebarProps> = ({
+  sidebarOpen,
+  setSidebarOpen,
+  navigation,
+}) => {
   const businessName = useAuthStore((state) => state.businessName);
   const location = useLocation();
   const [isAdmin, setIsAdmin] = useState(false);
@@ -37,71 +39,41 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
     }
   }
 
-  const navigation = [
-    {
-      name: "Dashboard",
-      href: "/dashboard",
-      icon: LayoutDashboard,
-    },
-    {
-      name: "Products",
-      href: "/products",
-      icon: Package,
-    },
-    {
-      name: "Sales",
-      href: "/sales",
-      icon: ShoppingCart,
-    },
-    {
-      name: "Expenses",
-      href: "/expenses",
-      icon: WalletCards,
-    },
-    {
-      name: "Analytics",
-      href: "/analytics",
-      icon: BarChart2,
-    },
-    {
-      name: "Settings",
-      href: "/settings",
-      icon: Settings,
-    },
-  ];
-
   // Add Blog Admin link only if user is admin
-  const allNavigation = isAdmin
+  const allNavigation: NavigationProps[] = isAdmin
     ? [
-      ...navigation,
-      {
-        name: "Blog Admin",
-        href: "/admin/blog",
-        icon: FileText,
-      },
-    ]
+        ...navigation,
+        {
+          name: "Blog Admin",
+          href: "/admin/blog",
+          icon: FileText,
+        },
+      ]
     : navigation;
 
   return (
     <>
       {/* Mobile sidebar */}
       <div
-        className={`fixed inset-0 z-40 flex md:hidden ${sidebarOpen ? "visible" : "invisible"
-          }`}
+        className={`fixed inset-0 z-40 flex md:hidden ${
+          sidebarOpen ? "visible" : "invisible"
+        }`}
         aria-hidden="true"
       >
         {/* Backdrop */}
         <div
-          className={`fixed inset-0 bg-gray-600 ${sidebarOpen
-            ? "opacity-75 transition-opacity ease-linear duration-300"
-            : "opacity-0 transition-opacity ease-linear duration-300"
-            }`}
+          className={`fixed inset-0 bg-gray-600 ${
+            sidebarOpen
+              ? "opacity-75 transition-opacity ease-linear duration-300"
+              : "opacity-0 transition-opacity ease-linear duration-300"
+          }`}
           onClick={() => setSidebarOpen(false)}
         />
         {/* Sidebar */}
         <div
-          className={`relative flex-1 flex flex-col max-w-[240px] pt-5 pb-4 bg-blue-800 transition ease-in-out duration-300 transform ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
-            }`}
+          className={`relative flex-1 flex flex-col max-w-[240px] pt-5 pb-4 bg-blue-800 transition ease-in-out duration-300 transform ${
+            sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
         >
           <div className="absolute top-0 right-0 -mr-12 pt-2">
             <button
@@ -123,12 +95,13 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
                 <Link
                   key={item.name}
                   to={item.href}
-                  className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${location.pathname === item.href ||
+                  className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${
+                    location.pathname === item.href ||
                     (item.href === "/admin/blog" &&
                       location.pathname.startsWith("/admin/blog"))
-                    ? "bg-blue-900 text-white"
-                    : "text-blue-100 hover:bg-blue-700"
-                    }`}
+                      ? "bg-blue-900 text-white"
+                      : "text-blue-100 hover:bg-blue-700"
+                  }`}
                   onClick={() => setSidebarOpen(false)}
                 >
                   <item.icon
@@ -163,12 +136,13 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
                   <Link
                     key={item.name}
                     to={item.href}
-                    className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${location.pathname === item.href ||
+                    className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
+                      location.pathname === item.href ||
                       (item.href === "/admin/blog" &&
                         location.pathname.startsWith("/admin/blog"))
-                      ? "bg-blue-900 text-white"
-                      : "text-blue-100 hover:bg-blue-700"
-                      }`}
+                        ? "bg-blue-900 text-white"
+                        : "text-blue-100 hover:bg-blue-700"
+                    }`}
                   >
                     <item.icon
                       className="mr-2 h-4 w-4 text-blue-200"
