@@ -42,14 +42,12 @@ const Login = () => {
 
     try {
       const data = await loginUser(form.email, form.password);
-      // Save auth with currency (THIS IS THE KEY CHANGE)
       setAuth(
         data.access_token,
         data.business_name || "",
-        data.currency || "GHS" // ← Save currency from backend
+        data.currency || "GHS"
       );
-      // Force reload to ensure all components see updated auth state
-      window.location.replace("/dashboard");
+      window.location.replace("/services");
     } catch (err: any) {
       setError(err.message || "Login failed. Please check your credentials.");
     } finally {

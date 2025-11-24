@@ -1,48 +1,66 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import Dashboard from './pages/Dashboard';
-import Products from './pages/Products';
-import SalesPage from './pages/SalesPage';
-import Analytics from './pages/Analytics';
-import Settings from './pages/Settings';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
-import ForgotPassword from './pages/ForgotPassword';
-import ResetPassword from './pages/ResetPassword';
-import Layout from './components/Layout/Layout';
-import Home from './pages/Home';
-import AboutUs from './pages/AboutUs';
-import FeaturesPage from './pages/FeaturesPage';
-import TestimonialsPage from './pages/TestimonialsPage';
-import PricingPage from './pages/PricingPage';
-import NotificationsPage from './pages/NotificationsPage';
-import SupplierPage from './pages/SupplierPage';
-import ReportsPage from './pages/ReportsPage';
-import ProductDetailsPage from './pages/ProductDetailsPage';
-import ExpensesPage from './pages/ExpensesPage';
-import { isAuthenticated } from './utils/auth';
+import React, { useState } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
+import Dashboard from "./pages/Dashboard";
+import Products from "./pages/Products";
+import SalesPage from "./pages/SalesPage";
+import Analytics from "./pages/Analytics";
+import Settings from "./pages/Settings";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+import Layout from "./components/Layout/Layout";
+import Home from "./pages/Home";
+import AboutUs from "./pages/AboutUs";
+import FeaturesPage from "./pages/FeaturesPage";
+import TestimonialsPage from "./pages/TestimonialsPage";
+import PricingPage from "./pages/PricingPage";
+import NotificationsPage from "./pages/NotificationsPage";
+import SupplierPage from "./pages/SupplierPage";
+import ReportsPage from "./pages/ReportsPage";
+import ProductDetailsPage from "./pages/ProductDetailsPage";
+import ExpensesPage from "./pages/ExpensesPage";
+import { isAuthenticated } from "./utils/auth";
+
+// Services Page
+import Services from "./pages/Services";
 
 // Blog imports
-import AdminBlogDashboard from './pages/AdminBlogDashboard';
-import AdminBlogEditor from './pages/AdminBlogEditor';
-import BlogList from './pages/BlogList';
-import BlogPost from './pages/BlogPost';
+import AdminBlogDashboard from "./pages/AdminBlogDashboard";
+import AdminBlogEditor from "./pages/AdminBlogEditor";
+import BlogList from "./pages/BlogList";
+import BlogPost from "./pages/BlogPost";
 
 // PWA Add to Home Screen Prompt
-import AddToHomeScreenPrompt from './components/LandingPage/AddToHomeScreenPrompt';
-import UpdatePrompt from './components/LandingPage/UpdatePrompt';
-import AuthProvider from './components/LandingPage/AuthProvider';
-
+import AddToHomeScreenPrompt from "./components/LandingPage/AddToHomeScreenPrompt";
+import UpdatePrompt from "./components/LandingPage/UpdatePrompt";
+import AuthProvider from "./components/LandingPage/AuthProvider";
 
 const WhatsAppButton: React.FC = (): JSX.Element | null => {
   const [showLabel, setShowLabel] = useState(true);
   const location = useLocation();
 
   const landingPages = [
-    '/', '/about', '/features', '/testimonials', '/pricing',
-    '/login', '/signup', '/forgot-password', '/reset-password', '/blog'
+    "/",
+    "/about",
+    "/features",
+    "/testimonials",
+    "/pricing",
+    "/login",
+    "/signup",
+    "/forgot-password",
+    "/reset-password",
+    "/blog",
   ];
-  const shouldShow = landingPages.includes(location.pathname) || location.pathname.startsWith('/blog/');
+  const shouldShow =
+    landingPages.includes(location.pathname) ||
+    location.pathname.startsWith("/blog/");
 
   if (!shouldShow) return null;
 
@@ -55,8 +73,14 @@ const WhatsAppButton: React.FC = (): JSX.Element | null => {
       onMouseEnter={() => setShowLabel(true)}
     >
       {/* Label */}
-      <div className={`bg-white px-4 py-2 rounded-lg shadow-lg border-2 border-green-500 whitespace-nowrap transition-all duration-300 ${showLabel ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'}`}>
-        <span className="text-sm font-semibold text-gray-800">contact us for help</span>
+      <div
+        className={`bg-white px-4 py-2 rounded-lg shadow-lg border-2 border-green-500 whitespace-nowrap transition-all duration-300 ${
+          showLabel ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
+        }`}
+      >
+        <span className="text-sm font-semibold text-gray-800">
+          contact us for help
+        </span>
       </div>
 
       {/* WhatsApp Icon Button */}
@@ -108,21 +132,170 @@ export function App() {
           <Route path="/blog/:postId" element={<BlogPost />} />
 
           {/* ADMIN BLOG ROUTES - Protected */}
-          <Route path="/admin/blog" element={isAuthenticated() ? <Layout><AdminBlogDashboard /></Layout> : <Navigate to="/login" />} />
-          <Route path="/admin/blog/new" element={isAuthenticated() ? <Layout><AdminBlogEditor /></Layout> : <Navigate to="/login" />} />
-          <Route path="/admin/blog/edit/:postId" element={isAuthenticated() ? <Layout><AdminBlogEditor /></Layout> : <Navigate to="/login" />} />
+          <Route
+            path="/admin/blog"
+            element={
+              isAuthenticated() ? (
+                <Layout>
+                  <AdminBlogDashboard />
+                </Layout>
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/admin/blog/new"
+            element={
+              isAuthenticated() ? (
+                <Layout>
+                  <AdminBlogEditor />
+                </Layout>
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/admin/blog/edit/:postId"
+            element={
+              isAuthenticated() ? (
+                <Layout>
+                  <AdminBlogEditor />
+                </Layout>
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
 
           {/* Protected routes */}
-          <Route path="/dashboard" element={isAuthenticated() ? <Layout><Dashboard /></Layout> : <Navigate to="/login" />} />
-          <Route path="/products" element={isAuthenticated() ? <Layout><Products /></Layout> : <Navigate to="/login" />} />
-          <Route path="/products/:name" element={isAuthenticated() ? <Layout><ProductDetailsPage /></Layout> : <Navigate to="/login" />} />
-          <Route path="/sales" element={isAuthenticated() ? <Layout><SalesPage /></Layout> : <Navigate to="/login" />} />
-          <Route path="/analytics" element={isAuthenticated() ? <Layout><Analytics /></Layout> : <Navigate to="/login" />} />
-          <Route path="/expenses" element={isAuthenticated() ? <Layout><ExpensesPage /></Layout> : <Navigate to="/login" />} />
-          <Route path="/settings" element={isAuthenticated() ? <Layout><Settings /></Layout> : <Navigate to="/login" />} />
-          <Route path="/notifications" element={isAuthenticated() ? <Layout><NotificationsPage /></Layout> : <Navigate to="/login" />} />
-          <Route path="/suppliers" element={isAuthenticated() ? <Layout><SupplierPage /></Layout> : <Navigate to="/login" />} />
-          <Route path="/reports" element={isAuthenticated() ? <Layout><ReportsPage /></Layout> : <Navigate to="/login" />} />
+          <Route
+            path="/dashboard"
+            element={
+              isAuthenticated() ? (
+                <Layout>
+                  <Dashboard />
+                </Layout>
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/products"
+            element={
+              isAuthenticated() ? (
+                <Layout>
+                  <Products />
+                </Layout>
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/products/:name"
+            element={
+              isAuthenticated() ? (
+                <Layout>
+                  <ProductDetailsPage />
+                </Layout>
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/sales"
+            element={
+              isAuthenticated() ? (
+                <Layout>
+                  <SalesPage />
+                </Layout>
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/analytics"
+            element={
+              isAuthenticated() ? (
+                <Layout>
+                  <Analytics />
+                </Layout>
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/expenses"
+            element={
+              isAuthenticated() ? (
+                <Layout>
+                  <ExpensesPage />
+                </Layout>
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              isAuthenticated() ? (
+                <Layout>
+                  <Settings />
+                </Layout>
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/notifications"
+            element={
+              isAuthenticated() ? (
+                <Layout>
+                  <NotificationsPage />
+                </Layout>
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/suppliers"
+            element={
+              isAuthenticated() ? (
+                <Layout>
+                  <SupplierPage />
+                </Layout>
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/reports"
+            element={
+              isAuthenticated() ? (
+                <Layout>
+                  <ReportsPage />
+                </Layout>
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/services"
+            element={
+              isAuthenticated() ? <Services /> : <Navigate to="/login" />
+            }
+          />
         </Routes>
       </AuthProvider>
     </Router>
