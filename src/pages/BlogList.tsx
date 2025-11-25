@@ -13,7 +13,6 @@ interface BlogPost {
 }
 
 const BlogList = () => {
-    console.log("🔴 BlogList component is rendering!");
 
     const navigate = useNavigate();
     const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -21,12 +20,10 @@ const BlogList = () => {
     const [error, setError] = useState("");
 
     useEffect(() => {
-        console.log("🔴 useEffect is running!");
         fetchPosts();
     }, []);
 
     async function fetchPosts() {
-        console.log("🔴 fetchPosts called!");
         try {
             const data = await apiFetch("/blog/posts");
             console.log("=== BLOG LIST DEBUG ===");
@@ -40,17 +37,14 @@ const BlogList = () => {
             console.log("======================");
             setPosts(data.posts || []);
         } catch (err: any) {
-            console.error("🔴 Error fetching posts:", err);
             setError(err.message || "Failed to load blog posts");
         } finally {
             setLoading(false);
         }
     }
 
-    console.log("🔴 Current state - Loading:", loading, "Posts count:", posts.length);
 
     if (loading) {
-        console.log("🔴 Showing loading state");
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="text-center">
@@ -61,7 +55,6 @@ const BlogList = () => {
         );
     }
 
-    console.log("🔴 Rendering blog list with", posts.length, "posts");
 
     return (
         <div className="min-h-screen bg-gray-50 py-12">
@@ -100,9 +93,6 @@ const BlogList = () => {
                             imageUrl = `https://i.imgur.com/${imgurId}.jpg`;
                         }
 
-                        console.log("🟢 Rendering post ID:", post.id);
-                        console.log("   Topic:", post.topic);
-                        console.log("   Image URL:", imageUrl);
 
                         return (
                             <article
@@ -117,9 +107,7 @@ const BlogList = () => {
                                             src={imageUrl}
                                             alt={post.topic || "Blog post image"}
                                             className="w-full h-full object-cover"
-                                            onLoad={() => console.log("✅ Image loaded:", imageUrl)}
                                             onError={(e) => {
-                                                console.error("❌ Image failed:", imageUrl);
                                                 const parent = e.currentTarget.parentElement;
                                                 if (parent) {
                                                     parent.innerHTML = `
@@ -153,15 +141,9 @@ const BlogList = () => {
                                             minHeight: '3.5rem'
                                         }}
                                     >
-                                        {post.topic || "⚠️ No Topic"}
+                                        {post.topic || "No Topic"}
                                     </h2>
 
-                                    {/* Debug warning */}
-                                    {!post.topic && (
-                                        <div className="text-xs text-red-600 mb-2 p-2 bg-red-50 rounded border border-red-200">
-                                            ⚠️ Topic is missing for post ID: {post.id}
-                                        </div>
-                                    )}
 
                                     {/* Excerpt */}
                                     <p
