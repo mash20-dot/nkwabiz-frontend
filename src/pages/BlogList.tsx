@@ -13,16 +13,20 @@ interface BlogPost {
 }
 
 const BlogList = () => {
+    console.log("🔴 BlogList component is rendering!");
+
     const navigate = useNavigate();
     const [posts, setPosts] = useState<BlogPost[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
     useEffect(() => {
+        console.log("🔴 useEffect is running!");
         fetchPosts();
     }, []);
 
     async function fetchPosts() {
+        console.log("🔴 fetchPosts called!");
         try {
             const data = await apiFetch("/blog/posts");
             console.log("=== BLOG LIST DEBUG ===");
@@ -31,17 +35,22 @@ const BlogList = () => {
             if (data.posts && data.posts.length > 0) {
                 console.log("First post:", data.posts[0]);
                 console.log("First post topic:", data.posts[0].topic);
+                console.log("First post image:", data.posts[0].image);
             }
             console.log("======================");
             setPosts(data.posts || []);
         } catch (err: any) {
+            console.error("🔴 Error fetching posts:", err);
             setError(err.message || "Failed to load blog posts");
         } finally {
             setLoading(false);
         }
     }
 
+    console.log("🔴 Current state - Loading:", loading, "Posts count:", posts.length);
+
     if (loading) {
+        console.log("🔴 Showing loading state");
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="text-center">
@@ -51,6 +60,8 @@ const BlogList = () => {
             </div>
         );
     }
+
+    console.log("🔴 Rendering blog list with", posts.length, "posts");
 
     return (
         <div className="min-h-screen bg-gray-50 py-12">
@@ -82,14 +93,16 @@ const BlogList = () => {
                 {/* Posts Grid */}
                 <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                     {posts.map((post) => {
-                        // Fix Imgur URLs - convert page URL to direct image URL
+                        // Fix Imgur URLs
                         let imageUrl = post.image;
                         if (imageUrl && imageUrl.includes('imgur.com/') && !imageUrl.includes('i.imgur.com')) {
                             const imgurId = imageUrl.split('imgur.com/')[1].split(/[?#.]/)[0];
                             imageUrl = `https://i.imgur.com/${imgurId}.jpg`;
                         }
 
-                        console.log("Rendering post:", post.id, "Topic:", post.topic, "Image:", imageUrl);
+                        console.log("🟢 Rendering post ID:", post.id);
+                        console.log("   Topic:", post.topic);
+                        console.log("   Image URL:", imageUrl);
 
                         return (
                             <article
@@ -104,10 +117,9 @@ const BlogList = () => {
                                             src={imageUrl}
                                             alt={post.topic || "Blog post image"}
                                             className="w-full h-full object-cover"
-                                            onLoad={() => console.log("Image loaded successfully:", imageUrl)}
+                                            onLoad={() => console.log("✅ Image loaded:", imageUrl)}
                                             onError={(e) => {
-                                                console.error("Image failed to load:", imageUrl);
-                                                console.log("Original image URL from backend:", post.image);
+                                                console.error("❌ Image failed:", imageUrl);
                                                 const parent = e.currentTarget.parentElement;
                                                 if (parent) {
                                                     parent.innerHTML = `
@@ -130,7 +142,7 @@ const BlogList = () => {
 
                                 {/* Content */}
                                 <div className="p-6">
-                                    {/* Topic - CRITICAL: This should display */}
+                                    {/* Topic */}
                                     <h2
                                         className="text-xl font-semibold text-gray-900 mb-2"
                                         style={{
@@ -141,13 +153,13 @@ const BlogList = () => {
                                             minHeight: '3.5rem'
                                         }}
                                     >
-                                        {post.topic ? post.topic : "⚠️ No Topic Found"}
+                                        {post.topic || "⚠️ No Topic"}
                                     </h2>
 
-                                    {/* Debug info - remove this after fixing */}
+                                    {/* Debug warning */}
                                     {!post.topic && (
-                                        <div className="text-xs text-red-500 mb-2 p-2 bg-red-50 rounded">
-                                            DEBUG: Topic is missing. Post ID: {post.id}
+                                        <div className="text-xs text-red-600 mb-2 p-2 bg-red-50 rounded border border-red-200">
+                                            ⚠️ Topic is missing for post ID: {post.id}
                                         </div>
                                     )}
 
