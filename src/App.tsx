@@ -44,7 +44,7 @@ import Services from "./pages/Services";
 // Blog imports
 import AdminBlogDashboard from "./pages/LandingPage/AdminBlogDashboard";
 import AdminBlogEditor from "./pages/LandingPage/AdminBlogEditor";
-import BlogList from "./pages/LandingPage/BlogList";
+import BlogList from "./pages/BlogList";
 import BlogPost from "./pages/LandingPage/BlogPost";
 
 // PWA Add to Home Screen Prompt
@@ -84,9 +84,8 @@ const WhatsAppButton: React.FC = (): JSX.Element | null => {
     >
       {/* Label */}
       <div
-        className={`bg-white px-4 py-2 rounded-lg shadow-lg border-2 border-green-500 whitespace-nowrap transition-all duration-300 ${
-          showLabel ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
-        }`}
+        className={`bg-white px-4 py-2 rounded-lg shadow-lg border-2 border-green-500 whitespace-nowrap transition-all duration-300 ${showLabel ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
+          }`}
       >
         <span className="text-sm font-semibold text-gray-800">
           contact us for help
