@@ -10,10 +10,9 @@ type BadgeStatusColor = "success" | "error" | "gray" | "warning";
 type messagesProp = {
   id: number;
   title: string;
-  recipients: number;
+  recipients: string;
   status: string;
   statusColor: BadgeStatusColor;
-  cost: string;
   date: string;
 };
 
@@ -21,46 +20,42 @@ const messages: messagesProp[] = [
   {
     id: 1,
     title: "Promo Alert",
-    recipients: 120,
+    recipients:
+      "+23481239788, +2349034356798, +22480673454, +22480673454, +22480673454, +22480673454",
     status: "Delivered",
     statusColor: "success",
-    cost: "GHS 18.00",
     date: "Nov 6, 2025",
   },
   {
     id: 2,
     title: "Reminder",
-    recipients: 80,
+    recipients: "+23481239788, +2349034356798, +22480673454",
     status: "Pending",
     statusColor: "warning",
-    cost: "GHS 12.00",
     date: "Nov 5, 2025",
   },
   {
     id: 3,
     title: "Welcome Message",
-    recipients: 40,
+    recipients: "+23481239788, +2349034356798, +22480673454",
     status: "Failed",
     statusColor: "error",
-    cost: "GHS 6.00",
     date: "Nov 4, 2025",
   },
   {
     id: 4,
     title: "Upcoming Features",
-    recipients: 40,
+    recipients: "+23481239788, +2349034356798, +22480673454",
     status: "Delivered",
     statusColor: "success",
-    cost: "GHS 6.00",
     date: "Nov 2, 2025",
   },
   {
     id: 5,
     title: "Introducing Our Platform",
-    recipients: 40,
+    recipients: "+23481239788, +2349034356798, +22480673454",
     status: "Delivered",
     statusColor: "success",
-    cost: "GHS 6.00",
     date: "Nov 2, 2025",
   },
 ];
@@ -136,35 +131,37 @@ const SmsDashboard = () => {
           title="Recent Messages"
         />
 
-        <Table>
-          <Table.Header className="border-y border-gray-200">
+        <Table className="react-aria-table w-full">
+          <Table.Header className="w-full border-b border-gray-200">
             <Table.Row>
+              <Table.Head>ID</Table.Head>
               <Table.Head>Message</Table.Head>
               <Table.Head>Recipients</Table.Head>
               <Table.Head>Status</Table.Head>
-              <Table.Head>Cost</Table.Head>
               <Table.Head>Date</Table.Head>
             </Table.Row>
           </Table.Header>
 
-          <Table.Body items={messages}>
+          <Table.Body className="w-full" items={messages}>
             {(message) => (
               <Table.Row
                 key={message.id}
                 className="cursor-pointer bg-white hover:bg-gray-50 border-b border-gray-200 last:border-b-0"
               >
+                <Table.Cell>{message.id}</Table.Cell>
                 <Table.Cell>
-                  <span className="font-medium text-primary">
+                  <span className="font-normal text-gray-800">
                     {message.title}
                   </span>
                 </Table.Cell>
-                <Table.Cell>{message.recipients}</Table.Cell>
+                <Table.Cell className="truncate">
+                  {message.recipients}
+                </Table.Cell>
                 <Table.Cell>
                   <Badge color={message.statusColor} size="sm">
                     {message.status}
                   </Badge>
                 </Table.Cell>
-                <Table.Cell>{message.cost}</Table.Cell>
                 <Table.Cell>{message.date}</Table.Cell>
               </Table.Row>
             )}
