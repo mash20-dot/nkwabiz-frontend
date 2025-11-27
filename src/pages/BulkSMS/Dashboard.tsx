@@ -5,7 +5,7 @@ import SummaryCard from "@/components/SummaryCard";
 import { Table, TableCard } from "@/components/application/table/table";
 import { Badge } from "@/components/base/badges/badges";
 
-type BadgeStatusColor = "success" | "error" | "gray";
+type BadgeStatusColor = "success" | "error" | "gray" | "warning";
 
 type messagesProp = {
   id: number;
@@ -32,7 +32,7 @@ const messages: messagesProp[] = [
     title: "Reminder",
     recipients: 80,
     status: "Pending",
-    statusColor: "gray",
+    statusColor: "warning",
     cost: "GHS 12.00",
     date: "Nov 5, 2025",
   },

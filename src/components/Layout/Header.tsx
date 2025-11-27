@@ -30,13 +30,17 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
         console.log("Response keys:", Object.keys(data)); // Debug: see all available keys
 
         // Try different possible field names
-        const firstName = data.firstname || data.firstName || data.first_name || data.name;
+        const firstName =
+          data.firstname || data.firstName || data.first_name || data.name;
 
         if (firstName) {
           setUserFirstName(firstName);
           console.log("First name set to:", firstName); // Debug log
         } else {
-          console.warn("No firstname found in response. Full data:", JSON.stringify(data));
+          console.warn(
+            "No firstname found in response. Full data:",
+            JSON.stringify(data)
+          );
           setError("Name not found in response");
         }
       })
@@ -60,11 +64,8 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
   }
 
   return (
-    <header className="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white border-b border-b-gray-300">
-      <ProfileCard
-        onClick={handleLogout}
-        isActive={isProfileActive}
-      />
+    <header className="sticky top-0 z-10 shrink-0 flex h-16 bg-white border-b border-b-gray-300">
+      <ProfileCard onClick={handleLogout} isActive={isProfileActive} />
       <button
         type="button"
         className="px-4 border-r border-gray-200 text-gray-500 md:hidden"
@@ -75,9 +76,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
       </button>
       <div className="flex-1 px-4 flex justify-between items-center">
         <div className="flex-1 flex items-center">
-          <h1 className="text-base font-medium text-gray-700">
-            Dashboard
-          </h1>
+          <h1 className="text-base font-medium text-gray-700">Dashboard</h1>
         </div>
         <div className="flex items-center space-x-2 md:space-x-3">
           {/* User greeting - Shows on all screens */}
@@ -120,12 +119,19 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
               </div>
               {/* Dropdown arrow indicator */}
               <svg
-                className={`h-4 w-4 text-gray-400 transition-transform ${isProfileActive ? 'rotate-180' : ''}`}
+                className={`h-4 w-4 text-gray-400 transition-transform ${
+                  isProfileActive ? "rotate-180" : ""
+                }`}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </button>
           </div>
