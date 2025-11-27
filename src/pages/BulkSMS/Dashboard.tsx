@@ -74,7 +74,10 @@ const SmsDashboard = () => {
       <div className="w-full flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
         <h1 className="text-2xl font-medium text-gray-900">SMS Management</h1>
         <div className="flex gap-4">
-          <Button className="bg-blue-600 hover:bg-blue-700 border-blue-600 text-white">
+          <Button
+            className="bg-blue-600 hover:bg-blue-700 border-blue-600 cursor-pointer text-white"
+            onClick={() => navigate("/sms/bulksms?openForm=true")}
+          >
             <MessageCircle
               className="h-4 w-4 mr-2 text-white"
               aria-hidden="true"
