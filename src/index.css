@@ -154,3 +154,42 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Table Styling */
+/* .react-aria-table [role="row"] {
+  display: grid !important;
+  grid-auto-flow: column !important;
+  grid-auto-columns: 1fr !important;
+} */
+
+.react-aria-table [role="cell"] {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Desktop & Tablet */
+@media (min-width: 640px) {
+  .react-aria-table [role="row"] {
+    display: grid !important;
+    grid-template-columns:
+      80px
+      1.4fr
+      2fr
+      1fr
+      1fr;
+    align-items: center;
+  }
+}
+
+@media (max-width: 639px) {
+  .react-aria-table [role="row"] {
+    display: block !important;
+  }
+
+  .react-aria-table [role="cell"] {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+  }
+}
