@@ -2,6 +2,7 @@ import { X } from "lucide-react";
 import Button from "@/components/Button";
 import classNames from "classnames";
 import { SendHorizontal } from "lucide-react";
+import { TextArea } from "@/components/base/textarea/textarea";
 
 type SendSMSProps = {
   showForm: boolean;
@@ -66,10 +67,36 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
 
       {/* Form Area */}
       <div className="flex flex-col md:flex-col lg:flex-row w-full gap-6">
-        <div className="w-full bg-white border border-gray-200 shadow-sm rounded-md"></div>
+        <div className="flex flex-col gap-6 w-full p-0 md:p-6 lg:p-6 bg-none md:bg-white border-0 md:border lg:border border-gray-200 md:shadow-sm lg:shadow-sm rounded-none md:rounded-md">
+          {/* Message */}
+          <div className="flex flex-col gap-2">
+            <h2 className="text-lg font-medium text-gray-800">Message</h2>
+            <TextArea
+              isRequired
+              placeholder="Type your message here..."
+              rows={8}
+            />
+          </div>
+
+          {/* Recipients */}
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1">
+              <h2 className="text-lg font-medium text-gray-800">Recipients</h2>
+              <p className="text-xs font-normal text-gray-400">
+                Add recipients by searching existing customers, or typing phone
+                numbers.
+              </p>
+            </div>
+            <TextArea
+              isRequired
+              placeholder="Search customers or type numbers..."
+              rows={8}
+            />
+          </div>
+        </div>
 
         {/* Summary */}
-        <div className="flex p-5 rounded-md shadow-sm flex-col gap-6 min-w-2xs bg-white border border-gray-200">
+        <div className="flex p-5 rounded-md shadow-sm flex-col gap-6 h-auto min-w-2xs bg-white border border-gray-200">
           <h2 className="text-lg font-medium text-gray-800">Cost Summary</h2>
           <div className="flex flex-col gap-4 w-full">
             <Summary title="Cost per SMS" value={0.025} className="justify-" />

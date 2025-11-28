@@ -132,7 +132,7 @@ const SmsDashboard = () => {
         />
 
         <Table className="react-aria-table w-full">
-          <Table.Header className="w-full border-b border-gray-200">
+          <Table.Header className="w-full border-y border-gray-200">
             <Table.Row>
               <Table.Head>ID</Table.Head>
               <Table.Head>Message</Table.Head>
