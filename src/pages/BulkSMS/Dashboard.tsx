@@ -4,6 +4,7 @@ import { MessageCircle, Send, CircleX, CreditCard } from "lucide-react";
 import SummaryCard from "@/components/SummaryCard";
 import { Table, TableCard } from "@/components/application/table/table";
 import { Badge } from "@/components/base/badges/badges";
+import { getSmsHistory } from "@/utils/BulkSMS/smsService";
 
 type BadgeStatusColor = "success" | "error" | "gray" | "warning";
 

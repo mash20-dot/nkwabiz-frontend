@@ -117,8 +117,8 @@ const BulkSMS = () => {
                 </Table.Row>
               </Table.Header>
 
-              <Table.Body className="w-full" items={messages}>
-                {(message) => (
+              <Table.Body className="w-full">
+                {messages.map((message) => (
                   <Table.Row
                     key={message.id}
                     className="cursor-pointer bg-white hover:bg-gray-50 border-b border-gray-200 last:border-b-0"
@@ -138,8 +138,8 @@ const BulkSMS = () => {
                           message.status === "Delivered"
                             ? "success"
                             : message.status === "Pending"
-                            ? "warning"
-                            : "error"
+                              ? "warning"
+                              : "error"
                         }
                         size="sm"
                       >
@@ -147,7 +147,7 @@ const BulkSMS = () => {
                       </Badge>
                     </Table.Cell>
                   </Table.Row>
-                )}
+                ))}
               </Table.Body>
             </Table>
           </TableCard.Root>
