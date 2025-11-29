@@ -35,7 +35,7 @@ import { isAuthenticated } from "./utils/auth";
 import SmsDashboard from "./pages/BulkSMS/Dashboard";
 import BulkSMS from "./pages/BulkSMS/BulkSms";
 import SettingsPage from "./pages/Inventory/Settings";
-import CustomersPage from "./pages/BulkSMS/Customers";
+import ContactsPage from "./pages/BulkSMS/Contacts";
 import Wallet from "./pages/BulkSMS/Wallet";
 
 // Services Page
@@ -84,8 +84,9 @@ const WhatsAppButton: React.FC = (): JSX.Element | null => {
     >
       {/* Label */}
       <div
-        className={`bg-white px-4 py-2 rounded-lg shadow-lg border-2 border-green-500 whitespace-nowrap transition-all duration-300 ${showLabel ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
-          }`}
+        className={`bg-white px-4 py-2 rounded-lg shadow-lg border-2 border-green-500 whitespace-nowrap transition-all duration-300 ${
+          showLabel ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
+        }`}
       >
         <span className="text-sm font-semibold text-gray-800">
           contact us for help
@@ -343,7 +344,7 @@ export function App() {
               element={
                 isAuthenticated() ? (
                   <Layout>
-                    <CustomersPage />
+                    <ContactsPage />
                   </Layout>
                 ) : (
                   <Navigate to="/login" />

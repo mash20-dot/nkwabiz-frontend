@@ -2,14 +2,14 @@ import { Users } from "lucide-react";
 import Button from "@/components/Button";
 import { Table, TableCard } from "@/components/application/table/table";
 
-type customersProps = {
+type contactsProps = {
   id: number;
   name: string;
   email: string;
   contact: number;
 };
 
-const customers: customersProps[] = [
+const contacts: contactsProps[] = [
   {
     id: 1,
     name: "Lando Norris",
@@ -36,7 +36,7 @@ const customers: customersProps[] = [
   },
 ];
 
-const CustomersPage = () => {
+const ContactsPage = () => {
   return (
     <div className="flex w-full h-full items-start justify-center">
       <div className="flex flex-col items-start justify-center gap-6">
@@ -66,21 +66,21 @@ const CustomersPage = () => {
               </Table.Row>
             </Table.Header>
 
-            <Table.Body className="w-full" items={customers}>
-              {(customer) => (
+            <Table.Body className="w-full" items={contacts}>
+              {(contact) => (
                 <Table.Row
-                  key={customer.id}
+                  key={contact.id}
                   className="cursor-pointer bg-white hover:bg-gray-50 border-b border-gray-200 last:border-b-0"
                 >
-                  <Table.Cell>{customer.id}</Table.Cell>
+                  <Table.Cell>{contact.id}</Table.Cell>
                   <Table.Cell>
                     <span className="font-normal text-gray-800">
-                      {customer.name}
+                      {contact.name}
                     </span>
                   </Table.Cell>
-                  <Table.Cell className="truncate">{customer.email}</Table.Cell>
+                  <Table.Cell className="truncate">{contact.email}</Table.Cell>
 
-                  <Table.Cell>{customer.contact}</Table.Cell>
+                  <Table.Cell>{contact.contact}</Table.Cell>
                 </Table.Row>
               )}
             </Table.Body>
@@ -91,4 +91,4 @@ const CustomersPage = () => {
   );
 };
 
-export default CustomersPage;
+export default ContactsPage;
