@@ -14,7 +14,7 @@ export default function SummaryCard({
   children,
 }: SummaryCardProps) {
   return (
-    <div className="bg-white overflow-hidden border border-gray-200 hover:border-gray-300 cursor-pointer rounded-lg group">
+    <div className="bg-white overflow-hidden border border-gray-200 rounded-lg group">
       <div className="p-5">
         <div className="w-full flex-1">
           <dl className="flex flex-col gap-2">

@@ -5,32 +5,16 @@ import { Badge } from "@/components/base/badges/badges";
 import SendSms from "./SendSms";
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { getSmsHistory } from "@/utils/BulkSMS/smsService";
 import { EmptyState } from "@/components/application/empty-state/empty-state";
-import type { SmsHistory } from "@/utils/BulkSMS/smsService";
+import { useSms } from "@/context/smsContext";
 
 const BulkSMS = () => {
-  const [smsData, setSmsData] = useState<SmsHistory[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { smsData, loading, error } = useSms();
   const [showForm, setShowForm] = useState<boolean>(false);
 
+  const messages = smsData?.history || [];
+
   const location = useLocation();
-
-  useEffect(() => {
-    async function fetchHistory() {
-      try {
-        const data = await getSmsHistory();
-        setSmsData(data);
-      } catch (err) {
-        setError("Failed to load SMS history");
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchHistory();
-  }, []);
 
   function handleCloseForm() {
     setShowForm(false);
@@ -79,8 +63,8 @@ const BulkSMS = () => {
         </div>
 
         {/* Empty State or Table */}
-        {smsData.length === 0 ? (
-          <div className="w-full flex-1 flex items-center justify-center overflow-hidden px-8 pt-10 pb-12">
+        {messages.length === 0 ? (
+          <div className="w-full border border-gray-200 rounded-md flex-1 flex items-center justify-center overflow-hidden px-8 pt-10 pb-12">
             <EmptyState size="sm">
               <EmptyState.Header pattern="none">
                 <EmptyState.FeaturedIcon color="brand" theme="light" />
@@ -124,7 +108,7 @@ const BulkSMS = () => {
               </Table.Header>
 
               <Table.Body className="w-full">
-                {smsData.map((message) => (
+                {messages.map((message) => (
                   <Table.Row
                     key={message.id}
                     className="cursor-pointer bg-white hover:bg-gray-50 border-b border-gray-200 last:border-b-0"
