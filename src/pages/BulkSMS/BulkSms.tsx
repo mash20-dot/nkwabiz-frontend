@@ -6,11 +6,11 @@ import SendSms from "./SendSms";
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { getSmsHistory } from "@/utils/BulkSMS/smsService";
-import { SmsHistory } from "@/utils/BulkSMS/smsService";
 import { EmptyState } from "@/components/application/empty-state/empty-state";
+import type { SmsHistory } from "@/utils/BulkSMS/smsService";
 
 const BulkSMS = () => {
-  const [messages, setMessages] = useState<SmsHistory[]>([]);
+  const [smsData, setSmsData] = useState<SmsHistory[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState<boolean>(false);
@@ -21,7 +21,7 @@ const BulkSMS = () => {
     async function fetchHistory() {
       try {
         const data = await getSmsHistory();
-        setMessages(data);
+        setSmsData(data);
       } catch (err) {
         setError("Failed to load SMS history");
       } finally {
@@ -56,7 +56,9 @@ const BulkSMS = () => {
       {/* Bulk SMS Page */}
       <div
         className={
-          showForm ? "hidden" : "flex flex-col items-start justify-center gap-6"
+          showForm
+            ? "hidden"
+            : "flex h-full flex-1 flex-col items-start justify-center gap-6"
         }
       >
         {/* Page Header */}
@@ -77,16 +79,18 @@ const BulkSMS = () => {
         </div>
 
         {/* Empty State or Table */}
-        {messages.length === 0 ? (
-          <div className="w-full flex items-center justify-center overflow-hidden px-8 pt-10 pb-12">
+        {smsData.length === 0 ? (
+          <div className="w-full flex-1 flex items-center justify-center overflow-hidden px-8 pt-10 pb-12">
             <EmptyState size="sm">
-              <EmptyState.Header pattern="circle">
-                <EmptyState.FeaturedIcon color="gray" theme="modern-neue" />
+              <EmptyState.Header pattern="none">
+                <EmptyState.FeaturedIcon color="brand" theme="light" />
               </EmptyState.Header>
 
               <EmptyState.Content>
-                <EmptyState.Title>No SMS messages yet</EmptyState.Title>
-                <EmptyState.Description>
+                <EmptyState.Title className="text-gray-800">
+                  No SMS messages yet
+                </EmptyState.Title>
+                <EmptyState.Description className="text-gray-600">
                   You haven't sent any bulk SMS messages yet. Get started by
                   sending your first message to your recipients.
                 </EmptyState.Description>
@@ -97,6 +101,7 @@ const BulkSMS = () => {
                   className="cursor-pointer bg-blue-600 hover:bg-blue-700 border-blue-600 text-white"
                   onClick={() => setShowForm((prev) => !prev)}
                 >
+                  <MessageCircle className="h-4 w-4 mr-2 text-white" />
                   Send Bulk SMS
                 </Button>
               </EmptyState.Footer>
@@ -114,11 +119,12 @@ const BulkSMS = () => {
                   <Table.Head>Message</Table.Head>
                   <Table.Head>Recipients</Table.Head>
                   <Table.Head>Status</Table.Head>
+                  <Table.Head>Date</Table.Head>
                 </Table.Row>
               </Table.Header>
 
               <Table.Body className="w-full">
-                {messages.map((message) => (
+                {smsData.map((message) => (
                   <Table.Row
                     key={message.id}
                     className="cursor-pointer bg-white hover:bg-gray-50 border-b border-gray-200 last:border-b-0"
@@ -130,14 +136,14 @@ const BulkSMS = () => {
                       </span>
                     </Table.Cell>
                     <Table.Cell className="truncate">
-                      {message.recipients}
+                      {message.recipient}
                     </Table.Cell>
                     <Table.Cell>
                       <Badge
                         color={
-                          message.status === "Delivered"
+                          message.status === "delivered"
                             ? "success"
-                            : message.status === "Pending"
+                            : message.status === "pending"
                               ? "warning"
                               : "error"
                         }
@@ -145,6 +151,9 @@ const BulkSMS = () => {
                       >
                         {message.status}
                       </Badge>
+                    </Table.Cell>
+                    <Table.Cell className="truncate">
+                      {message.created_at}
                     </Table.Cell>
                   </Table.Row>
                 ))}
