@@ -1,10 +1,12 @@
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import Button from "@/components/Button";
-import { MessageCircle, Send, CircleX, CreditCard } from "lucide-react";
+import { MessageCircle, Send, CircleX } from "lucide-react";
 import SummaryCard from "@/components/SummaryCard";
 import { Table, TableCard } from "@/components/application/table/table";
 import { Badge } from "@/components/base/badges/badges";
-import { getSmsHistory } from "@/utils/BulkSMS/smsService";
+import { getSmsHistoryFull } from "@/utils/BulkSMS/smsService";
+import type { SmsHistoryResponse } from "@/utils/BulkSMS/smsService";
 
 type BadgeStatusColor = "success" | "error" | "gray" | "warning";
 
@@ -63,6 +65,60 @@ const messages: messagesProp[] = [
 
 const SmsDashboard = () => {
   const navigate = useNavigate();
+  const [fullData, setFullData] = useState<SmsHistoryResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchHistory() {
+      try {
+        const data = await getSmsHistoryFull();
+        setFullData(data);
+      } catch (err) {
+        setError("Failed to load SMS history");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchHistory();
+  }, []);
+
+  const stats = {
+    total_sms: fullData?.total_sms ?? 0,
+    total_delivered: fullData?.total_delivered ?? 0,
+    total_pending: fullData?.total_pending ?? 0,
+    total_failed: fullData?.total_failed ?? 0,
+  };
+
+  const statsCards = [
+    {
+      title: "Total SMS",
+      icon: MessageCircle,
+      iconColor: "text-blue-500",
+      value: stats.total_sms,
+    },
+    {
+      title: "Total Sent",
+      icon: Send,
+      iconColor: "text-green-500",
+      value: stats.total_delivered,
+    },
+    {
+      title: "Total Pending",
+      icon: CircleX,
+      iconColor: "text-orange-500",
+      value: stats.total_pending,
+    },
+    {
+      title: "Total Failed",
+      icon: CircleX,
+      iconColor: "text-red-500",
+      value: stats.total_failed,
+    },
+  ];
+
+  // const messages = fullData?.history;
 
   return (
     <div className="flex flex-col items-start justify-center gap-6">
@@ -85,41 +141,18 @@ const SmsDashboard = () => {
 
       {/* SMS Overview */}
       <div className="w-full grid grid-cols-2 gap-3 md:gap-4 lg:gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {/* Total Messages Card */}
-        <SummaryCard
-          title="Total Messages"
-          icon={MessageCircle}
-          iconColor="text-blue-500"
-        >
-          <div className="text-[1.5rem] font-semibold text-gray-900">...</div>
-        </SummaryCard>
-
-        {/* SMS Delivered */}
-        <SummaryCard
-          title="SMS Delivered"
-          icon={Send}
-          iconColor="text-green-500"
-        >
-          <div className="text-[1.5rem] font-semibold text-gray-900">2,000</div>
-        </SummaryCard>
-
-        {/* Failed Messages */}
-        <SummaryCard
-          title="Failed Messages"
-          icon={CircleX}
-          iconColor="text-red-500"
-        >
-          <div className="text-[1.5rem] font-semibold text-gray-900">130</div>
-        </SummaryCard>
-
-        {/* Failed Messages */}
-        <SummaryCard
-          title="Remaining Balance"
-          icon={CreditCard}
-          iconColor="text-blue-500"
-        >
-          <div className="text-[1.5rem] font-semibold text-gray-900">2500</div>
-        </SummaryCard>
+        {statsCards.map((card) => (
+          <SummaryCard
+            key={card.id}
+            title={card.title}
+            icon={card.icon}
+            iconColor={card.iconColor}
+          >
+            <div className="text-[1.5rem] font-semibold text-gray-900">
+              {loading ? "..." : card.value}
+            </div>
+          </SummaryCard>
+        ))}
       </div>
 
       {/* Recent Messages Table */}
