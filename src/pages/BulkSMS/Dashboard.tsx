@@ -47,8 +47,6 @@ const SmsDashboard = () => {
     },
   ];
 
-  // const messages = fullData?.history;
-
   return (
     <div className="flex flex-1 h-full flex-col items-start justify-center gap-6">
       {/* Page Header */}

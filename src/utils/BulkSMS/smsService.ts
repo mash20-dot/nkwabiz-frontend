@@ -24,6 +24,23 @@ export interface SmsHistoryResponse {
   history: SmsHistory[];
 }
 
+export interface Contact {
+  user_id: number;
+  contact: string;
+  category: string;
+}
+
+export interface AddContactRequest {
+  contact: string;
+  category: string;
+}
+
+export interface AddContactResponse {
+  message: string;
+}
+
+export type ContactsResponse = Contact[] | { message: string; contacts: [] };
+
 // Get full SMS response (stats + history)
 export async function getSmsHistoryFull(): Promise<SmsHistoryResponse> {
   try {
@@ -40,40 +57,53 @@ export async function getSmsHistoryFull(): Promise<SmsHistoryResponse> {
   }
 }
 
-// Get only SMS history array
-export async function getSmsHistory(): Promise<SmsHistory[]> {
+// Get all contacts
+export async function getAllContacts(): Promise<Contact[]> {
   try {
-    const response = await apiFetch("/sms/all/sms", { method: "GET" }, true);
+    const response = await apiFetch(
+      "/sms/all/contact",
+      { method: "GET" },
+      true,
+    );
 
-    // Check if response has the expected structure
-    if (response && typeof response === "object" && "history" in response) {
-      return (response as SmsHistoryResponse).history;
+    if (
+      response &&
+      typeof response === "object" &&
+      "message" in response &&
+      "contacts" in response
+    ) {
+      return [];
     }
 
-    // If response is already an array, return it
     if (Array.isArray(response)) {
-      return response;
+      return response as Contact[];
     }
 
     return [];
   } catch (error) {
-    console.error("Error fetching SMS history:", error);
+    console.error("Error fetching contacts:", error);
     throw error;
   }
 }
 
-// Get only SMS statistics
-export async function getSmsStats(): Promise<SmsStats> {
+// Add a new contact
+export async function addContact(
+  contact: string,
+  category: string,
+): Promise<AddContactResponse> {
   try {
-    const response = await getSmsHistoryFull();
-    return {
-      total_sms: response.total_sms,
-      total_delivered: response.total_delivered,
-      total_failed: response.total_failed,
-      total_pending: response.total_pending,
-    };
+    const response = await apiFetch(
+      "/sms/contacts",
+      {
+        method: "POST",
+        body: JSON.stringify({ contact, category }),
+      },
+      true,
+    );
+
+    return response as AddContactResponse;
   } catch (error) {
-    console.error("Error fetching SMS stats:", error);
+    console.error("Error adding contact:", error);
     throw error;
   }
 }
