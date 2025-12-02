@@ -17,10 +17,9 @@ export const filledColors: Record<
   { root: string; addon: string; addonButton: string }
 > = {
   gray: {
-    root: "bg-utility-gray-50 text-utility-gray-700 ring-utility-gray-200",
-    addon: "text-utility-gray-500",
-    addonButton:
-      "hover:bg-utility-gray-100 text-utility-gray-400 hover:text-utility-gray-500",
+    root: "bg-gray-100 text-gray-700 ring-gray-200",
+    addon: "text-gray-500",
+    addonButton: "hover:bg-gray-100 text-gray-400 hover:text-gray-500",
   },
   brand: {
     root: "bg-utility-brand-50 text-utility-brand-700 ring-utility-brand-200",
@@ -91,7 +90,7 @@ const addonOnlyColors = Object.fromEntries(
   Object.entries(filledColors).map(([key, value]) => [
     key,
     { root: "", addon: value.addon },
-  ])
+  ]),
 ) as Record<BadgeColors, { root: string; addon: string }>;
 
 const withPillTypes = {
@@ -176,7 +175,7 @@ export const Badge = <T extends BadgeTypes>(props: BadgeProps<T>) => {
         colors.common,
         sizes[type][size],
         colors.styles[color].root,
-        props.className
+        props.className,
       )}
     >
       {children}
@@ -193,7 +192,7 @@ interface BadgeWithDotProps<T extends BadgeTypes> {
 }
 
 export const BadgeWithDot = <T extends BadgeTypes>(
-  props: BadgeWithDotProps<T>
+  props: BadgeWithDotProps<T>,
 ) => {
   const {
     size = "md",
@@ -229,7 +228,7 @@ export const BadgeWithDot = <T extends BadgeTypes>(
         colors.common,
         sizes[type][size],
         colors.styles[color].root,
-        className
+        className,
       )}
     >
       <Dot className={colors.styles[color].addon} size="sm" />
@@ -249,7 +248,7 @@ interface BadgeWithIconProps<T extends BadgeTypes> {
 }
 
 export const BadgeWithIcon = <T extends BadgeTypes>(
-  props: BadgeWithIconProps<T>
+  props: BadgeWithIconProps<T>,
 ) => {
   const {
     size = "md",
@@ -306,7 +305,7 @@ export const BadgeWithIcon = <T extends BadgeTypes>(
         colors.common,
         sizes[type][size][icon],
         colors.styles[color].root,
-        className
+        className,
       )}
     >
       {IconLeading && (
@@ -333,7 +332,7 @@ interface BadgeWithFlagProps<T extends BadgeTypes> {
 }
 
 export const BadgeWithFlag = <T extends BadgeTypes>(
-  props: BadgeWithFlagProps<T>
+  props: BadgeWithFlagProps<T>,
 ) => {
   const {
     size = "md",
@@ -367,7 +366,7 @@ export const BadgeWithFlag = <T extends BadgeTypes>(
       className={cx(
         colors.common,
         sizes[type][size],
-        colors.styles[color].root
+        colors.styles[color].root,
       )}
     >
       <img
@@ -389,7 +388,7 @@ interface BadgeWithImageProps<T extends BadgeTypes> {
 }
 
 export const BadgeWithImage = <T extends BadgeTypes>(
-  props: BadgeWithImageProps<T>
+  props: BadgeWithImageProps<T>,
 ) => {
   const {
     size = "md",
@@ -423,7 +422,7 @@ export const BadgeWithImage = <T extends BadgeTypes>(
       className={cx(
         colors.common,
         sizes[type][size],
-        colors.styles[color].root
+        colors.styles[color].root,
       )}
     >
       <img
@@ -453,7 +452,7 @@ interface BadgeWithButtonProps<T extends BadgeTypes> {
 }
 
 export const BadgeWithButton = <T extends BadgeTypes>(
-  props: BadgeWithButtonProps<T>
+  props: BadgeWithButtonProps<T>,
 ) => {
   const {
     size = "md",
@@ -488,7 +487,7 @@ export const BadgeWithButton = <T extends BadgeTypes>(
       className={cx(
         colors.common,
         sizes[type][size],
-        colors.styles[color].root
+        colors.styles[color].root,
       )}
     >
       {children}
@@ -499,7 +498,7 @@ export const BadgeWithButton = <T extends BadgeTypes>(
         className={cx(
           "flex cursor-pointer items-center justify-center p-0.5 outline-focus-ring transition duration-100 ease-linear focus-visible:outline-2",
           colors.styles[color].addonButton,
-          type === "pill-color" ? "rounded-full" : "rounded-[3px]"
+          type === "pill-color" ? "rounded-full" : "rounded-[3px]",
         )}
       >
         <Icon className="size-3 stroke-[3px] transition-inherit-all" />
@@ -549,7 +548,7 @@ export const BadgeIcon = <T extends BadgeTypes>(props: BadgeIconProps<T>) => {
       className={cx(
         colors.common,
         sizes[type][size],
-        colors.styles[color].root
+        colors.styles[color].root,
       )}
     >
       <Icon className={cx("size-3 stroke-[3px]", colors.styles[color].addon)} />

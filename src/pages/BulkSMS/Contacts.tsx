@@ -152,7 +152,7 @@ const ContactsPage = () => {
               </Table.Header>
 
               <Table.Body className="w-full">
-                {contacts.map((contact, index) => (
+                {filteredContacts.map((contact, index) => (
                   <Table.Row
                     key={index}
                     className="cursor-pointer bg-white hover:bg-gray-50 border-b border-gray-200 last:border-b-0"
