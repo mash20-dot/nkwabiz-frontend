@@ -36,7 +36,6 @@ import SmsDashboard from "./pages/BulkSMS/Dashboard";
 import BulkSMS from "./pages/BulkSMS/BulkSms";
 import SettingsPage from "./pages/Inventory/Settings";
 import ContactsPage from "./pages/BulkSMS/Contacts";
-import Wallet from "./pages/BulkSMS/Wallet";
 
 // Services Page
 import Services from "./pages/Services";
@@ -55,6 +54,8 @@ import AuthProvider from "./components/LandingPage/AuthProvider";
 // Contexts
 import { SmsProvider } from "@/context/smsContext";
 import { ContactsProvider } from "@/context/ContactsContext";
+import TopUp from "./pages/BulkSMS/TopUp";
+import PaymentVerification from "./pages/BulkSMS/PaymentVerification";
 
 const WhatsAppButton: React.FC = (): JSX.Element | null => {
   const [showLabel, setShowLabel] = useState(true);
@@ -358,12 +359,23 @@ export function App() {
                 />
 
                 <Route
-                  path="/sms/wallet"
+                  path="/sms/topup"
                   element={
                     isAuthenticated() ? (
                       <Layout>
-                        <Wallet />
+                        <TopUp />
                       </Layout>
+                    ) : (
+                      <Navigate to="/login" />
+                    )
+                  }
+                />
+
+                <Route
+                  path="/sms/payment-verification"
+                  element={
+                    isAuthenticated() ? (
+                      <PaymentVerification />
                     ) : (
                       <Navigate to="/login" />
                     )

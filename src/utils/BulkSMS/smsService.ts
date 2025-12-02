@@ -39,6 +39,31 @@ export interface AddContactResponse {
   message: string;
 }
 
+export interface SmsBundle {
+  id: number;
+  name: string;
+  sms_credits: number;
+  price: number;
+  price_per_sms: number;
+}
+
+export interface PaystackInitializeResponse {
+  bundle: SmsBundle;
+  paystack_data: {
+    authorization_url: string;
+    access_code: string;
+    reference: string;
+  };
+}
+
+export interface PaymentVerificationResponse {
+  message: string;
+  paystack_status: string;
+  payment_status: string;
+  amount: number;
+  current_sms_balance: number;
+}
+
 export type ContactsResponse = Contact[] | { message: string; contacts: [] };
 
 // Get full SMS response (stats + history)
@@ -104,6 +129,65 @@ export async function addContact(
     return response as AddContactResponse;
   } catch (error) {
     console.error("Error adding contact:", error);
+    throw error;
+  }
+}
+
+// Get all available SMS bundles
+export async function getSMSBundles(): Promise<SmsBundle[]> {
+  try {
+    const response = await apiFetch(
+      "/payment/get-bundles",
+      { method: "GET" },
+      false,
+    );
+
+    if (response && Array.isArray(response.bundles)) {
+      return response.bundles;
+    }
+
+    return [];
+  } catch (error) {
+    console.error("Error fetching SMS bundles:", error);
+    throw error;
+  }
+}
+
+// Initialize payment for a bundle
+export async function initializeSMSPayment(
+  bundleType: "small" | "medium" | "large" | "xl",
+): Promise<PaystackInitializeResponse> {
+  try {
+    const response = await apiFetch(
+      "/sms/api/payment/initialize-payment",
+      {
+        method: "POST",
+        body: JSON.stringify({ bundle_type: bundleType }),
+      },
+      true,
+    );
+
+    return response as PaystackInitializeResponse;
+  } catch (error) {
+    console.error("Error initializing payment:", error);
+    throw error;
+  }
+}
+
+// Verify payment after user returns from Paystack
+export async function verifyPayment(
+  reference: string,
+): Promise<PaymentVerificationResponse> {
+  try {
+    const response = await apiFetch(
+      `/sms/api/payment/verify_payment/${reference}`,
+      { method: "GET" },
+      true,
+    );
+
+    return response as PaymentVerificationResponse;
+  } catch (error) {
+    console.error("Error verifying payment:", error);
     throw error;
   }
 }
