@@ -48,8 +48,8 @@ export interface SmsBundle {
 }
 
 export interface PaystackInitializeResponse {
-  bundle: SmsBundle;
-  paystack_data: {
+  bundle?: SmsBundle;
+  paystack_data?: {
     authorization_url: string;
     access_code: string;
     reference: string;
@@ -158,8 +158,10 @@ export async function initializeSMSPayment(
   bundleType: "small" | "medium" | "large" | "xl",
 ): Promise<PaystackInitializeResponse> {
   try {
+    console.log("Calling initialize payment with:", bundleType);
+
     const response = await apiFetch(
-      "/sms/api/payment/initialize-payment",
+      "/payment/initialize-payment",
       {
         method: "POST",
         body: JSON.stringify({ bundle_type: bundleType }),
@@ -167,6 +169,17 @@ export async function initializeSMSPayment(
       true,
     );
 
+    console.log("Raw backend response:", response);
+
+    // Extract the nested data
+    if (response.paystack_data?.data) {
+      return {
+        bundle: response.bundle,
+        paystack_data: response.paystack_data.data, // Extract the nested data object
+      };
+    }
+
+    // If structure is different, return as is
     return response as PaystackInitializeResponse;
   } catch (error) {
     console.error("Error initializing payment:", error);
@@ -180,7 +193,7 @@ export async function verifyPayment(
 ): Promise<PaymentVerificationResponse> {
   try {
     const response = await apiFetch(
-      `/sms/api/payment/verify_payment/${reference}`,
+      `payment/verify_payment/${reference}`,
       { method: "GET" },
       true,
     );

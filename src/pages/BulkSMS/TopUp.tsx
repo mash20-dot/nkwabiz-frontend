@@ -39,7 +39,21 @@ const TopUp = () => {
       setProcessingPayment(true);
       setSelectedBundle(bundleType);
 
+      console.log("Initializing payment for bundle:", bundleType);
+
       const response = await initializeSMSPayment(bundleType);
+
+      console.log("Full payment response:", JSON.stringify(response, null, 2));
+      console.log("Paystack data:", response.paystack_data);
+      console.log(
+        "Authorization URL:",
+        response.paystack_data?.authorization_url,
+      );
+
+      // Check if we have the authorization URL
+      if (!response.paystack_data?.authorization_url) {
+        throw new Error("No authorization URL received from backend");
+      }
 
       // Save reference to localStorage for verification page
       localStorage.setItem(
@@ -48,6 +62,7 @@ const TopUp = () => {
       );
 
       // Redirect to Paystack payment page
+      console.log("Redirecting to:", response.paystack_data.authorization_url);
       window.location.href = response.paystack_data.authorization_url;
     } catch (err) {
       console.error("Failed to initialize payment:", err);
