@@ -57,6 +57,13 @@ import { ContactsProvider } from "@/context/ContactsContext";
 import TopUp from "./pages/BulkSMS/TopUp";
 import PaymentVerification from "./pages/BulkSMS/PaymentVerification";
 
+// const RedirectToVerification = () => {
+//   const location = useLocation();
+//   return (
+//     <Navigate to={`/sms/payment-verification${location.search}`} replace />
+//   );
+// };
+
 const WhatsAppButton: React.FC = (): JSX.Element | null => {
   const [showLabel, setShowLabel] = useState(true);
   const location = useLocation();
@@ -372,7 +379,7 @@ export function App() {
                 />
 
                 <Route
-                  path="/sms/payment-verification"
+                  path="/payment/verify"
                   element={
                     isAuthenticated() ? (
                       <PaymentVerification />
@@ -381,6 +388,17 @@ export function App() {
                     )
                   }
                 />
+
+                {/*<Route
+                  path="/payment/verify"
+                  element={
+                    isAuthenticated() ? (
+                      <RedirectToVerification />
+                    ) : (
+                      <Navigate to="/login" />
+                    )
+                  }
+                />*/}
 
                 <Route
                   path="/sms/settings"

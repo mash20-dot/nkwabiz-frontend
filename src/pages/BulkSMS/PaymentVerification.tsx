@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom"; // Removed useNavigate as we are closing the window
 import {
   verifyPayment,
   PaymentVerificationResponse,
@@ -9,7 +9,6 @@ import { CheckCircle, XCircle, Loader2 } from "lucide-react";
 
 const PaymentVerification = () => {
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
   const [verifying, setVerifying] = useState(true);
   const [verificationResult, setVerificationResult] =
     useState<PaymentVerificationResponse | null>(null);
@@ -18,6 +17,7 @@ const PaymentVerification = () => {
   useEffect(() => {
     const reference =
       searchParams.get("reference") ||
+      searchParams.get("trxref") ||
       localStorage.getItem("payment_reference");
 
     if (!reference) {
@@ -28,7 +28,8 @@ const PaymentVerification = () => {
 
     async function verify() {
       try {
-        const result = await verifyPayment(reference);
+        // 2. Call the API (Make sure smsService.ts is updated as per backend instructions!)
+        const result = await verifyPayment(reference as string);
         setVerificationResult(result);
 
         // Clear the saved reference
@@ -41,16 +42,16 @@ const PaymentVerification = () => {
       }
     }
 
-    // Add a small delay for better UX
-    const timer = setTimeout(() => {
-      verify();
-    }, 1500);
-
-    return () => clearTimeout(timer);
+    verify();
   }, [searchParams]);
 
-  const handleContinue = () => {
-    navigate("/sms/dashboard");
+  // 3. Logic to close the new window/tab
+  const handleClose = () => {
+    window.close();
+    // Fallback if browser blocks window.close()
+    if (!window.closed) {
+      alert("Verification complete. You can close this tab now.");
+    }
   };
 
   if (verifying) {
@@ -81,10 +82,10 @@ const PaymentVerification = () => {
             {error || "Unable to verify your payment. Please contact support."}
           </p>
           <Button
-            onClick={() => navigate("/sms/topup")}
+            onClick={handleClose}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white"
           >
-            Back to Top Up
+            Close Window
           </Button>
         </div>
       </div>
@@ -103,7 +104,8 @@ const PaymentVerification = () => {
               Payment Successful!
             </h2>
             <p className="text-gray-600 mb-6">
-              Your SMS credits have been added to your account.
+              Your SMS credits have been added. You can safely close this
+              window.
             </p>
 
             <div className="bg-gray-50 rounded-lg p-4 mb-6">
@@ -114,7 +116,7 @@ const PaymentVerification = () => {
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-600">Current SMS Balance:</span>
+                <span className="text-gray-600">New Balance:</span>
                 <span className="font-semibold text-green-600 text-lg">
                   {verificationResult.current_sms_balance.toLocaleString()} SMS
                 </span>
@@ -122,10 +124,10 @@ const PaymentVerification = () => {
             </div>
 
             <Button
-              onClick={handleContinue}
+              onClick={handleClose}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white"
             >
-              Continue to Dashboard
+              Close Window
             </Button>
           </>
         ) : (
@@ -139,10 +141,10 @@ const PaymentVerification = () => {
                 "Your payment could not be processed."}
             </p>
             <Button
-              onClick={() => navigate("/sms/topup")}
+              onClick={handleClose}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white"
             >
-              Try Again
+              Close Window
             </Button>
           </>
         )}
