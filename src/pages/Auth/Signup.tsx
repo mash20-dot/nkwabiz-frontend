@@ -4,7 +4,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { signupUser } from "../../utils/userApi";
 import Button from "../../components/Button";
 import CurrencySelector from "../../components/LandingPage/CurrencySelector";
-import SEO from "../../components/SEO";
+import SEO from "../../pages/LandingPage/SEO";
 
 function validateEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
