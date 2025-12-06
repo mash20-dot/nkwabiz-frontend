@@ -343,27 +343,27 @@ const TestimonialsPage = () => {
               </h2>
               <div className="mt-8 flex lg:mt-0 lg:flex-shrink-0">
                 <div className="inline-flex rounded-md shadow">
-
-                  href="/login"
-                  className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-blue-600 bg-white hover:bg-blue-50"
+                  <a
+                    href="/login"
+                    className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-blue-600 bg-white hover:bg-blue-50"
                   >
-                  Get started
-                </a>
+                    Get started
+                  </a>
+                </div>
+                <div className="ml-3 inline-flex rounded-md shadow">
+                  <a
+                    href="#"
+                    className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-800 hover:bg-blue-900"
+                  >
+                    Contact sales
+                  </a>
+                </div>
               </div>
-              <div className="ml-3 inline-flex rounded-md shadow">
-
-                href="#"
-                className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-800 hover:bg-blue-900"
-                  >
-                Contact sales
-              </a>
             </div>
           </div>
+        </main>
+        <Footer />
       </div>
-    </div >
-        </main >
-  <Footer />
-      </div >
     </>
   );
 };
