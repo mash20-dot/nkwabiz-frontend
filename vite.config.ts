@@ -108,7 +108,7 @@ export default defineConfig(({ mode }) => {
     preview: {
       port: process.env.PORT ? parseInt(process.env.PORT, 10) : 5173,
       host: "0.0.0.0",
-      allowedHosts: ["nkwabiz-frontend-1.onrender.com", "nkwabiz.com"],
+      allowedHosts: ["nkwabiz-frontend-1.onrender.com", "nkwabiz.com", "www.nkwabiz.com"],
     },
   };
 });
