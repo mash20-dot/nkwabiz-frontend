@@ -224,28 +224,28 @@ const AboutUs = () => {
                 </p>
                 <div className="mt-8 flex justify-center">
                   <div className="inline-flex rounded-md shadow">
-
-                    href="#"
-                    className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                    <a
+                      href="#"
+                      className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
                     >
-                    Contact us
-                  </a>
+                      Contact us
+                    </a>
+                  </div>
+                  <div className="ml-3 inline-flex">
+                    <a
+                      href="#"
+                      className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200"
+                    >
+                      Schedule a demo
+                    </a>
+                  </div>
                 </div>
-                <div className="ml-3 inline-flex">
-
-                  href="#"
-                  className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200"
-                    >
-                  Schedule a demo
-                </a>
               </div>
             </div>
           </div>
+        </main>
+        <Footer />
       </div>
-    </div >
-        </main >
-  <Footer />
-      </div >
     </>
   );
 };
