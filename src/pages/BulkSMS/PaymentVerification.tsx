@@ -136,7 +136,7 @@ const PaymentVerification = () => {
                 "Your payment could not be processed."}
             </p>
             <Button
-              onClick={}
+              onClick={handleClose}
               className="w-full bg-blue-600 hover:bg-blue-700 items-center justify-center  text-white"
             >
               Close Window
