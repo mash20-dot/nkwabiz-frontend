@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom"; // Removed useNavigate as we are closing the window
+import { useSearchParams, useNavigate } from "react-router-dom";
 import {
   verifyPayment,
   PaymentVerificationResponse,
@@ -13,6 +13,7 @@ const PaymentVerification = () => {
   const [verificationResult, setVerificationResult] =
     useState<PaymentVerificationResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const reference =
@@ -28,11 +29,9 @@ const PaymentVerification = () => {
 
     async function verify() {
       try {
-        // 2. Call the API (Make sure smsService.ts is updated as per backend instructions!)
         const result = await verifyPayment(reference as string);
         setVerificationResult(result);
 
-        // Clear the saved reference
         localStorage.removeItem("payment_reference");
       } catch (err) {
         setError("Failed to verify payment");
@@ -45,13 +44,9 @@ const PaymentVerification = () => {
     verify();
   }, [searchParams]);
 
-  // 3. Logic to close the new window/tab
   const handleClose = () => {
     window.close();
-    // Fallback if browser blocks window.close()
-    if (!window.closed) {
-      alert("Verification complete. You can close this tab now.");
-    }
+    navigate("/sms/dashboard");
   };
 
   if (verifying) {
@@ -59,7 +54,7 @@ const PaymentVerification = () => {
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center">
           <Loader2 className="h-16 w-16 animate-spin text-blue-600 mx-auto mb-4" />
-          <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-2">
             Verifying Payment
           </h2>
           <p className="text-gray-600">
@@ -141,8 +136,8 @@ const PaymentVerification = () => {
                 "Your payment could not be processed."}
             </p>
             <Button
-              onClick={handleClose}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+              onClick={}
+              className="w-full bg-blue-600 hover:bg-blue-700 items-center justify-center  text-white"
             >
               Close Window
             </Button>
