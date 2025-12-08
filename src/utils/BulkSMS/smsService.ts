@@ -94,6 +94,7 @@ export async function getSmsHistoryFull(): Promise<SmsHistoryResponse> {
   }
 }
 
+
 // Send SMS to multiple recipients
 export async function sendSms(
   recipients: string[],
