@@ -230,7 +230,7 @@ export async function verifyPayment(
 ): Promise<PaymentVerificationResponse> {
   try {
     const response = await apiFetch(
-      `payment/verify_payment/${reference}`,
+      `/payment/verify_payment/${reference}`,
       { method: "GET" },
       true,
     );
