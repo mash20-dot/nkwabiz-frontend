@@ -101,7 +101,7 @@ export async function sendSms(
 ): Promise<SendSmsResponse> {
   try {
     const response = await apiFetch(
-      "/sms/send",
+      "/sms/api/sms/send",
       {
         method: "POST",
         body: JSON.stringify({

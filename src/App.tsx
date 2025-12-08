@@ -91,9 +91,8 @@ const WhatsAppButton: React.FC = (): JSX.Element | null => {
     >
       {/* Label */}
       <div
-        className={`bg-white px-4 py-2 rounded-lg shadow-lg border-2 border-green-500 whitespace-nowrap transition-all duration-300 ${
-          showLabel ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
-        }`}
+        className={`bg-white px-4 py-2 rounded-lg shadow-lg border-2 border-green-500 whitespace-nowrap transition-all duration-300 ${showLabel ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
+          }`}
       >
         <span className="text-sm font-semibold text-gray-800">
           contact us for help

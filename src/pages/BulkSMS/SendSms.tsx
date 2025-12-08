@@ -1,4 +1,4 @@
-import {
+1111import {
   X,
   SendHorizontal,
   AlertCircle,
@@ -33,16 +33,14 @@ const Summary = ({
   return (
     <div className={className ? style : "flex flex-row w-full justify-between"}>
       <span
-        className={`font-normal text-sm text-start ${
-          textColor ? textColor : "text-gray-600"
-        }`}
+        className={`font-normal text-sm text-start ${textColor ? textColor : "text-gray-600"
+          }`}
       >
         {title}
       </span>
       <span
-        className={`text-sm font-semibold text-end ${
-          textColor ? textColor : "text-gray-800"
-        }`}
+        className={`text-sm font-semibold text-end ${textColor ? textColor : "text-gray-800"
+          }`}
       >
         {value}
       </span>
@@ -160,8 +158,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
     const invalidNumbers = allRecipients.filter((num) => !validateNumber(num));
     if (invalidNumbers.length > 0) {
       setError(
-        `Invalid Ghana phone numbers: ${invalidNumbers.slice(0, 3).join(", ")}${
-          invalidNumbers.length > 3 ? "..." : ""
+        `Invalid Ghana phone numbers: ${invalidNumbers.slice(0, 3).join(", ")}${invalidNumbers.length > 3 ? "..." : ""
         }`,
       );
       return;
