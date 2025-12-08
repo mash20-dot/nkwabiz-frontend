@@ -44,8 +44,7 @@ const PaymentVerification = () => {
     verify();
   }, [searchParams]);
 
-  const handleClose = () => {
-    window.close();
+  const handleBackToHome = () => {
     navigate("/sms/dashboard");
   };
 
@@ -53,7 +52,7 @@ const PaymentVerification = () => {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center">
-          <Loader2 className="h-16 w-16 animate-spin text-blue-600 mx-auto mb-4" />
+          <Loader2 className="h-12 w-12 animate-spin text-blue-600 mx-auto mb-4" />
           <h2 className="text-2xl font-semibold text-gray-800 mb-2">
             Verifying Payment
           </h2>
@@ -69,18 +68,18 @@ const PaymentVerification = () => {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center">
-          <XCircle className="h-16 w-16 text-red-600 mx-auto mb-4" />
-          <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+          <XCircle className="h-12 w-12 text-red-600 mx-auto mb-4" />
+          <h2 className="text-2xl font-semibold text-gray-800 mb-2">
             Verification Failed
           </h2>
           <p className="text-gray-600 mb-6">
             {error || "Unable to verify your payment. Please contact support."}
           </p>
           <Button
-            onClick={handleClose}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+            onClick={handleBackToHome}
+            className="w-full bg-blue-600 hover:bg-blue-700 items-center justify-center text-white"
           >
-            Close Window
+            Back to Home
           </Button>
         </div>
       </div>
@@ -119,15 +118,15 @@ const PaymentVerification = () => {
             </div>
 
             <Button
-              onClick={handleClose}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+              onClick={handleBackToHome}
+              className="w-full bg-blue-600 items-center justify-center hover:bg-blue-700 text-white"
             >
-              Close Window
+              Back to Home
             </Button>
           </>
         ) : (
           <>
-            <XCircle className="h-16 w-16 text-red-600 mx-auto mb-4" />
+            <XCircle className="h-12 w-12 text-red-600 mx-auto mb-4" />
             <h2 className="text-2xl font-semibold text-gray-900 mb-2">
               Payment Failed
             </h2>
@@ -136,10 +135,10 @@ const PaymentVerification = () => {
                 "Your payment could not be processed."}
             </p>
             <Button
-              onClick={handleClose}
+              onClick={handleBackToHome}
               className="w-full bg-blue-600 hover:bg-blue-700 items-center justify-center  text-white"
             >
-              Close Window
+              Back to Home
             </Button>
           </>
         )}
