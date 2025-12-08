@@ -24,6 +24,18 @@ export interface SmsHistoryResponse {
   history: SmsHistory[];
 }
 
+export interface SendSmsRequest {
+  recipients: string[];
+  message: string;
+}
+
+export interface SendSmsResponse {
+  message: string;
+  queued: number;
+  failed?: number;
+  errors?: string[];
+}
+
 export interface Contact {
   user_id: number;
   contact: string;
@@ -78,6 +90,30 @@ export async function getSmsHistoryFull(): Promise<SmsHistoryResponse> {
     throw new Error("Unexpected API response structure");
   } catch (error) {
     console.error("Error fetching SMS history:", error);
+    throw error;
+  }
+}
+
+export async function sendSms(
+  recipients: string[],
+  message: string,
+): Promise<SendSmsResponse> {
+  try {
+    const response = await apiFetch(
+      "/sms/send",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          recipients,
+          message,
+        }),
+      },
+      true,
+    );
+
+    return response as SendSmsResponse;
+  } catch (error) {
+    console.error("Error sending SMS:", error);
     throw error;
   }
 }
