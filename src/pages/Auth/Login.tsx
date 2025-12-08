@@ -48,7 +48,7 @@ const Login = () => {
         data.business_name || "",
         data.currency || "GHS"
       );
-      window.location.replace("/dashboard");
+      window.location.replace("/services");
     } catch (err: any) {
       setError(err.message || "Login failed. Please check your credentials.");
     } finally {
