@@ -13,6 +13,7 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.1.17",
     "@types/react-helmet": "^6.1.11",
+    "@untitledui/file-icons": "^0.0.9",
     "@untitledui/icons": "^0.0.19",
     "class-variance-authority": "^0.7.1",
     "classnames": "^2.5.1",
