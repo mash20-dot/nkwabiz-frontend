@@ -92,58 +92,114 @@ const BulkSMS = () => {
             </EmptyState>
           </div>
         ) : (
-          <TableCard.Root
-            className="w-full bg-white border border-gray-200"
-            size="sm"
-          >
-            <Table className="react-aria-table w-full">
-              <Table.Header className="w-full border-b border-gray-200">
-                <Table.Row>
-                  <Table.Head>ID</Table.Head>
-                  <Table.Head>Message</Table.Head>
-                  <Table.Head>Recipients</Table.Head>
-                  <Table.Head>Status</Table.Head>
-                  <Table.Head>Date</Table.Head>
-                </Table.Row>
-              </Table.Header>
-
-              <Table.Body className="w-full">
-                {messages.map((message) => (
-                  <Table.Row
-                    key={message.id}
-                    className="cursor-pointer bg-white hover:bg-gray-50 border-b border-gray-200 last:border-b-0"
-                  >
-                    <Table.Cell>{message.id}</Table.Cell>
-                    <Table.Cell>
-                      <span className="font-normal text-gray-800">
-                        {message.message}
-                      </span>
-                    </Table.Cell>
-                    <Table.Cell className="truncate">
-                      {message.recipient}
-                    </Table.Cell>
-                    <Table.Cell>
-                      <Badge
-                        color={
-                          message.status === "delivered"
-                            ? "success"
-                            : message.status === "pending"
-                              ? "warning"
-                              : "error"
-                        }
-                        size="sm"
-                      >
-                        {message.status}
-                      </Badge>
-                    </Table.Cell>
-                    <Table.Cell className="truncate">
-                      {message.created_at}
-                    </Table.Cell>
+          <>
+            {/* Desktop Table View - Hidden on Mobile */}
+            <TableCard.Root
+              className="hidden md:block w-full bg-white border border-gray-200"
+              size="sm"
+            >
+              <Table className="react-aria-table w-full">
+                <Table.Header className="w-full border-b border-gray-200">
+                  <Table.Row>
+                    <Table.Head>ID</Table.Head>
+                    <Table.Head>Message</Table.Head>
+                    <Table.Head>Recipients</Table.Head>
+                    <Table.Head>Status</Table.Head>
+                    <Table.Head>Date</Table.Head>
                   </Table.Row>
-                ))}
-              </Table.Body>
-            </Table>
-          </TableCard.Root>
+                </Table.Header>
+
+                <Table.Body className="w-full">
+                  {messages.map((message) => (
+                    <Table.Row
+                      key={message.id}
+                      className="cursor-pointer bg-white hover:bg-gray-50 border-b border-gray-200 last:border-b-0"
+                    >
+                      <Table.Cell>{message.id}</Table.Cell>
+                      <Table.Cell>
+                        <span className="font-normal text-gray-800">
+                          {message.message}
+                        </span>
+                      </Table.Cell>
+                      <Table.Cell className="truncate">
+                        {message.recipient}
+                      </Table.Cell>
+                      <Table.Cell>
+                        <Badge
+                          color={
+                            message.status === "delivered"
+                              ? "success"
+                              : message.status === "pending"
+                                ? "warning"
+                                : "error"
+                          }
+                          size="sm"
+                        >
+                          {message.status}
+                        </Badge>
+                      </Table.Cell>
+                      <Table.Cell className="truncate">
+                        {message.created_at}
+                      </Table.Cell>
+                    </Table.Row>
+                  ))}
+                </Table.Body>
+              </Table>
+            </TableCard.Root>
+
+            {/* Mobile Card View - Hidden on Desktop */}
+            <div className="md:hidden w-full space-y-4">
+              {messages.map((message) => (
+                <div
+                  key={message.id}
+                  className="bg-white border border-gray-200 rounded-lg p-4 space-y-3"
+                >
+                  {/* ID and Status Row */}
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium text-gray-500">
+                      ID: {message.id}
+                    </span>
+                    <Badge
+                      color={
+                        message.status === "delivered"
+                          ? "success"
+                          : message.status === "pending"
+                            ? "warning"
+                            : "error"
+                      }
+                      size="sm"
+                    >
+                      {message.status}
+                    </Badge>
+                  </div>
+
+                  {/* Message */}
+                  <div>
+                    <span className="text-xs font-medium text-gray-500 block mb-1">
+                      Message
+                    </span>
+                    <p className="text-sm text-gray-800">{message.message}</p>
+                  </div>
+
+                  {/* Recipients */}
+                  <div>
+                    <span className="text-xs font-medium text-gray-500 block mb-1">
+                      Recipients
+                    </span>
+                    <p className="text-sm text-gray-800">{message.recipient}</p>
+                  </div>
+
+                  {/* Date */}
+                  <div>
+                    <span className="text-xs font-medium text-gray-500 block mb-1">
+                      Date
+                    </span>
+                    <p className="text-sm text-gray-800">{message.created_at}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
 
