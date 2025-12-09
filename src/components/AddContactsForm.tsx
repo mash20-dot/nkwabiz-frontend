@@ -1,227 +1,150 @@
-import { Users, UserPlus, X } from "lucide-react";
-import { useState } from "react";
-import { useContacts } from "@/context/ContactsContext";
+import { useState, useEffect } from "react";
 import Button from "@/components/Button";
-import { Table, TableCard } from "@/components/application/table/table";
-import { EmptyState } from "@/components/application/empty-state/empty-state";
-import { Badge } from "@/components/base/badges/badges";
-import AddContactForm from "@/components/AddContactsForm";
+import { useContacts } from "@/context/ContactsContext";
 
-const ContactsPage = () => {
-  const { contacts, loading, error, getAllCategories } = useContacts();
-  const [showAddContactModal, setShowAddContactModal] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+interface AddContactFormProps {
+  onClose: () => void;
+  onSuccess?: () => void;
+  preSelectedCategory?: string;
+}
+
+const AddContactForm: React.FC<AddContactFormProps> = ({
+  onClose,
+  onSuccess,
+  preSelectedCategory,
+}) => {
+  const { addNewContact, getAllCategories } = useContacts();
+  const [newContact, setNewContact] = useState("");
+  const [newCategory, setNewCategory] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const categories = getAllCategories();
 
-  const filteredContacts =
-    selectedCategory === "all"
-      ? contacts
-      : contacts.filter((c) => c.category === selectedCategory);
+  // Set category when preSelectedCategory changes
+  useEffect(() => {
+    if (preSelectedCategory) {
+      setNewCategory(preSelectedCategory);
+    }
+  }, [preSelectedCategory]);
 
-  if (loading) {
-    return <p className="text-gray-600">Loading contacts...</p>;
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  if (error) {
-    return <p className="text-red-600">{error}</p>;
-  }
+    if (!newContact.trim() || !newCategory.trim()) {
+      alert("Please fill in all fields");
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      await addNewContact(newContact, newCategory);
+      setNewContact("");
+      setNewCategory("");
+      alert("Contact added successfully!");
+      onSuccess?.();
+      onClose();
+    } catch (err) {
+      console.error("Failed to add contact:", err);
+      alert("Failed to add contact. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setNewContact("");
+    setNewCategory("");
+    onClose();
+  };
 
   return (
-    <div className="flex flex-col w-full items-start gap-6">
-      {/* Page Header */}
-      <div className="w-full flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-medium text-gray-900">Contacts</h1>
-          <p className="text-sm text-gray-600 font-normal">
-            Total: {contacts.length} contacts
-            {categories.length > 0 && ` in ${categories.length} categories`}
-          </p>
-        </div>
-        <div className="flex gap-4">
-          <Button
-            className={
-              showAddContactModal
-                ? ""
-                : "cursor-pointer bg-blue-600 hover:bg-blue-700 border-blue-600 text-white"
-            }
-            onClick={() => setShowAddContactModal(!showAddContactModal)}
-          >
-            {showAddContactModal ? (
-              <>
-                <X
-                  className="h-4 w-4 mr-2 text-gray-600"
-                  aria-hidden="true"
-                />
-                Cancel
-              </>
-            ) : (
-              <>
-                <UserPlus
-                  className="h-4 w-4 mr-2 text-white"
-                  aria-hidden="true"
-                />
-                Add Contact
-              </>
+    <div className="w-full fixed inset-0 z-50 flex items-center justify-center">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        onClick={handleCancel}
+      />
+
+      {/* Modal Content */}
+      <div className="relative z-50 w-full max-w-md mx-4 bg-white border border-gray-200 rounded-lg p-6 shadow-xl">
+        <h2 className="text-lg font-medium text-gray-900 mb-4">
+          Add New Contact
+        </h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Phone Number
+            </label>
+            <input
+              type="tel"
+              placeholder="0541234567"
+              value={newContact}
+              onChange={(e) => setNewContact(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={isSubmitting}
+              required
+            />
+            <p className="mt-1 text-xs text-gray-500">
+              Enter Ghana phone number (e.g., 0241234567)
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Category
+            </label>
+            <input
+              type="text"
+              placeholder="e.g., Clients, Family, Friends"
+              value={newCategory}
+              onChange={(e) => setNewCategory(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={isSubmitting}
+              required
+            />
+            {categories.length > 0 && (
+              <div className="mt-2">
+                <span className="text-xs text-gray-500 block mb-2">
+                  Existing categories (click to use):
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {categories.map((cat) => (
+                    <button
+                      key={cat}
+                      type="button"
+                      onClick={() => setNewCategory(cat)}
+                      className="text-xs px-3 py-1 bg-gray-100 hover:bg-blue-100 hover:text-blue-700 rounded-full transition-colors"
+                      disabled={isSubmitting}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              </div>
             )}
-          </Button>
-        </div>
-      </div>
+          </div>
 
-      {/* Add Contact Modal */}
-      {showAddContactModal && (
-        <AddContactForm
-          onClose={() => setShowAddContactModal(false)}
-          onSuccess={() => {
-            console.log("Contact added successfully!");
-          }}
-          preSelectedCategory={selectedCategory !== "all" ? selectedCategory : undefined}
-        />
-      )}
-
-      {/* Category Filter */}
-      {categories.length > 0 && (
-        <div className="w-full">
-          <div className="flex gap-2 flex-wrap">
-            <button
-              onClick={() => setSelectedCategory("all")}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${selectedCategory === "all"
-                  ? "bg-blue-100 text-blue-600 border border-blue-300"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200"
-                }`}
+          <div className="flex gap-4 pt-2">
+            <Button
+              type="submit"
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+              disabled={isSubmitting}
             >
-              All ({contacts.length})
-            </button>
-            {categories.map((category) => (
-              <div key={category} className="flex items-center gap-1">
-                <button
-                  onClick={() => setSelectedCategory(category)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${selectedCategory === category
-                      ? "bg-blue-100 text-blue-600 border border-blue-300"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200"
-                    }`}
-                >
-                  {category} (
-                  {contacts.filter((c) => c.category === category).length})
-                </button>
-                <button
-                  onClick={() => {
-                    setSelectedCategory(category);
-                    setShowAddContactModal(true);
-                  }}
-                  className="p-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors cursor-pointer"
-                  title={`Add contact to ${category}`}
-                >
-                  <UserPlus className="h-4 w-4" />
-                </button>
-              </div>
-            ))}
+              {isSubmitting ? "Adding..." : "Add Contact"}
+            </Button>
+            <Button
+              type="button"
+              className="bg-gray-200 hover:bg-gray-300 text-gray-700"
+              onClick={handleCancel}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </Button>
           </div>
-        </div>
-      )}
-
-      {/* Empty State and Table */}
-      {filteredContacts.length === 0 ? (
-        <div className="w-full border border-gray-200 rounded-md flex items-center justify-center overflow-hidden px-8 py-20">
-          <EmptyState size="sm">
-            <EmptyState.Header pattern="none">
-              <EmptyState.FeaturedIcon color="brand" theme="light" />
-            </EmptyState.Header>
-
-            <EmptyState.Content>
-              <EmptyState.Title className="text-gray-800">
-                No contacts yet
-              </EmptyState.Title>
-              <EmptyState.Description className="text-gray-600">
-                You haven't saved any contacts yet. Get started by adding a
-                new contact.
-              </EmptyState.Description>
-            </EmptyState.Content>
-
-            <EmptyState.Footer>
-              <Button
-                className="cursor-pointer bg-blue-600 hover:bg-blue-700 border-blue-600 text-white"
-                onClick={() => setShowAddContactModal(true)}
-              >
-                <Users className="h-4 w-4 mr-2 text-white" />
-                Add Contact
-              </Button>
-            </EmptyState.Footer>
-          </EmptyState>
-        </div>
-      ) : (
-        <>
-          {/* Desktop Table View - Hidden on Mobile */}
-          <TableCard.Root
-            className="hidden md:block w-full bg-white border border-gray-200"
-            size="sm"
-          >
-            <Table className="react-aria-table w-full">
-              <Table.Header className="w-full border-b border-gray-200">
-                <Table.Row>
-                  <Table.Head>ID</Table.Head>
-                  <Table.Head>Phone Number</Table.Head>
-                  <Table.Head>Category</Table.Head>
-                </Table.Row>
-              </Table.Header>
-
-              <Table.Body className="w-full">
-                {filteredContacts.map((contact, index) => (
-                  <Table.Row
-                    key={index}
-                    className="cursor-pointer bg-white hover:bg-gray-50 border-b border-gray-200 last:border-b-0"
-                  >
-                    <Table.Cell>{index + 1}</Table.Cell>
-                    <Table.Cell>
-                      <span className="font-normal text-gray-800">
-                        {contact.contact}
-                      </span>
-                    </Table.Cell>
-
-                    <Table.Cell>
-                      <Badge color="gray" size="sm">
-                        {contact.category}
-                      </Badge>
-                    </Table.Cell>
-                  </Table.Row>
-                ))}
-              </Table.Body>
-            </Table>
-          </TableCard.Root>
-
-          {/* Mobile Card View - Hidden on Desktop */}
-          <div className="md:hidden w-full space-y-4">
-            {filteredContacts.map((contact, index) => (
-              <div
-                key={index}
-                className="bg-white border border-gray-200 rounded-lg p-4 space-y-3"
-              >
-                {/* ID and Category Row */}
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium text-gray-500">
-                    ID: {index + 1}
-                  </span>
-                  <Badge color="gray" size="sm">
-                    {contact.category}
-                  </Badge>
-                </div>
-
-                {/* Phone Number */}
-                <div>
-                  <span className="text-xs font-medium text-gray-500 block mb-1">
-                    Phone Number
-                  </span>
-                  <p className="text-sm text-gray-800 font-medium">
-                    {contact.contact}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </>
-      )}
+        </form>
+      </div>
     </div>
   );
 };
 
-export default ContactsPage;
+export default AddContactForm;
