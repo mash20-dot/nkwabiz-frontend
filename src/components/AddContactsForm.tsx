@@ -93,17 +93,28 @@ const ContactsPage = () => {
               All ({contacts.length})
             </button>
             {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${selectedCategory === category
-                    ? "bg-blue-100 text-blue-600 border border-blue-300"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200"
-                  }`}
-              >
-                {category} (
-                {contacts.filter((c) => c.category === category).length})
-              </button>
+              <div key={category} className="flex items-center gap-1">
+                <button
+                  onClick={() => setSelectedCategory(category)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${selectedCategory === category
+                      ? "bg-blue-100 text-blue-600 border border-blue-300"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200"
+                    }`}
+                >
+                  {category} (
+                  {contacts.filter((c) => c.category === category).length})
+                </button>
+                <button
+                  onClick={() => {
+                    setSelectedCategory(category);
+                    setShowAddContactModal(true);
+                  }}
+                  className="p-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors cursor-pointer"
+                  title={`Add contact to ${category}`}
+                >
+                  <UserPlus className="h-4 w-4" />
+                </button>
+              </div>
             ))}
           </div>
         </div>
