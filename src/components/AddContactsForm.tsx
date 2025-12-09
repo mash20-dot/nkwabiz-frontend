@@ -59,25 +59,25 @@ const AddContactForm: React.FC<AddContactFormProps> = ({
     try {
       setIsSubmitting(true);
       const response = await addNewContact(newContact, newCategory);
-      setNewContact("");
-      setNewCategory("");
 
       // Extract and display backend success message
       const successMessage = response?.message || response?.data?.message || "Contact added successfully!";
       showToast("success", successMessage);
 
-      // Wait a bit before closing to show the toast
+      setNewContact("");
+      setNewCategory("");
+
+      // Wait 2 seconds to show the toast, then close
       setTimeout(() => {
         onSuccess?.();
         onClose();
-      }, 1500);
+      }, 2000);
     } catch (err: any) {
       console.error("Failed to add contact:", err);
 
       // Extract and display backend error message
       const errorMessage = err?.response?.data?.message || err?.message || "Failed to add contact. Please try again.";
       showToast("error", errorMessage);
-    } finally {
       setIsSubmitting(false);
     }
   };
