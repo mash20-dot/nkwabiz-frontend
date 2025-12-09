@@ -42,7 +42,7 @@ const BulkSMS = () => {
         className={
           showForm
             ? "hidden"
-            : "flex h-full flex-1 flex-col items-start justify-center gap-6"
+            : "flex flex-col items-start gap-6 w-full"
         }
       >
         {/* Page Header */}
@@ -64,7 +64,7 @@ const BulkSMS = () => {
 
         {/* Empty State or Table */}
         {messages.length === 0 ? (
-          <div className="w-full border border-gray-200 rounded-md flex-1 flex items-center justify-center overflow-hidden px-8 pt-10 pb-12">
+          <div className="w-full border border-gray-200 rounded-md flex items-center justify-center overflow-hidden px-8 py-20">
             <EmptyState size="sm">
               <EmptyState.Header pattern="none">
                 <EmptyState.FeaturedIcon color="brand" theme="light" />
