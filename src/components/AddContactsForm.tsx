@@ -37,15 +37,22 @@ const AddContactForm: React.FC<AddContactFormProps> = ({
 
     try {
       setIsSubmitting(true);
-      await addNewContact(newContact, newCategory);
+      const response = await addNewContact(newContact, newCategory);
       setNewContact("");
       setNewCategory("");
-      alert("Contact added successfully!");
+
+      // Display backend success message if available
+      const successMessage = response?.message || response?.data?.message || "Contact added successfully!";
+      alert(successMessage);
+
       onSuccess?.();
       onClose();
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to add contact:", err);
-      alert("Failed to add contact. Please try again.");
+
+      // Display backend error message if available
+      const errorMessage = err?.response?.data?.message || err?.message || "Failed to add contact. Please try again.";
+      alert(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
