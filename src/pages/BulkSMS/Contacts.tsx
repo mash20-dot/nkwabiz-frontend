@@ -133,7 +133,10 @@ const ContactsPage = () => {
               <EmptyState.Footer>
                 <Button
                   className="cursor-pointer bg-blue-600 hover:bg-blue-700 border-blue-600 text-white"
-                  onClick={() => setShowAddContactModal(true)}
+                  onClick={() => {
+                    setPrefilledCategory(undefined);
+                    setShowAddContactModal(true);
+                  }}
                 >
                   <Users className="h-4 w-4 mr-2 text-white" />
                   Add Contact
