@@ -53,7 +53,7 @@ import UpdatePrompt from "./components/LandingPage/UpdatePrompt";
 import AuthProvider from "./components/LandingPage/AuthProvider";
 
 // Contexts
-import { SmsProvider } from "@/context/SmsContext";
+import { SmsProvider } from "@/context/BulkSmsContext";
 import { ContactsProvider } from "@/context/ContactsContext";
 import TopUp from "./pages/BulkSMS/TopUp";
 import PaymentVerification from "./pages/BulkSMS/PaymentVerification";

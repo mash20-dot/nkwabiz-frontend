@@ -1,16 +1,10 @@
-import {
-  X,
-  SendHorizontal,
-  AlertCircle,
-  Users,
-  ChevronDown,
-} from "lucide-react";
+import { X, SendHorizontal, Users, ChevronDown } from "lucide-react";
 import Button from "@/components/Button";
 import classNames from "classnames";
 import { TextArea } from "@/components/base/textarea/textarea";
 import { useState, useRef, useEffect } from "react";
 import { sendSms } from "@/utils/BulkSMS/smsService";
-import { useSms } from "@/context/SmsContext";
+import { useSms } from "@/context/BulkSmsContext";
 import { useContacts } from "@/context/ContactsContext";
 import { toast } from "sonner";
 
@@ -107,7 +101,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
   // Get all contacts from selected categories
   const getContactsFromSelectedCategories = (): string[] => {
     const categoryContacts = selectedCategories.flatMap((category) =>
-      getContactsByCategory(category).map((c) => c.contact),
+      getContactsByCategory(category).map((c) => c.contact)
     );
     return [...new Set(categoryContacts)];
   };
@@ -163,14 +157,14 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
       setError(
         `Invalid Ghana phone numbers: ${invalidNumbers.slice(0, 3).join(", ")}${
           invalidNumbers.length > 3 ? "..." : ""
-        }`,
+        }`
       );
       return;
     }
 
     if (!hasEnoughBalance) {
       setError(
-        `Insufficient balance. You need ${recipientCount} SMS credits but only have ${currentBalance}`,
+        `Insufficient balance. You need ${recipientCount} SMS credits but only have ${currentBalance}`
       );
       return;
     }
@@ -181,7 +175,9 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
       await sendSms(allRecipients, message);
 
       setSuccess(
-        `Successfully queued ${recipientCount} SMS message${recipientCount > 1 ? "s" : ""}`,
+        `Successfully queued ${recipientCount} SMS message${
+          recipientCount > 1 ? "s" : ""
+        }`
       );
 
       // Reset form
@@ -299,7 +295,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
                         "min-h-11 w-full flex flex-wrap items-center gap-2 px-3 py-2 bg-white border rounded-lg shadow-sm cursor-pointer transition-colors",
                         isDropdownOpen
                           ? "border-blue-500 ring-2 ring-blue-500"
-                          : "border-gray-200 hover:border-gray-300",
+                          : "border-gray-200 hover:border-gray-300"
                       )}
                     >
                       {/* Selected Category Tags */}
@@ -338,7 +334,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
                       <ChevronDown
                         className={classNames(
                           "ml-auto h-4 w-4 text-gray-400 transition-transform",
-                          isDropdownOpen && "transform rotate-180",
+                          isDropdownOpen && "transform rotate-180"
                         )}
                       />
                     </div>
@@ -360,7 +356,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
                                   }
                                   className={classNames(
                                     "px-3 py-2 cursor-pointer hover:bg-gray-50 flex items-center justify-between",
-                                    isSelected && "bg-blue-50",
+                                    isSelected && "bg-blue-50"
                                   )}
                                 >
                                   <div className="flex-1">
@@ -404,7 +400,9 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
                   {selectedCategories.length} categor
                   {selectedCategories.length !== 1 ? "ies" : "y"} selected
                   {categoryContactNumbers.length > 0 &&
-                    ` • ${categoryContactNumbers.length} contact${categoryContactNumbers.length !== 1 ? "s" : ""}`}
+                    ` • ${categoryContactNumbers.length} contact${
+                      categoryContactNumbers.length !== 1 ? "s" : ""
+                    }`}
                 </p>
               </div>
             ) : (
@@ -422,7 +420,6 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
                 Or Enter Phone Numbers Manually
               </label>
               <TextArea
-                ref={textareaRef}
                 placeholder="0241234567, 0551234567, 0201234567..."
                 rows={6}
                 value={recipientsInput}
@@ -481,8 +478,8 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
                 hasEnoughBalance
                   ? "text-blue-600"
                   : recipientCount > 0
-                    ? "text-red-600"
-                    : "text-gray-600"
+                  ? "text-red-600"
+                  : "text-gray-600"
               }
               title="Current Balance"
               value={`${currentBalance} SMS`}
@@ -503,7 +500,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
                   !sending && hasEnoughBalance && recipientCount > 0,
                 "bg-gray-400 cursor-not-allowed":
                   sending || !hasEnoughBalance || recipientCount === 0,
-              },
+              }
             )}
             onClick={handleSend}
             disabled={

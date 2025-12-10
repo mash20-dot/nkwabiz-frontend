@@ -5,7 +5,7 @@ import SummaryCard from "@/components/SummaryCard";
 import { Table, TableCard } from "@/components/application/table/table";
 import { Badge } from "@/components/base/badges/badges";
 import { EmptyState } from "@/components/application/empty-state/empty-state";
-import { useSms } from "@/context/SmsContext";
+import { useSms } from "@/context/BulkSmsContext";
 
 const SmsDashboard = () => {
   const navigate = useNavigate();
@@ -157,8 +157,8 @@ const SmsDashboard = () => {
                           message.status === "delivered"
                             ? "success"
                             : message.status === "pending"
-                              ? "warning"
-                              : "error"
+                            ? "warning"
+                            : "error"
                         }
                         size="sm"
                       >
@@ -193,8 +193,8 @@ const SmsDashboard = () => {
                         message.status === "delivered"
                           ? "success"
                           : message.status === "pending"
-                            ? "warning"
-                            : "error"
+                          ? "warning"
+                          : "error"
                       }
                       size="sm"
                     >

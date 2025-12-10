@@ -6,7 +6,7 @@ import SendSms from "./SendSms";
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { EmptyState } from "@/components/application/empty-state/empty-state";
-import { useSms } from "@/context/SmsContext";
+import { useSms } from "@/context/BulkSmsContext";
 
 const BulkSMS = () => {
   const { smsData, loading, error } = useSms();
@@ -128,8 +128,8 @@ const BulkSMS = () => {
                             message.status === "delivered"
                               ? "success"
                               : message.status === "pending"
-                                ? "warning"
-                                : "error"
+                              ? "warning"
+                              : "error"
                           }
                           size="sm"
                         >
@@ -162,8 +162,8 @@ const BulkSMS = () => {
                         message.status === "delivered"
                           ? "success"
                           : message.status === "pending"
-                            ? "warning"
-                            : "error"
+                          ? "warning"
+                          : "error"
                       }
                       size="sm"
                     >
