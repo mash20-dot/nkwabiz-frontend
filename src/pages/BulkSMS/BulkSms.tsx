@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { EmptyState } from "@/components/application/empty-state/empty-state";
 import { useSms } from "@/context/BulkSmsContext";
+import { toast } from "sonner";
 
 const BulkSMS = () => {
   const { smsData, loading, error } = useSms();
@@ -37,6 +38,8 @@ const BulkSMS = () => {
 
   return (
     <>
+      {/* Toast Container */}
+
       {/* Bulk SMS Page */}
       <div
         className={

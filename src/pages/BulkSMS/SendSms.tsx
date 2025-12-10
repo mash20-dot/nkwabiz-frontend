@@ -8,6 +8,13 @@ import { useSms } from "@/context/BulkSmsContext";
 import { useContacts } from "@/context/ContactsContext";
 import { toast } from "sonner";
 
+interface SmsSuccessData {
+  current_sms_balance: number;
+  info: string;
+  message: string;
+  total_sent: number;
+}
+
 type SendSMSProps = {
   showForm: boolean;
   closeForm: () => void;
@@ -58,7 +65,6 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
   const [success, setSuccess] = useState<string | null>(null);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const COST_PER_SMS = 0.025;
   const currentBalance = smsData?.total_sms || 0;
