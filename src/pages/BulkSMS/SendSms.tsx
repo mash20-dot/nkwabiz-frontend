@@ -179,19 +179,27 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
 
       const response = await sendSms(allRecipients, message);
 
-      // Show success toast with response details
+      // Show success toast with response details from backend
       toast.success(
-        `Successfully sent ${recipientCount} SMS message${recipientCount > 1 ? "s" : ""
-        }!`,
+        `Successfully queued ${response?.queued || recipientCount} SMS message${(response?.queued || recipientCount) > 1 ? "s" : ""}!`,
         {
-          description: response?.data?.message_ids
-            ? `Message IDs: ${response.data.message_ids.slice(0, 2).join(", ")}${response.data.message_ids.length > 2 ? "..." : ""
-            }`
-            : `Status: ${response?.data?.status || "Sent"}`,
-          duration: Infinity, // Won't auto-close
+          description: response?.message || "Messages are being sent",
+          duration: Infinity,
           closeButton: true,
         }
       );
+
+      // Optionally show failed count if any
+      if (response?.failed && response.failed > 0) {
+        toast.warning(
+          `${response.failed} message${response.failed > 1 ? "s" : ""} failed to queue`,
+          {
+            description: response?.errors?.join(", ") || "Some messages could not be sent",
+            duration: Infinity,
+            closeButton: true,
+          }
+        );
+      }
 
       // Reset form
       setMessage("");
@@ -216,7 +224,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
 
       toast.error("SMS Send Failed", {
         description: errorMessage,
-        duration: Infinity, // Won't auto-close
+        duration: Infinity,
         closeButton: true,
       });
     } finally {
