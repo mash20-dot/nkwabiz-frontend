@@ -6,7 +6,7 @@ import SendSms from "./SendSms";
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { EmptyState } from "@/components/application/empty-state/empty-state";
-import { useSms } from "@/context/smsContext";
+import { useSms } from "@/context/SmsContext";
 
 const BulkSMS = () => {
   const { smsData, loading, error } = useSms();
@@ -40,9 +40,7 @@ const BulkSMS = () => {
       {/* Bulk SMS Page */}
       <div
         className={
-          showForm
-            ? "hidden"
-            : "flex flex-col items-start gap-6 w-full"
+          showForm ? "hidden" : "flex flex-col items-start gap-6 w-full"
         }
       >
         {/* Page Header */}
@@ -194,7 +192,9 @@ const BulkSMS = () => {
                     <span className="text-xs font-medium text-gray-500 block mb-1">
                       Date
                     </span>
-                    <p className="text-sm text-gray-800">{message.created_at}</p>
+                    <p className="text-sm text-gray-800">
+                      {message.created_at}
+                    </p>
                   </div>
                 </div>
               ))}
