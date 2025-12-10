@@ -35,16 +35,14 @@ const Summary = ({
   return (
     <div className={className ? style : "flex flex-row w-full justify-between"}>
       <span
-        className={`font-normal text-sm text-start ${
-          textColor ? textColor : "text-gray-600"
-        }`}
+        className={`font-normal text-sm text-start ${textColor ? textColor : "text-gray-600"
+          }`}
       >
         {title}
       </span>
       <span
-        className={`text-sm font-semibold text-end ${
-          textColor ? textColor : "text-gray-800"
-        }`}
+        className={`text-sm font-semibold text-end ${textColor ? textColor : "text-gray-800"
+          }`}
       >
         {value}
       </span>
@@ -61,8 +59,6 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [sending, setSending] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -143,34 +139,44 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
   };
 
   const handleSend = async () => {
-    setError(null);
-    setSuccess(null);
-
     // Validation
     if (!message.trim()) {
-      setError("Please enter a message");
+      toast.error("Please enter a message", {
+        duration: 5000,
+        closeButton: true,
+      });
       return;
     }
 
     if (allRecipients.length === 0) {
-      setError("Please add at least one recipient");
+      toast.error("Please add at least one recipient", {
+        duration: 5000,
+        closeButton: true,
+      });
       return;
     }
 
     // Validate all recipients are Ghana numbers
     const invalidNumbers = allRecipients.filter((num) => !validateNumber(num));
     if (invalidNumbers.length > 0) {
-      setError(
-        `Invalid Ghana phone numbers: ${invalidNumbers.slice(0, 3).join(", ")}${
-          invalidNumbers.length > 3 ? "..." : ""
-        }`
+      toast.error(
+        `Invalid Ghana phone numbers: ${invalidNumbers.slice(0, 3).join(", ")}${invalidNumbers.length > 3 ? "..." : ""
+        }`,
+        {
+          duration: 7000,
+          closeButton: true,
+        }
       );
       return;
     }
 
     if (!hasEnoughBalance) {
-      setError(
-        `Insufficient balance. You need ${recipientCount} SMS credits but only have ${currentBalance}`
+      toast.error(
+        `Insufficient balance. You need ${recipientCount} SMS credits but only have ${currentBalance}`,
+        {
+          duration: 7000,
+          closeButton: true,
+        }
       );
       return;
     }
@@ -178,13 +184,29 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
     try {
       setSending(true);
 
-      await sendSms(allRecipients, message);
+      const response = await sendSms(allRecipients, message);
 
-      setSuccess(
-        `Successfully queued ${recipientCount} SMS message${
-          recipientCount > 1 ? "s" : ""
-        }`
+      // Show success toast with response details from backend
+      toast.success(
+        `Successfully queued ${response?.queued || recipientCount} SMS message${(response?.queued || recipientCount) > 1 ? "s" : ""}!`,
+        {
+          description: response?.message || "Messages are being sent",
+          duration: Infinity,
+          closeButton: true,
+        }
       );
+
+      // Optionally show failed count if any
+      if (response?.failed && response.failed > 0) {
+        toast.warning(
+          `${response.failed} message${response.failed > 1 ? "s" : ""} failed to queue`,
+          {
+            description: response?.errors?.join(", ") || "Some messages could not be sent",
+            duration: Infinity,
+            closeButton: true,
+          }
+        );
+      }
 
       // Reset form
       setMessage("");
@@ -194,13 +216,24 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
       // Refresh SMS data
       await refetch();
 
-      // Close form after 2 seconds
-      setTimeout(() => {
-        closeForm();
-        setSuccess(null);
-      }, 2000);
+      // Optional: Close form after 3 seconds
+      // Uncomment if you want auto-close behavior
+      // setTimeout(() => {
+      //   closeForm();
+      // }, 3000);
     } catch (err: any) {
-      setError(err.message || "Failed to send SMS. Please try again.");
+      // Show detailed error from backend
+      const errorMessage =
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        err.message ||
+        "Failed to send SMS. Please try again.";
+
+      toast.error("SMS Send Failed", {
+        description: errorMessage,
+        duration: Infinity,
+        closeButton: true,
+      });
     } finally {
       setSending(false);
     }
@@ -210,8 +243,6 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
     setMessage("");
     setRecipientsInput("");
     setSelectedCategories([]);
-    setError(null);
-    setSuccess(null);
     closeForm();
   };
 
@@ -236,27 +267,6 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
           </Button>
         </div>
       </div>
-
-      {/* Error/Success Messages */}
-      {error &&
-        // <div className="w-full p-4 bg-red-50 border border-red-200 rounded-md flex items-start gap-3">
-        //   <AlertCircle className="h-5 w-5 text-red-600 mt-0.5" />
-        //   <div className="flex-1">
-        //     <p className="text-sm font-medium text-red-800">Error</p>
-        //     <p className="text-sm text-red-700">{error}</p>
-        //   </div>
-        // </div>
-        toast.error(error)}
-
-      {success &&
-        // <div className="w-full p-4 bg-green-50 border border-green-200 rounded-md flex items-start gap-3">
-        //   <AlertCircle className="h-5 w-5 text-green-600 mt-0.5" />
-        //   <div className="flex-1">
-        //     <p className="text-sm font-medium text-green-800">Success</p>
-        //     <p className="text-sm text-green-700">{success}</p>
-        //   </div>
-        // </div>
-        toast.success(success)}
 
       {/* Form Area */}
       <div className="flex flex-col md:flex-col lg:flex-row w-full gap-6">
@@ -406,8 +416,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
                   {selectedCategories.length} categor
                   {selectedCategories.length !== 1 ? "ies" : "y"} selected
                   {categoryContactNumbers.length > 0 &&
-                    ` • ${categoryContactNumbers.length} contact${
-                      categoryContactNumbers.length !== 1 ? "s" : ""
+                    ` • ${categoryContactNumbers.length} contact${categoryContactNumbers.length !== 1 ? "s" : ""
                     }`}
                 </p>
               </div>
@@ -484,8 +493,8 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
                 hasEnoughBalance
                   ? "text-blue-600"
                   : recipientCount > 0
-                  ? "text-red-600"
-                  : "text-gray-600"
+                    ? "text-red-600"
+                    : "text-gray-600"
               }
               title="Current Balance"
               value={`${currentBalance} SMS`}
