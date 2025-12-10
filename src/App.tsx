@@ -7,6 +7,7 @@ import {
   Navigate,
   useLocation,
 } from "react-router-dom";
+import { Toaster } from "sonner";
 
 // Inventory Service Pages
 import Dashboard from "./pages/Inventory/Dashboard";
@@ -40,8 +41,6 @@ import ContactsPage from "./pages/BulkSMS/Contacts";
 // Services Page
 import Services from "./pages/Services";
 
-
-
 // Blog imports
 import AdminBlogDashboard from "./pages/LandingPage/AdminBlogDashboard";
 import AdminBlogEditor from "./pages/LandingPage/AdminBlogEditor";
@@ -54,7 +53,7 @@ import UpdatePrompt from "./components/LandingPage/UpdatePrompt";
 import AuthProvider from "./components/LandingPage/AuthProvider";
 
 // Contexts
-import { SmsProvider } from "@/context/smsContext";
+import { SmsProvider } from "@/context/SmsContext";
 import { ContactsProvider } from "@/context/ContactsContext";
 import TopUp from "./pages/BulkSMS/TopUp";
 import PaymentVerification from "./pages/BulkSMS/PaymentVerification";
@@ -91,8 +90,9 @@ const WhatsAppButton: React.FC = (): JSX.Element | null => {
     >
       {/* Label */}
       <div
-        className={`bg-white px-4 py-2 rounded-lg shadow-lg border-2 border-green-500 whitespace-nowrap transition-all duration-300 ${showLabel ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
-          }`}
+        className={`bg-white px-4 py-2 rounded-lg shadow-lg border-2 border-green-500 whitespace-nowrap transition-all duration-300 ${
+          showLabel ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
+        }`}
       >
         <span className="text-sm font-semibold text-gray-800">
           contact us for help
@@ -118,7 +118,6 @@ const WhatsAppButton: React.FC = (): JSX.Element | null => {
   );
 };
 
-
 export function App() {
   return (
     <Router>
@@ -126,6 +125,7 @@ export function App() {
         <ServiceProvider>
           <SmsProvider>
             <ContactsProvider>
+              <Toaster position="top-right" richColors={true} />
               {/* PWA Update Prompt - Shows when new version is available */}
               <UpdatePrompt />
 

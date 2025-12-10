@@ -9,6 +9,7 @@ import {
   getAllContacts,
   addContact as addContactAPI,
   Contact,
+  AddContactResponse,
 } from "@/utils/BulkSMS/smsService";
 
 interface ContactsContextType {
@@ -16,7 +17,10 @@ interface ContactsContextType {
   loading: boolean;
   error: string | null;
   refetch: () => Promise<void>;
-  addNewContact: (contact: string, category: string) => Promise<void>;
+  addNewContact: (
+    contact: string,
+    category: string,
+  ) => Promise<AddContactResponse>;
   getContactsByCategory: (category: string) => Contact[];
   getAllCategories: () => string[];
 }
@@ -44,7 +48,6 @@ export const ContactsProvider: React.FC<ContactsProviderProps> = ({
       setContacts(data);
     } catch (err) {
       setError("Failed to load contacts");
-      console.error("Error fetching contacts:", err);
     } finally {
       setLoading(false);
     }
@@ -60,11 +63,12 @@ export const ContactsProvider: React.FC<ContactsProviderProps> = ({
 
   const addNewContact = async (contact: string, category: string) => {
     try {
-      await addContactAPI(contact, category);
+      const response = await addContactAPI(contact, category);
       await refetch();
+
+      return response;
     } catch (err) {
       setError("Failed to add contact");
-      console.error("Error adding contact:", err);
       throw err;
     }
   };

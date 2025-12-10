@@ -3,6 +3,10 @@ import { Link, useLocation } from "react-router-dom";
 import { LucideIcon, FileText, X } from "lucide-react";
 import { useAuthStore } from "../../store/useAuthStore";
 import { apiFetch } from "../../utils/api";
+import ProfileCard from "../ProfileCard";
+import Tab from "../Tab";
+
+import { MessagesSquare, Store } from "lucide-react";
 
 type NavigationProps = {
   name: string;
@@ -21,6 +25,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   setSidebarOpen,
   navigation,
 }) => {
+  const [isServicesCardOpen, setIsServicesCardOpen] = useState<boolean>(false);
   const businessName = useAuthStore((state) => state.businessName);
   const location = useLocation();
   const [isAdmin, setIsAdmin] = useState(false);
@@ -53,6 +58,21 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <>
+      {/* Services Card */}
+      <ProfileCard
+        isActive={isServicesCardOpen}
+        className="bottom-16 left-4"
+        title="Services"
+      >
+        <a href="/dashboard" className="w-full">
+          <Tab tabName="Inventory" icon={Store} />
+        </a>
+
+        <a href="/sms/dashboard">
+          <Tab tabName="Bulk SMS" icon={MessagesSquare} />
+        </a>
+      </ProfileCard>
+
       {/* Mobile sidebar */}
       <div
         className={`fixed inset-0 z-40 flex md:hidden ${
@@ -71,7 +91,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         />
         {/* Sidebar */}
         <div
-          className={`relative flex-1 flex flex-col max-w-[240px] pt-5 pb-4 bg-blue-800 transition ease-in-out duration-300 transform ${
+          className={`relative flex-1 flex flex-col max-w-60 pt-5 pb-4 bg-blue-800 transition ease-in-out duration-300 transform ${
             sidebarOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
@@ -84,11 +104,15 @@ const Sidebar: React.FC<SidebarProps> = ({
               <X className="h-6 w-6 text-white" aria-hidden="true" />
             </button>
           </div>
-          <div className="flex-shrink-0 flex items-center px-4">
+
+          {/* Logo */}
+          <div className="shrink-0 flex items-center px-4">
             <Link to="/" className="text-2xl font-bold text-white">
               NkwaBiz
             </Link>
           </div>
+
+          {/* Menu Items */}
           <div className="mt-5 flex-1 h-0 overflow-y-auto">
             <nav className="px-2 space-y-1">
               {allNavigation.map((item) => (
@@ -113,17 +137,30 @@ const Sidebar: React.FC<SidebarProps> = ({
               ))}
             </nav>
           </div>
+
+          {/* Business Information */}
+          <button
+            className="flex cursor-pointer items-center shrink-0 px-4 pb-2 h-16 bg-blue-800"
+            onClick={() => setIsServicesCardOpen((prev) => !prev)}
+          >
+            <div className="h-8 w-8 rounded-sm bg-blue-200 text-blue-800 flex items-center font-medium justify-center">
+              {businessName?.slice(0, 2).toUpperCase()}
+            </div>
+            <span className="ml-2 font-medium text-white">
+              {businessName || "Business Name"}
+            </span>
+          </button>
         </div>
-        <div className="flex-shrink-0 w-14" aria-hidden="true">
+        <div className="shrink-0 w-14" aria-hidden="true">
           {/* Dummy element to force sidebar to shrink to fit close icon */}
         </div>
       </div>
       {/* Static sidebar for desktop */}
-      <div className="hidden md:flex md:flex-shrink-0 w-60">
+      <div className="hidden md:flex md:shrink-0 w-60">
         <div className="flex flex-col w-64">
           <div className="flex flex-col h-0 flex-1">
             {/* Logo */}
-            <div className="flex items-center h-16 flex-shrink-0 px-4 bg-blue-800">
+            <div className="flex items-center h-16 shrink-0 px-4 bg-blue-800">
               <Link to="/" className="text-2xl font-bold text-white">
                 NkwaBiz
               </Link>
@@ -155,14 +192,17 @@ const Sidebar: React.FC<SidebarProps> = ({
             </div>
 
             {/* Business Name */}
-            <div className="flex items-center flex-shrink-0 px-4 pb-2 h-16 bg-blue-800">
+            <button
+              className="flex cursor-pointer items-center shrink-0 px-4 pb-2 h-16 bg-blue-800 hover:bg-blue-900"
+              onClick={() => setIsServicesCardOpen((prev) => !prev)}
+            >
               <div className="h-8 w-8 rounded-sm bg-blue-200 text-blue-800 flex items-center font-medium justify-center">
                 {businessName?.slice(0, 2).toUpperCase()}
               </div>
               <span className="ml-2 font-medium text-white">
                 {businessName || "Business Name"}
               </span>
-            </div>
+            </button>
           </div>
         </div>
       </div>

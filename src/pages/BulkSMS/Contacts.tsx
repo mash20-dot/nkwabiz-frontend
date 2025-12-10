@@ -6,12 +6,15 @@ import { Table, TableCard } from "@/components/application/table/table";
 import { EmptyState } from "@/components/application/empty-state/empty-state";
 import { Badge } from "@/components/base/badges/badges";
 import AddContactForm from "@/components/AddContactsForm";
+import { toast } from "sonner";
 
 const ContactsPage = () => {
   const { contacts, loading, error, getAllCategories } = useContacts();
   const [showAddContactModal, setShowAddContactModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [prefilledCategory, setPrefilledCategory] = useState<string | undefined>(undefined);
+  const [prefilledCategory, setPrefilledCategory] = useState<
+    string | undefined
+  >(undefined);
 
   const categories = getAllCategories();
 
@@ -25,8 +28,7 @@ const ContactsPage = () => {
     setPrefilledCategory(undefined);
   };
 
-  const handleOpenModalWithCategory = (category?: string) => {
-    setPrefilledCategory(category);
+  const handleOpenModal = () => {
     setShowAddContactModal(true);
   };
 
@@ -44,9 +46,15 @@ const ContactsPage = () => {
       {showAddContactModal && (
         <AddContactForm
           onClose={handleCloseModal}
-          onSuccess={() => {
-            console.log("Contact added successfully!");
+          onSuccess={(message) => {
             handleCloseModal();
+
+            setTimeout(() => {
+              toast.success(message || "Contact added successfully");
+            }, 100);
+          }}
+          onError={(message) => {
+            toast.error(message || "Failed to add contact");
           }}
           preSelectedCategory={prefilledCategory}
         />
@@ -65,7 +73,7 @@ const ContactsPage = () => {
           <div className="flex gap-4">
             <Button
               className="cursor-pointer bg-blue-600 hover:bg-blue-700 border-blue-600 text-white"
-              onClick={() => handleOpenModalWithCategory(undefined)}
+              onClick={handleOpenModal}
             >
               <UserPlus
                 className="h-4 w-4 mr-2 text-white"
@@ -82,10 +90,11 @@ const ContactsPage = () => {
             <div className="flex gap-2 flex-wrap">
               <button
                 onClick={() => setSelectedCategory("all")}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${selectedCategory === "all"
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+                  selectedCategory === "all"
                     ? "bg-blue-100 text-blue-600 border border-blue-300"
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200"
-                  }`}
+                }`}
               >
                 All ({contacts.length})
               </button>
@@ -93,20 +102,14 @@ const ContactsPage = () => {
                 <div key={category} className="flex items-center gap-1">
                   <button
                     onClick={() => setSelectedCategory(category)}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${selectedCategory === category
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+                      selectedCategory === category
                         ? "bg-blue-100 text-blue-600 border border-blue-300"
                         : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200"
-                      }`}
+                    }`}
                   >
                     {category} (
                     {contacts.filter((c) => c.category === category).length})
-                  </button>
-                  <button
-                    onClick={() => handleOpenModalWithCategory(category)}
-                    className="p-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors cursor-pointer"
-                    title={`Add contact to ${category}`}
-                  >
-                    <UserPlus className="h-4 w-4" />
                   </button>
                 </div>
               ))}
@@ -135,7 +138,7 @@ const ContactsPage = () => {
               <EmptyState.Footer>
                 <Button
                   className="cursor-pointer bg-blue-600 hover:bg-blue-700 border-blue-600 text-white"
-                  onClick={() => handleOpenModalWithCategory(undefined)}
+                  onClick={handleOpenModal}
                 >
                   <Users className="h-4 w-4 mr-2 text-white" />
                   Add Contact

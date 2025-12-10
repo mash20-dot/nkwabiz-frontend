@@ -5,6 +5,9 @@ import { logout } from "../../utils/auth";
 import { apiFetch } from "../../utils/api";
 import ProfileCard from "../ProfileCard";
 
+import Tab from "../Tab";
+import { Settings, LogOut } from "lucide-react";
+
 interface HeaderProps {
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
@@ -39,7 +42,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
         } else {
           console.warn(
             "No firstname found in response. Full data:",
-            JSON.stringify(data)
+            JSON.stringify(data),
           );
           setError("Name not found in response");
         }
@@ -65,7 +68,13 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
 
   return (
     <header className="sticky top-0 z-10 shrink-0 flex h-16 bg-white border-b border-b-gray-300">
-      <ProfileCard onClick={handleLogout} isActive={isProfileActive} />
+      <ProfileCard isActive={isProfileActive} className="right-4 top-16">
+        <a href="/settings" className="w-full">
+          <Tab tabName="Account Settings" icon={Settings} />
+        </a>
+
+        <Tab tabName="Sign out" icon={LogOut} onClick={handleLogout} />
+      </ProfileCard>
       <button
         type="button"
         className="px-4 border-r border-gray-200 text-gray-500 md:hidden"

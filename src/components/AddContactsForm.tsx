@@ -1,29 +1,24 @@
 import { useState, useEffect } from "react";
-import { CheckCircle, XCircle, X } from "lucide-react";
 import Button from "@/components/Button";
 import { useContacts } from "@/context/ContactsContext";
 
 interface AddContactFormProps {
   onClose: () => void;
-  onSuccess?: () => void;
+  onSuccess?: (message?: string) => void;
+  onError?: (message?: string) => void;
   preSelectedCategory?: string;
-}
-
-interface Toast {
-  type: "success" | "error";
-  message: string;
 }
 
 const AddContactForm: React.FC<AddContactFormProps> = ({
   onClose,
   onSuccess,
+  onError,
   preSelectedCategory,
 }) => {
   const { addNewContact, getAllCategories } = useContacts();
   const [newContact, setNewContact] = useState("");
   const [newCategory, setNewCategory] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [toast, setToast] = useState<Toast | null>(null);
 
   const categories = getAllCategories();
 
@@ -34,25 +29,11 @@ const AddContactForm: React.FC<AddContactFormProps> = ({
     }
   }, [preSelectedCategory]);
 
-  // Auto-hide toast after 5 seconds
-  useEffect(() => {
-    if (toast) {
-      const timer = setTimeout(() => {
-        setToast(null);
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [toast]);
-
-  const showToast = (type: "success" | "error", message: string) => {
-    setToast({ type, message });
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!newContact.trim() || !newCategory.trim()) {
-      showToast("error", "Please fill in all fields");
+      onError?.("Please fill in all fields");
       return;
     }
 
@@ -61,27 +42,25 @@ const AddContactForm: React.FC<AddContactFormProps> = ({
       const response = await addNewContact(newContact, newCategory);
 
       // Extract and display backend success message
-      const successMessage = response?.message || response?.data?.message || "Contact added successfully!";
+      const successMessage = response?.message || "Contact added successfully!";
 
       setNewContact("");
       setNewCategory("");
       setIsSubmitting(false);
 
       // Close the modal first
-      onSuccess?.();
+      onSuccess?.(successMessage);
       onClose();
-
-      // Then show toast after a brief delay so it appears after modal closes
-      setTimeout(() => {
-        showToast("success", successMessage);
-      }, 100);
-
     } catch (err: any) {
       console.error("Failed to add contact:", err);
 
       // Extract and display backend error message
-      const errorMessage = err?.response?.data?.message || err?.message || "Failed to add contact. Please try again.";
-      showToast("error", errorMessage);
+      const error = err as any;
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to add contact. Please try again.";
+      onError?.(errorMessage);
       setIsSubmitting(false);
     }
   };
@@ -94,31 +73,6 @@ const AddContactForm: React.FC<AddContactFormProps> = ({
 
   return (
     <>
-      {/* Toast Notification - Outside modal so it persists */}
-      {toast && (
-        <div className="fixed top-4 right-4 z-[100] animate-in slide-in-from-top-2 duration-300">
-          <div
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg border min-w-[300px] ${toast.type === "success"
-                ? "bg-green-50 border-green-200 text-green-800"
-                : "bg-red-50 border-red-200 text-red-800"
-              }`}
-          >
-            {toast.type === "success" ? (
-              <CheckCircle className="h-5 w-5 text-green-600 flex-shrink-0" />
-            ) : (
-              <XCircle className="h-5 w-5 text-red-600 flex-shrink-0" />
-            )}
-            <p className="text-sm font-medium flex-1">{toast.message}</p>
-            <button
-              onClick={() => setToast(null)}
-              className="ml-2 text-gray-400 hover:text-gray-600"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-      )}
-
       <div className="w-full fixed inset-0 z-50 flex items-center justify-center">
         {/* Backdrop */}
         <div

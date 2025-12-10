@@ -5,7 +5,7 @@ import SummaryCard from "@/components/SummaryCard";
 import { Table, TableCard } from "@/components/application/table/table";
 import { Badge } from "@/components/base/badges/badges";
 import { EmptyState } from "@/components/application/empty-state/empty-state";
-import { useSms } from "@/context/smsContext";
+import { useSms } from "@/context/SmsContext";
 
 const SmsDashboard = () => {
   const navigate = useNavigate();
@@ -19,6 +19,8 @@ const SmsDashboard = () => {
   };
 
   const messages = smsData?.history || [];
+
+  const recentMessages = messages.slice(0, 5);
 
   const statsCards = [
     {
@@ -83,7 +85,7 @@ const SmsDashboard = () => {
       </div>
 
       {/* Recent Messages Table */}
-      {messages.length === 0 ? (
+      {recentMessages.length === 0 ? (
         <div className="w-full border border-gray-200 rounded-md flex items-center justify-center overflow-hidden px-8 py-20">
           <EmptyState size="sm">
             <EmptyState.Header pattern="none">
@@ -135,7 +137,7 @@ const SmsDashboard = () => {
               </Table.Header>
 
               <Table.Body className="w-full">
-                {messages.map((message) => (
+                {recentMessages.map((message) => (
                   <Table.Row
                     key={message.id}
                     className="cursor-pointer bg-white hover:bg-gray-50 border-b border-gray-200 last:border-b-0"
@@ -176,7 +178,7 @@ const SmsDashboard = () => {
               Recent Messages
             </h2>
             <div className="space-y-4">
-              {messages.map((message) => (
+              {recentMessages.map((message) => (
                 <div
                   key={message.id}
                   className="bg-white border border-gray-200 rounded-lg p-4 space-y-3"
@@ -221,7 +223,9 @@ const SmsDashboard = () => {
                     <span className="text-xs font-medium text-gray-500 block mb-1">
                       Date
                     </span>
-                    <p className="text-sm text-gray-800">{message.created_at}</p>
+                    <p className="text-sm text-gray-800">
+                      {message.created_at}
+                    </p>
                   </div>
                 </div>
               ))}

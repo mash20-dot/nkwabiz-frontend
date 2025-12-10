@@ -10,8 +10,9 @@ import classNames from "classnames";
 import { TextArea } from "@/components/base/textarea/textarea";
 import { useState, useRef, useEffect } from "react";
 import { sendSms } from "@/utils/BulkSMS/smsService";
-import { useSms } from "@/context/smsContext";
+import { useSms } from "@/context/SmsContext";
 import { useContacts } from "@/context/ContactsContext";
+import { toast } from "sonner";
 
 type SendSMSProps = {
   showForm: boolean;
@@ -33,14 +34,16 @@ const Summary = ({
   return (
     <div className={className ? style : "flex flex-row w-full justify-between"}>
       <span
-        className={`font-normal text-sm text-start ${textColor ? textColor : "text-gray-600"
-          }`}
+        className={`font-normal text-sm text-start ${
+          textColor ? textColor : "text-gray-600"
+        }`}
       >
         {title}
       </span>
       <span
-        className={`text-sm font-semibold text-end ${textColor ? textColor : "text-gray-800"
-          }`}
+        className={`text-sm font-semibold text-end ${
+          textColor ? textColor : "text-gray-800"
+        }`}
       >
         {value}
       </span>
@@ -158,7 +161,8 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
     const invalidNumbers = allRecipients.filter((num) => !validateNumber(num));
     if (invalidNumbers.length > 0) {
       setError(
-        `Invalid Ghana phone numbers: ${invalidNumbers.slice(0, 3).join(", ")}${invalidNumbers.length > 3 ? "..." : ""
+        `Invalid Ghana phone numbers: ${invalidNumbers.slice(0, 3).join(", ")}${
+          invalidNumbers.length > 3 ? "..." : ""
         }`,
       );
       return;
@@ -232,25 +236,25 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
       </div>
 
       {/* Error/Success Messages */}
-      {error && (
-        <div className="w-full p-4 bg-red-50 border border-red-200 rounded-md flex items-start gap-3">
-          <AlertCircle className="h-5 w-5 text-red-600 mt-0.5" />
-          <div className="flex-1">
-            <p className="text-sm font-medium text-red-800">Error</p>
-            <p className="text-sm text-red-700">{error}</p>
-          </div>
-        </div>
-      )}
+      {error &&
+        // <div className="w-full p-4 bg-red-50 border border-red-200 rounded-md flex items-start gap-3">
+        //   <AlertCircle className="h-5 w-5 text-red-600 mt-0.5" />
+        //   <div className="flex-1">
+        //     <p className="text-sm font-medium text-red-800">Error</p>
+        //     <p className="text-sm text-red-700">{error}</p>
+        //   </div>
+        // </div>
+        toast.error(error)}
 
-      {success && (
-        <div className="w-full p-4 bg-green-50 border border-green-200 rounded-md flex items-start gap-3">
-          <AlertCircle className="h-5 w-5 text-green-600 mt-0.5" />
-          <div className="flex-1">
-            <p className="text-sm font-medium text-green-800">Success</p>
-            <p className="text-sm text-green-700">{success}</p>
-          </div>
-        </div>
-      )}
+      {success &&
+        // <div className="w-full p-4 bg-green-50 border border-green-200 rounded-md flex items-start gap-3">
+        //   <AlertCircle className="h-5 w-5 text-green-600 mt-0.5" />
+        //   <div className="flex-1">
+        //     <p className="text-sm font-medium text-green-800">Success</p>
+        //     <p className="text-sm text-green-700">{success}</p>
+        //   </div>
+        // </div>
+        toast.success(success)}
 
       {/* Form Area */}
       <div className="flex flex-col md:flex-col lg:flex-row w-full gap-6">
