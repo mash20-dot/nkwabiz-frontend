@@ -61,7 +61,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       {/* Services Card */}
       <ProfileCard
         isActive={isServicesCardOpen}
-        className="bottom-16 left-4"
+        className="bottom-20 md:bottom-16 left-4 z-100"
         title="Services"
       >
         <a href="/dashboard" className="w-full">
