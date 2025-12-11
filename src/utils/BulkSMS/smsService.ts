@@ -38,6 +38,7 @@ export interface SendSmsResponse {
 
 export interface Contact {
   user_id: number;
+  contact_id: number;
   contact: string;
   category: string;
 }
@@ -76,6 +77,10 @@ export interface PaymentVerificationResponse {
   current_sms_balance: number;
 }
 
+export interface DeleteContactResponse {
+  message: string;
+}
+
 export type ContactsResponse = Contact[] | { message: string; contacts: [] };
 
 // Get full SMS response (stats + history)
@@ -94,11 +99,10 @@ export async function getSmsHistoryFull(): Promise<SmsHistoryResponse> {
   }
 }
 
-
 // Send SMS to multiple recipients
 export async function sendSms(
   recipients: string[],
-  message: string,
+  message: string
 ): Promise<SendSmsResponse> {
   try {
     const response = await apiFetch(
@@ -110,7 +114,7 @@ export async function sendSms(
           message,
         }),
       },
-      true,
+      true
     );
 
     return response as SendSmsResponse;
@@ -126,7 +130,7 @@ export async function getAllContacts(): Promise<Contact[]> {
     const response = await apiFetch(
       "/sms/all/contact",
       { method: "GET" },
-      true,
+      true
     );
 
     if (
@@ -152,7 +156,7 @@ export async function getAllContacts(): Promise<Contact[]> {
 // Add a new contact
 export async function addContact(
   contact: string,
-  category: string,
+  category: string
 ): Promise<AddContactResponse> {
   try {
     const response = await apiFetch(
@@ -161,12 +165,32 @@ export async function addContact(
         method: "POST",
         body: JSON.stringify({ contact, category }),
       },
-      true,
+      true
     );
 
     return response as AddContactResponse;
   } catch (error) {
     console.error("Error adding contact:", error);
+    throw error;
+  }
+}
+
+// Delete Contact
+export async function deleteContact(
+  contactId: number
+): Promise<DeleteContactResponse> {
+  try {
+    const response = await apiFetch(
+      `/sms/delete/${contactId}`,
+      {
+        method: "DELETE",
+      },
+      true
+    );
+
+    return response as DeleteContactResponse;
+  } catch (error) {
+    console.error("Error deleting contact:", error);
     throw error;
   }
 }
@@ -177,7 +201,7 @@ export async function getSMSBundles(): Promise<SmsBundle[]> {
     const response = await apiFetch(
       "/payment/get-bundles",
       { method: "GET" },
-      false,
+      false
     );
 
     if (response && Array.isArray(response.bundles)) {
@@ -193,7 +217,7 @@ export async function getSMSBundles(): Promise<SmsBundle[]> {
 
 // Initialize payment for a bundle
 export async function initializeSMSPayment(
-  bundleType: "small" | "medium" | "large" | "xl",
+  bundleType: "small" | "medium" | "large" | "xl"
 ): Promise<PaystackInitializeResponse> {
   try {
     console.log("Calling initialize payment with:", bundleType);
@@ -204,7 +228,7 @@ export async function initializeSMSPayment(
         method: "POST",
         body: JSON.stringify({ bundle_type: bundleType }),
       },
-      true,
+      true
     );
 
     console.log("Raw backend response:", response);
@@ -227,13 +251,13 @@ export async function initializeSMSPayment(
 
 // Verify payment after user returns from Paystack
 export async function verifyPayment(
-  reference: string,
+  reference: string
 ): Promise<PaymentVerificationResponse> {
   try {
     const response = await apiFetch(
       `/payment/verify_payment/${reference}`,
       { method: "GET" },
-      true,
+      true
     );
 
     return response as PaymentVerificationResponse;

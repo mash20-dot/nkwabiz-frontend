@@ -8,6 +8,7 @@ import React, {
 import {
   getAllContacts,
   addContact as addContactAPI,
+  deleteContact as deleteContactAPI,
   Contact,
   AddContactResponse,
 } from "@/utils/BulkSMS/smsService";
@@ -19,14 +20,15 @@ interface ContactsContextType {
   refetch: () => Promise<void>;
   addNewContact: (
     contact: string,
-    category: string,
+    category: string
   ) => Promise<AddContactResponse>;
+  deleteContact: (contactId: number) => Promise<void>;
   getContactsByCategory: (category: string) => Contact[];
   getAllCategories: () => string[];
 }
 
 const ContactsContext = createContext<ContactsContextType | undefined>(
-  undefined,
+  undefined
 );
 
 interface ContactsProviderProps {
@@ -73,6 +75,17 @@ export const ContactsProvider: React.FC<ContactsProviderProps> = ({
     }
   };
 
+  const deleteContact = async (contactId: number): Promise<void> => {
+    try {
+      await deleteContactAPI(contactId);
+      await refetch();
+    } catch (err) {
+      setError("Failed to delete contact");
+      console.error("Error deleting contact:", err);
+      throw err;
+    }
+  };
+
   const getContactsByCategory = (category: string): Contact[] => {
     return contacts.filter((contact) => contact.category === category);
   };
@@ -90,6 +103,7 @@ export const ContactsProvider: React.FC<ContactsProviderProps> = ({
         error,
         refetch,
         addNewContact,
+        deleteContact,
         getContactsByCategory,
         getAllCategories,
       }}

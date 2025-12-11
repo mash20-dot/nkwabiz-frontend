@@ -1,4 +1,4 @@
-import { Users, UserPlus } from "lucide-react";
+import { Users, UserPlus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useContacts } from "@/context/ContactsContext";
 import Button from "@/components/Button";
@@ -6,15 +6,26 @@ import { Table, TableCard } from "@/components/application/table/table";
 import { EmptyState } from "@/components/application/empty-state/empty-state";
 import { Badge } from "@/components/base/badges/badges";
 import AddContactForm from "@/components/AddContactsForm";
+import DeleteContactDialog from "@/components/ConfirmationModal";
+
 import { toast } from "sonner";
 
 const ContactsPage = () => {
-  const { contacts, loading, error, getAllCategories } = useContacts();
+  const { contacts, loading, error, getAllCategories, deleteContact } =
+    useContacts();
   const [showAddContactModal, setShowAddContactModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [prefilledCategory, setPrefilledCategory] = useState<
     string | undefined
   >(undefined);
+
+  // Delete dialog state
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [contactToDelete, setContactToDelete] = useState<{
+    id: number;
+    phone: string;
+  } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const categories = getAllCategories();
 
@@ -32,6 +43,38 @@ const ContactsPage = () => {
     setShowAddContactModal(true);
   };
 
+  const handleDeleteClick = (contactId: number, phoneNumber: string) => {
+    setContactToDelete({ id: contactId, phone: phoneNumber });
+    setShowDeleteDialog(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!contactToDelete) return;
+
+    try {
+      setIsDeleting(true);
+      await deleteContact(contactToDelete.id);
+
+      toast.success(`Contact ${contactToDelete.phone} deleted successfully`);
+      setShowDeleteDialog(false);
+      setContactToDelete(null);
+    } catch (err: any) {
+      console.error("Failed to delete contact:", err);
+      toast.error(
+        err?.response?.data?.message ||
+          err?.message ||
+          "Failed to delete contact. Please try again."
+      );
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteDialog(false);
+    setContactToDelete(null);
+  };
+
   if (loading) {
     return <p className="text-gray-600">Loading contacts...</p>;
   }
@@ -42,7 +85,7 @@ const ContactsPage = () => {
 
   return (
     <>
-      {/* Add Contact Modal - No extra wrapper, form handles its own modal */}
+      {/* Add Contact Modal */}
       {showAddContactModal && (
         <AddContactForm
           onClose={handleCloseModal}
@@ -59,6 +102,15 @@ const ContactsPage = () => {
           preSelectedCategory={prefilledCategory}
         />
       )}
+
+      {/* Delete Contact Confirmation Dialog */}
+      <DeleteContactDialog
+        isOpen={showDeleteDialog}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        contactNumber={contactToDelete?.phone || ""}
+        isDeleting={isDeleting}
+      />
 
       <div className="flex flex-col w-full items-start gap-6">
         {/* Page Header */}
@@ -159,6 +211,7 @@ const ContactsPage = () => {
                     <Table.Head>ID</Table.Head>
                     <Table.Head>Phone Number</Table.Head>
                     <Table.Head>Category</Table.Head>
+                    <Table.Head>Actions</Table.Head>
                   </Table.Row>
                 </Table.Header>
 
@@ -179,6 +232,20 @@ const ContactsPage = () => {
                         <Badge color="gray" size="sm">
                           {contact.category}
                         </Badge>
+                      </Table.Cell>
+
+                      <Table.Cell>
+                        <Button
+                          className="border-none hover:text-red-500"
+                          onClick={() =>
+                            handleDeleteClick(
+                              contact.contact_id,
+                              contact.contact
+                            )
+                          }
+                        >
+                          <Trash2 />
+                        </Button>
                       </Table.Cell>
                     </Table.Row>
                   ))}
@@ -204,13 +271,24 @@ const ContactsPage = () => {
                   </div>
 
                   {/* Phone Number */}
-                  <div>
-                    <span className="text-xs font-medium text-gray-500 block mb-1">
-                      Phone Number
-                    </span>
-                    <p className="text-sm text-gray-800 font-medium">
-                      {contact.contact}
-                    </p>
+                  <div className="flex justify-between items-end">
+                    <div>
+                      <span className="text-xs font-medium text-gray-500 block mb-1">
+                        Phone Number
+                      </span>
+                      <p className="text-sm text-gray-800 font-medium">
+                        {contact.contact}
+                      </p>
+                    </div>
+
+                    <Button
+                      className="border-none hover:text-red-500"
+                      onClick={() =>
+                        handleDeleteClick(contact.contact_id, contact.contact)
+                      }
+                    >
+                      <Trash2 className="h-5 w-5" />
+                    </Button>
                   </div>
                 </div>
               ))}
