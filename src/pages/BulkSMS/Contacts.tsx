@@ -1,4 +1,4 @@
-import { Users, UserPlus, Trash2 } from "lucide-react";
+import { Users, UserPlus, Trash2, Upload } from "lucide-react";
 import { useState } from "react";
 import { useContacts } from "@/context/ContactsContext";
 import Button from "@/components/Button";
@@ -7,6 +7,7 @@ import { EmptyState } from "@/components/application/empty-state/empty-state";
 import { Badge } from "@/components/base/badges/badges";
 import AddContactForm from "@/components/AddContactsForm";
 import DeleteContactDialog from "@/components/ConfirmationModal";
+import ImportContactsModal from "@/components/ImportContactsModal";
 
 import { toast } from "sonner";
 
@@ -14,6 +15,7 @@ const ContactsPage = () => {
   const { contacts, loading, error, getAllCategories, deleteContact } =
     useContacts();
   const [showAddContactModal, setShowAddContactModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [prefilledCategory, setPrefilledCategory] = useState<
     string | undefined
@@ -41,6 +43,14 @@ const ContactsPage = () => {
 
   const handleOpenModal = () => {
     setShowAddContactModal(true);
+  };
+
+  const handleOpenImportModal = () => {
+    setShowImportModal(true);
+  };
+
+  const handleCloseImportModal = () => {
+    setShowImportModal(false);
   };
 
   const handleDeleteClick = (contactId: number, phoneNumber: string) => {
@@ -103,6 +113,22 @@ const ContactsPage = () => {
         />
       )}
 
+      {/* Import Contacts Modal */}
+      {showImportModal && (
+        <ImportContactsModal
+          onClose={handleCloseImportModal}
+          onSuccess={(message) => {
+            handleCloseImportModal();
+            setTimeout(() => {
+              toast.success(message || "Contacts imported successfully");
+            }, 100);
+          }}
+          onError={(message) => {
+            toast.error(message || "Failed to import contacts");
+          }}
+        />
+      )}
+
       {/* Delete Contact Confirmation Dialog */}
       <DeleteContactDialog
         isOpen={showDeleteDialog}
@@ -122,7 +148,17 @@ const ContactsPage = () => {
               {categories.length > 0 && ` in ${categories.length} categories`}
             </p>
           </div>
-          <div className="flex gap-4">
+          <div className="flex gap-3">
+            <Button
+              className="cursor-pointer bg-white hover:bg-gray-50 border-gray-300 text-gray-700"
+              onClick={handleOpenImportModal}
+            >
+              <Upload
+                className="h-4 w-4 mr-2 text-gray-700"
+                aria-hidden="true"
+              />
+              Import
+            </Button>
             <Button
               className="cursor-pointer bg-blue-600 hover:bg-blue-700 border-blue-600 text-white"
               onClick={handleOpenModal}
@@ -181,18 +217,27 @@ const ContactsPage = () => {
                 </EmptyState.Title>
                 <EmptyState.Description className="text-gray-600">
                   You haven't saved any contacts yet. Get started by adding a
-                  new contact.
+                  new contact or importing from a file.
                 </EmptyState.Description>
               </EmptyState.Content>
 
               <EmptyState.Footer>
-                <Button
-                  className="cursor-pointer bg-blue-600 hover:bg-blue-700 border-blue-600 text-white"
-                  onClick={handleOpenModal}
-                >
-                  <Users className="h-4 w-4 mr-2 text-white" />
-                  Add Contact
-                </Button>
+                <div className="flex gap-3">
+                  <Button
+                    className="cursor-pointer bg-white hover:bg-gray-50 border-gray-300 text-gray-700"
+                    onClick={handleOpenImportModal}
+                  >
+                    <Upload className="h-4 w-4 mr-2 text-gray-700" />
+                    Import Contacts
+                  </Button>
+                  <Button
+                    className="cursor-pointer bg-blue-600 hover:bg-blue-700 border-blue-600 text-white"
+                    onClick={handleOpenModal}
+                  >
+                    <Users className="h-4 w-4 mr-2 text-white" />
+                    Add Contact
+                  </Button>
+                </div>
               </EmptyState.Footer>
             </EmptyState>
           </div>
