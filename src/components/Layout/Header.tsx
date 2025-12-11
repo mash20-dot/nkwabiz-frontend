@@ -130,63 +130,86 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
 
         {/* Right side icons and info */}
         <div className="flex items-center gap-2 ml-auto">
-          {/* SMS Balance - Desktop: Always visible, Mobile: Dropdown */}
-          {isBulkSmsPage && (
-            <div className="relative sms-balance-dropdown">
-              {/* Desktop view - always visible */}
-              <div className="hidden sm:flex items-center gap-1 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-lg">
-                <span className="text-sm text-blue-600 font-medium">
-                  SMS Balance:
-                </span>
-                <span className="text-sm font-semibold text-blue-700">
-                  {smsBalance?.toLocaleString() || 0}
-                </span>
-              </div>
+          {/* User Info & SMS Balance - Combined dropdown on mobile, separate on desktop */}
+          <div className="relative sms-balance-dropdown">
+            {/* Desktop view - User greeting visible, SMS balance on bulk pages */}
+            <div className="hidden sm:flex items-center gap-2">
+              {/* User greeting - Always visible on desktop */}
+              {loading ? (
+                <div className="flex items-center">
+                  <span className="text-sm text-gray-400">Loading...</span>
+                </div>
+              ) : error ? (
+                <div className="flex items-center">
+                  <span className="text-sm text-red-500">Error</span>
+                </div>
+              ) : userFirstName ? (
+                <div className="flex items-center">
+                  <span className="text-sm text-gray-700 whitespace-nowrap">
+                    Hi, <span className="font-semibold">{userFirstName}</span>
+                  </span>
+                </div>
+              ) : null}
 
-              {/* Mobile view - dropdown button */}
-              <button
-                onClick={toggleSmsBalance}
-                className="sm:hidden flex items-center gap-1 px-2.5 py-1.5 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
-              >
-                <span className="text-xs text-blue-600 font-medium">SMS</span>
-                <ChevronDown
-                  className={`h-3.5 w-3.5 text-blue-600 transition-transform ${isSmsBalanceOpen ? "rotate-180" : ""
-                    }`}
-                />
-              </button>
-
-              {/* Mobile dropdown content */}
-              {isSmsBalanceOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 px-3 z-20">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-blue-600 font-medium">
-                      SMS Balance:
-                    </span>
-                    <span className="text-sm font-semibold text-blue-700">
-                      {smsBalance?.toLocaleString() || 0}
-                    </span>
-                  </div>
+              {/* SMS Balance - Only on bulk SMS pages */}
+              {isBulkSmsPage && (
+                <div className="flex items-center gap-1 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-lg">
+                  <span className="text-sm text-blue-600 font-medium">
+                    SMS Balance:
+                  </span>
+                  <span className="text-sm font-semibold text-blue-700">
+                    {smsBalance?.toLocaleString() || 0}
+                  </span>
                 </div>
               )}
             </div>
-          )}
 
-          {/* User greeting - Hidden on small mobile, visible on larger screens */}
-          {loading ? (
-            <div className="hidden xs:flex items-center">
-              <span className="text-xs sm:text-sm text-gray-400">Loading...</span>
-            </div>
-          ) : error ? (
-            <div className="hidden xs:flex items-center">
-              <span className="text-xs sm:text-sm text-red-500">Error</span>
-            </div>
-          ) : userFirstName ? (
-            <div className="hidden xs:flex items-center">
-              <span className="text-xs sm:text-sm text-gray-700 whitespace-nowrap">
-                Hi, <span className="font-semibold">{userFirstName}</span>
-              </span>
-            </div>
-          ) : null}
+            {/* Mobile view - Combined dropdown button */}
+            <button
+              onClick={toggleSmsBalance}
+              className="sm:hidden flex items-center gap-1 px-2.5 py-1.5 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors"
+            >
+              <User className="h-3.5 w-3.5 text-gray-600" />
+              <ChevronDown
+                className={`h-3.5 w-3.5 text-gray-600 transition-transform ${isSmsBalanceOpen ? "rotate-180" : ""
+                  }`}
+              />
+            </button>
+
+            {/* Mobile dropdown content - Shows user info and SMS balance */}
+            {isSmsBalanceOpen && (
+              <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-20">
+                {/* User greeting section */}
+                <div className="px-3 py-2 border-b border-gray-200">
+                  {loading ? (
+                    <span className="text-sm text-gray-400">Loading...</span>
+                  ) : error ? (
+                    <span className="text-sm text-red-500">Error loading info</span>
+                  ) : userFirstName ? (
+                    <div className="text-sm text-gray-700">
+                      Hi, <span className="font-semibold">{userFirstName}</span>
+                    </div>
+                  ) : (
+                    <span className="text-sm text-gray-400">No name</span>
+                  )}
+                </div>
+
+                {/* SMS Balance section - Only show on bulk SMS pages */}
+                {isBulkSmsPage && (
+                  <div className="px-3 py-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-blue-600 font-medium">
+                        SMS Balance:
+                      </span>
+                      <span className="text-sm font-semibold text-blue-700">
+                        {smsBalance?.toLocaleString() || 0}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
 
           {/* Notification button */}
           <button className="p-1.5 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
