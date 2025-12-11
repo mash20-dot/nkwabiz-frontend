@@ -48,8 +48,7 @@ const Summary = ({
 const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
   const { refetch } = useSms();
   const { contacts, getAllCategories, getContactsByCategory } = useContacts();
-  const smsBalance = useAuthStore((state) => state.smsBalance);
-  const setSmsBalance = useAuthStore((state) => state.setSmsBalance);
+  const { smsBalance, setSmsBalance } = useAuthStore();
 
   const [message, setMessage] = useState("");
   const [recipientsInput, setRecipientsInput] = useState("");
@@ -60,7 +59,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const COST_PER_SMS = 0.04;
-  const currentBalance = smsBalance;
+  const currentBalance = smsBalance || 0;
   const categories = getAllCategories();
 
   // Close dropdown when clicking outside

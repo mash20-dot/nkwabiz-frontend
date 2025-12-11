@@ -12,10 +12,8 @@ export default function AuthProvider({ children }: AuthProviderProps) {
   const [isChecking, setIsChecking] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
-  const { setCurrency, setSmsBalance } = useAuthStore((state) => ({
-    setCurrency: state.setCurrency,
-    setSmsBalance: state.setSmsBalance,
-  }));
+  const setCurrency = useAuthStore((state) => state.setCurrency);
+  const setSmsBalance = useAuthStore((state) => state.setSmsBalance);
 
   useEffect(() => {
     checkAuth();
