@@ -167,11 +167,13 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
             {/* Mobile view - Combined dropdown button */}
             <button
               onClick={toggleSmsBalance}
-              className="sm:hidden flex items-center gap-1 px-2.5 py-1.5 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors"
+              className="sm:hidden flex items-center gap-1 px-2.5 py-1.5 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
             >
-              <User className="h-3.5 w-3.5 text-gray-600" />
+              <span className="text-xs text-blue-600 font-medium">
+                {isBulkSmsPage ? "Info" : "Account"}
+              </span>
               <ChevronDown
-                className={`h-3.5 w-3.5 text-gray-600 transition-transform ${isSmsBalanceOpen ? "rotate-180" : ""
+                className={`h-3.5 w-3.5 text-blue-600 transition-transform ${isSmsBalanceOpen ? "rotate-180" : ""
                   }`}
               />
             </button>
