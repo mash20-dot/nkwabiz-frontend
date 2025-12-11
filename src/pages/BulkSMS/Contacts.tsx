@@ -62,8 +62,8 @@ const ContactsPage = () => {
       console.error("Failed to delete contact:", err);
       toast.error(
         err?.response?.data?.message ||
-          err?.message ||
-          "Failed to delete contact. Please try again."
+        err?.message ||
+        "Failed to delete contact. Please try again."
       );
     } finally {
       setIsDeleting(false);
@@ -142,11 +142,10 @@ const ContactsPage = () => {
             <div className="flex gap-2 flex-wrap">
               <button
                 onClick={() => setSelectedCategory("all")}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-                  selectedCategory === "all"
-                    ? "bg-blue-100 text-blue-600 border border-blue-300"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200"
-                }`}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${selectedCategory === "all"
+                  ? "bg-blue-100 text-blue-600 border border-blue-300"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200"
+                  }`}
               >
                 All ({contacts.length})
               </button>
@@ -154,11 +153,10 @@ const ContactsPage = () => {
                 <div key={category} className="flex items-center gap-1">
                   <button
                     onClick={() => setSelectedCategory(category)}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-                      selectedCategory === category
-                        ? "bg-blue-100 text-blue-600 border border-blue-300"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200"
-                    }`}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${selectedCategory === category
+                      ? "bg-blue-100 text-blue-600 border border-blue-300"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200"
+                      }`}
                   >
                     {category} (
                     {contacts.filter((c) => c.category === category).length})
@@ -239,7 +237,7 @@ const ContactsPage = () => {
                           className="border-none hover:text-red-500"
                           onClick={() =>
                             handleDeleteClick(
-                              contact.contact_id,
+                              contact.id,
                               contact.contact
                             )
                           }
