@@ -38,7 +38,7 @@ export interface SendSmsResponse {
 
 export interface Contact {
   user_id: number;
-  contact_id: number;
+  id: number;
   contact: string;
   category: string;
 }
