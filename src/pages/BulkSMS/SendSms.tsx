@@ -216,12 +216,6 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
 
       // Refresh SMS data
       await refetch();
-
-      // Optional: Close form after 3 seconds
-      // Uncomment if you want auto-close behavior
-      // setTimeout(() => {
-      //   closeForm();
-      // }, 3000);
     } catch (err: any) {
       // Show detailed error from backend
       const errorMessage =
