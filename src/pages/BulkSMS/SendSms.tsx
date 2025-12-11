@@ -6,6 +6,8 @@ import { useState, useRef, useEffect } from "react";
 import { sendSms } from "@/utils/BulkSMS/smsService";
 import { useSms } from "@/context/BulkSmsContext";
 import { useContacts } from "@/context/ContactsContext";
+import { useAuthStore } from "@/store/useAuthStore";
+import { apiFetch } from "@/utils/api";
 import { toast } from "sonner";
 
 type SendSMSProps = {
@@ -28,16 +30,14 @@ const Summary = ({
   return (
     <div className={className ? style : "flex flex-row w-full justify-between"}>
       <span
-        className={`font-normal text-sm text-start ${
-          textColor ? textColor : "text-gray-600"
-        }`}
+        className={`font-normal text-sm text-start ${textColor ? textColor : "text-gray-600"
+          }`}
       >
         {title}
       </span>
       <span
-        className={`text-sm font-semibold text-end ${
-          textColor ? textColor : "text-gray-800"
-        }`}
+        className={`text-sm font-semibold text-end ${textColor ? textColor : "text-gray-800"
+          }`}
       >
         {value}
       </span>
@@ -46,8 +46,9 @@ const Summary = ({
 };
 
 const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
-  const { smsData, refetch } = useSms();
+  const { refetch } = useSms();
   const { contacts, getAllCategories, getContactsByCategory } = useContacts();
+  const { smsBalance, setSmsBalance } = useAuthStore();
 
   const [message, setMessage] = useState("");
   const [recipientsInput, setRecipientsInput] = useState("");
@@ -58,7 +59,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const COST_PER_SMS = 0.04;
-  const currentBalance = smsData?.total_sms || 0;
+  const currentBalance = smsBalance || 0;
   const categories = getAllCategories();
 
   // Close dropdown when clicking outside
@@ -155,8 +156,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
     const invalidNumbers = allRecipients.filter((num) => !validateNumber(num));
     if (invalidNumbers.length > 0) {
       toast.error(
-        `Invalid Ghana phone numbers: ${invalidNumbers.slice(0, 3).join(", ")}${
-          invalidNumbers.length > 3 ? "..." : ""
+        `Invalid Ghana phone numbers: ${invalidNumbers.slice(0, 3).join(", ")}${invalidNumbers.length > 3 ? "..." : ""
         }`,
         {
           duration: 7000,
@@ -184,8 +184,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
 
       // Show success toast with response details from backend
       toast.success(
-        `Successfully queued ${response?.queued || recipientCount} SMS message${
-          (response?.queued || recipientCount) > 1 ? "s" : ""
+        `Successfully queued ${response?.queued || recipientCount} SMS message${(response?.queued || recipientCount) > 1 ? "s" : ""
         }!`,
         {
           description: response?.message || "Messages are being sent",
@@ -197,8 +196,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
       // Optionally show failed count if any
       if (response?.failed && response.failed > 0) {
         toast.warning(
-          `${response.failed} message${
-            response.failed > 1 ? "s" : ""
+          `${response.failed} message${response.failed > 1 ? "s" : ""
           } failed to queue`,
           {
             description:
@@ -216,6 +214,16 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
 
       // Refresh SMS data
       await refetch();
+
+      // Refresh SMS balance
+      try {
+        const userData = await apiFetch("/security/user-info", {}, true);
+        if (userData.sms_balance !== undefined) {
+          setSmsBalance(userData.sms_balance);
+        }
+      } catch (error) {
+        console.error("Failed to refresh balance:", error);
+      }
     } catch (err: any) {
       // Show detailed error from backend
       const errorMessage =
@@ -411,8 +419,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
                   {selectedCategories.length} categor
                   {selectedCategories.length !== 1 ? "ies" : "y"} selected
                   {categoryContactNumbers.length > 0 &&
-                    ` • ${categoryContactNumbers.length} contact${
-                      categoryContactNumbers.length !== 1 ? "s" : ""
+                    ` • ${categoryContactNumbers.length} contact${categoryContactNumbers.length !== 1 ? "s" : ""
                     }`}
                 </p>
               </div>
@@ -489,8 +496,8 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
                 hasEnoughBalance
                   ? "text-blue-600"
                   : recipientCount > 0
-                  ? "text-red-600"
-                  : "text-gray-600"
+                    ? "text-red-600"
+                    : "text-gray-600"
               }
               title="Current Balance"
               value={`${currentBalance} SMS`}
