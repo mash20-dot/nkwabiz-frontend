@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { isAuthenticated } from "../../utils/auth";
 import { apiFetch } from "../../utils/api";
 import { useAuthStore } from "../../store/useAuthStore";
+
 interface AuthProviderProps {
   children: React.ReactNode;
 }
@@ -11,7 +12,10 @@ export default function AuthProvider({ children }: AuthProviderProps) {
   const [isChecking, setIsChecking] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
-  const setCurrency = useAuthStore((state) => state.setCurrency);
+  const { setCurrency, setSmsBalance } = useAuthStore((state) => ({
+    setCurrency: state.setCurrency,
+    setSmsBalance: state.setSmsBalance,
+  }));
 
   useEffect(() => {
     checkAuth();
@@ -40,11 +44,15 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     const isAuthRoute = ["/login", "/signup"].includes(currentPath);
 
     if (authenticated) {
-      // Fetch user info to get currency
+      // Fetch user info to get currency and SMS balance
       try {
         const userData = await apiFetch("/security/user-info", {}, true);
         if (userData.currency) {
           setCurrency(userData.currency);
+        }
+        // SMS balance
+        if (userData.sms_balance !== undefined) {
+          setSmsBalance(userData.sms_balance);
         }
       } catch (error) {
         console.error("Failed to fetch user info:", error);
