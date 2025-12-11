@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Menu, Bell, User } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { logout } from "../../utils/auth";
 import { apiFetch } from "../../utils/api";
 import ProfileCard from "../ProfileCard";
+import { useSms } from "@/context/BulkSmsContext";
 
 import Tab from "../Tab";
 import { Settings, LogOut } from "lucide-react";
@@ -20,6 +21,14 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
   const [error, setError] = useState<string>("");
 
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const { smsData } = useSms();
+
+  // Check if we're on BulkSMS related pages
+  const isBulkSmsPage =
+    location.pathname.startsWith("/sms") ||
+    location.pathname.includes("bulk-sms");
 
   useEffect(() => {
     // Fetch user info
@@ -42,7 +51,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
         } else {
           console.warn(
             "No firstname found in response. Full data:",
-            JSON.stringify(data),
+            JSON.stringify(data)
           );
           setError("Name not found in response");
         }
@@ -87,7 +96,19 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
         <div className="flex-1 flex items-center">
           <h1 className="text-base font-medium text-gray-700">Dashboard</h1>
         </div>
-        <div className="flex items-center space-x-2 md:space-x-3">
+        <div className="flex items-center space-x-2 md:space-x-3 gap-1">
+          {/* SMS Balance - Only show on BulkSMS pages */}
+          {isBulkSmsPage && smsData && (
+            <div className="hidden sm:flex items-center gap-1 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-lg">
+              <span className="text-sm text-blue-600 font-medium">
+                SMS Balance:
+              </span>
+              <span className="text-sm font-semibold text-blue-700">
+                {smsData.total_sms?.toLocaleString() || 0}
+              </span>
+            </div>
+          )}
+
           {/* User greeting - Shows on all screens */}
           {loading ? (
             <div className="flex items-center mr-1">
@@ -112,7 +133,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
           {/* Notification button */}
           <button className="p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
             <span className="sr-only">View notifications</span>
-            <Bell className="h-5 w-5 sm:h-6 sm:w-6" aria-hidden="true" />
+            <Bell className="h-5 w-5" aria-hidden="true" />
           </button>
 
           {/* Profile dropdown */}
