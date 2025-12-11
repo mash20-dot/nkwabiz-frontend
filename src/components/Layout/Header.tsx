@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Menu, Bell, User } from "lucide-react";
+import { Menu, Bell, User, ChevronDown } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { logout } from "../../utils/auth";
 import { apiFetch } from "../../utils/api";
 import ProfileCard from "../ProfileCard";
-import { useSms } from "@/context/BulkSmsContext";
 
 import Tab from "../Tab";
 import { Settings, LogOut } from "lucide-react";
@@ -16,14 +15,14 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
   const [isProfileActive, setIsProfileActive] = useState<boolean>(false);
+  const [isSmsBalanceOpen, setIsSmsBalanceOpen] = useState<boolean>(false);
   const [userFirstName, setUserFirstName] = useState<string>("");
+  const [smsBalance, setSmsBalance] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
 
   const navigate = useNavigate();
   const location = useLocation();
-
-  const { smsData } = useSms();
 
   // Check if we're on BulkSMS related pages
   const isBulkSmsPage =
@@ -33,21 +32,21 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
   useEffect(() => {
     // Fetch user info
     setLoading(true);
-    console.log("Environment:", window.location.hostname); // Debug: check environment
-    console.log("Fetching from /security/user-info"); // Debug log
+    console.log("Environment:", window.location.hostname);
+    console.log("Fetching from /security/user-info");
 
     apiFetch("/security/user-info", {}, true)
       .then((data) => {
-        console.log("User info response:", data); // Debug log
-        console.log("Response keys:", Object.keys(data)); // Debug: see all available keys
+        console.log("User info response:", data);
+        console.log("Response keys:", Object.keys(data));
 
-        // Try different possible field names
+        // Try different possible field names for first name
         const firstName =
           data.firstname || data.firstName || data.first_name || data.name;
 
         if (firstName) {
           setUserFirstName(firstName);
-          console.log("First name set to:", firstName); // Debug log
+          console.log("First name set to:", firstName);
         } else {
           console.warn(
             "No firstname found in response. Full data:",
@@ -55,15 +54,37 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
           );
           setError("Name not found in response");
         }
+
+        // Get SMS balance
+        if (data.sms_balance !== undefined) {
+          setSmsBalance(data.sms_balance);
+          console.log("SMS balance set to:", data.sms_balance);
+        } else {
+          console.warn("No sms_balance found in response");
+        }
       })
       .catch((err) => {
         console.error("Failed to fetch user info:", err);
-        console.error("Error details:", JSON.stringify(err)); // More detailed error
+        console.error("Error details:", JSON.stringify(err));
         setError(err.message || "Failed to fetch user info");
       })
       .finally(() => {
         setLoading(false);
       });
+  }, []);
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.sms-balance-dropdown') && !target.closest('.profile-dropdown')) {
+        setIsSmsBalanceOpen(false);
+        setIsProfileActive(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   function handleLogout() {
@@ -73,6 +94,12 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
 
   function handleProfileClick() {
     setIsProfileActive(!isProfileActive);
+    setIsSmsBalanceOpen(false); // Close SMS dropdown when opening profile
+  }
+
+  function toggleSmsBalance() {
+    setIsSmsBalanceOpen(!isSmsBalanceOpen);
+    setIsProfileActive(false); // Close profile dropdown when opening SMS
   }
 
   return (
@@ -97,15 +124,44 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
           <h1 className="text-base font-medium text-gray-700">Dashboard</h1>
         </div>
         <div className="flex items-center space-x-2 md:space-x-3 gap-1">
-          {/* SMS Balance - Only show on BulkSMS pages */}
-          {isBulkSmsPage && smsData && (
-            <div className="hidden sm:flex items-center gap-1 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-lg">
-              <span className="text-sm text-blue-600 font-medium">
-                SMS Balance:
-              </span>
-              <span className="text-sm font-semibold text-blue-700">
-                {smsData.total_sms?.toLocaleString() || 0}
-              </span>
+          {/* SMS Balance - Desktop: Always visible, Mobile: Dropdown */}
+          {isBulkSmsPage && (
+            <div className="relative sms-balance-dropdown">
+              {/* Desktop view - always visible */}
+              <div className="hidden sm:flex items-center gap-1 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-lg">
+                <span className="text-sm text-blue-600 font-medium">
+                  SMS Balance:
+                </span>
+                <span className="text-sm font-semibold text-blue-700">
+                  {smsBalance?.toLocaleString() || 0}
+                </span>
+              </div>
+
+              {/* Mobile view - dropdown button */}
+              <button
+                onClick={toggleSmsBalance}
+                className="sm:hidden flex items-center gap-1 px-2 py-1.5 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
+              >
+                <span className="text-xs text-blue-600 font-medium">SMS</span>
+                <ChevronDown
+                  className={`h-3 w-3 text-blue-600 transition-transform ${isSmsBalanceOpen ? "rotate-180" : ""
+                    }`}
+                />
+              </button>
+
+              {/* Mobile dropdown content */}
+              {isSmsBalanceOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 px-3 z-20">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-blue-600 font-medium">
+                      SMS Balance:
+                    </span>
+                    <span className="text-sm font-semibold text-blue-700">
+                      {smsBalance?.toLocaleString() || 0}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -137,7 +193,7 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
           </button>
 
           {/* Profile dropdown */}
-          <div className="relative">
+          <div className="relative profile-dropdown">
             <button
               onClick={handleProfileClick}
               className="flex items-center space-x-1 max-w-xs bg-white text-sm rounded-full hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors p-1"
@@ -149,9 +205,8 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
               </div>
               {/* Dropdown arrow indicator */}
               <svg
-                className={`h-4 w-4 text-gray-400 transition-transform ${
-                  isProfileActive ? "rotate-180" : ""
-                }`}
+                className={`h-4 w-4 text-gray-400 transition-transform ${isProfileActive ? "rotate-180" : ""
+                  }`}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
