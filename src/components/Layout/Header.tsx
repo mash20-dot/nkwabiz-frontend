@@ -111,6 +111,8 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
 
         <Tab tabName="Sign out" icon={LogOut} onClick={handleLogout} />
       </ProfileCard>
+
+      {/* Mobile menu button */}
       <button
         type="button"
         className="px-4 border-r border-gray-200 text-gray-500 md:hidden"
@@ -119,11 +121,15 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
         <span className="sr-only">Open sidebar</span>
         <Menu className="h-6 w-6" aria-hidden="true" />
       </button>
-      <div className="flex-1 px-4 flex justify-between items-center">
-        <div className="flex-1 flex items-center">
+
+      <div className="flex-1 px-3 md:px-4 flex justify-between items-center">
+        {/* Dashboard title - Hidden on mobile */}
+        <div className="hidden md:flex flex-1 items-center">
           <h1 className="text-base font-medium text-gray-700">Dashboard</h1>
         </div>
-        <div className="flex items-center space-x-2 md:space-x-3 gap-1">
+
+        {/* Right side icons and info */}
+        <div className="flex items-center gap-2 ml-auto">
           {/* SMS Balance - Desktop: Always visible, Mobile: Dropdown */}
           {isBulkSmsPage && (
             <div className="relative sms-balance-dropdown">
@@ -140,11 +146,11 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
               {/* Mobile view - dropdown button */}
               <button
                 onClick={toggleSmsBalance}
-                className="sm:hidden flex items-center gap-1 px-2 py-1.5 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
+                className="sm:hidden flex items-center gap-1 px-2.5 py-1.5 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
               >
                 <span className="text-xs text-blue-600 font-medium">SMS</span>
                 <ChevronDown
-                  className={`h-3 w-3 text-blue-600 transition-transform ${isSmsBalanceOpen ? "rotate-180" : ""
+                  className={`h-3.5 w-3.5 text-blue-600 transition-transform ${isSmsBalanceOpen ? "rotate-180" : ""
                     }`}
                 />
               </button>
@@ -165,29 +171,25 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
             </div>
           )}
 
-          {/* User greeting - Shows on all screens */}
+          {/* User greeting - Hidden on small mobile, visible on larger screens */}
           {loading ? (
-            <div className="flex items-center mr-1">
-              <span className="text-sm text-gray-400">Loading...</span>
+            <div className="hidden xs:flex items-center">
+              <span className="text-xs sm:text-sm text-gray-400">Loading...</span>
             </div>
           ) : error ? (
-            <div className="flex items-center mr-1">
-              <span className="text-sm text-red-500">{error}</span>
+            <div className="hidden xs:flex items-center">
+              <span className="text-xs sm:text-sm text-red-500">Error</span>
             </div>
           ) : userFirstName ? (
-            <div className="flex items-center mr-1">
-              <span className="text-sm text-gray-700 whitespace-nowrap">
+            <div className="hidden xs:flex items-center">
+              <span className="text-xs sm:text-sm text-gray-700 whitespace-nowrap">
                 Hi, <span className="font-semibold">{userFirstName}</span>
               </span>
             </div>
-          ) : (
-            <div className="flex items-center mr-1">
-              <span className="text-sm text-gray-400">No name</span>
-            </div>
-          )}
+          ) : null}
 
           {/* Notification button */}
-          <button className="p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+          <button className="p-1.5 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
             <span className="sr-only">View notifications</span>
             <Bell className="h-5 w-5" aria-hidden="true" />
           </button>
