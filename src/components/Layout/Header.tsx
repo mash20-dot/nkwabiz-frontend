@@ -77,7 +77,13 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
-      if (!target.closest('.sms-balance-dropdown') && !target.closest('.profile-dropdown')) {
+
+      // Don't close if clicking inside ProfileCard content or its buttons
+      if (
+        !target.closest('.sms-balance-dropdown') &&
+        !target.closest('.profile-dropdown') &&
+        !target.closest('aside') // Don't close if clicking inside the ProfileCard
+      ) {
         setIsSmsBalanceOpen(false);
         setIsProfileActive(false);
       }
@@ -88,8 +94,16 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
   }, []);
 
   function handleLogout() {
-    logout();
-    navigate("/login");
+    console.log("🔴 Logout button clicked!");
+    try {
+      setIsProfileActive(false); // Close the dropdown first
+      logout();
+      console.log("✅ Logout function executed");
+      navigate("/login");
+      console.log("✅ Navigating to login");
+    } catch (err) {
+      console.error("❌ Logout error:", err);
+    }
   }
 
   function handleProfileClick() {
