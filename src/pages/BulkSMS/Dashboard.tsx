@@ -94,7 +94,7 @@ const SmsDashboard = () => {
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <h3 className="text-sm font-semibold text-green-900 mb-1">
-                    📌 IMPORTANT NOTE
+                    IMPORTANT NOTE
                   </h3>
                   <p className="text-sm text-green-800">
                     Your first SMS might experience a delay due to business name (Sender ID) confirmation.
