@@ -1,4 +1,4 @@
-import { X, SendHorizontal, Users, ChevronDown } from "lucide-react";
+import { X, SendHorizontal, Users, ChevronDown, Info } from "lucide-react";
 import Button from "@/components/Button";
 import classNames from "classnames";
 import { TextArea } from "@/components/base/textarea/textarea";
@@ -51,6 +51,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
   const { smsBalance, setSmsBalance } = useAuthStore();
 
   const [message, setMessage] = useState("");
+  const [senderId, setSenderId] = useState("");
   const [recipientsInput, setRecipientsInput] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -134,8 +135,30 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
     return ghanaPattern.test(cleaned);
   };
 
+  // Validate Sender ID
+  const validateSenderId = (id: string): boolean => {
+    // Sender ID should be alphanumeric, 3-11 characters
+    return /^[a-zA-Z0-9]{3,11}$/.test(id);
+  };
+
   const handleSend = async () => {
     // Validation
+    if (!senderId.trim()) {
+      toast.error("Please enter a Sender ID", {
+        duration: 5000,
+        closeButton: true,
+      });
+      return;
+    }
+
+    if (!validateSenderId(senderId)) {
+      toast.error("Sender ID must be 3-11 alphanumeric characters (no spaces or special characters)", {
+        duration: 7000,
+        closeButton: true,
+      });
+      return;
+    }
+
     if (!message.trim()) {
       toast.error("Please enter a message", {
         duration: 5000,
@@ -180,7 +203,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
     try {
       setSending(true);
 
-      const response = await sendSms(allRecipients, message);
+      const response = await sendSms(allRecipients, message, senderId);
 
       // Show success toast with response details from backend
       toast.success(
@@ -209,6 +232,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
 
       // Reset form
       setMessage("");
+      setSenderId("");
       setRecipientsInput("");
       setSelectedCategories([]);
 
@@ -244,6 +268,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
 
   const handleClose = () => {
     setMessage("");
+    setSenderId("");
     setRecipientsInput("");
     setSelectedCategories([]);
     closeForm();
@@ -274,6 +299,35 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
       {/* Form Area */}
       <div className="flex flex-col md:flex-col lg:flex-row w-full gap-6">
         <div className="flex flex-col gap-6 w-full p-0 md:p-6 lg:p-6 bg-none md:bg-white border-0 md:border lg:border border-gray-200 md:shadow-sm lg:shadow-sm rounded-none md:rounded-md">
+          {/* Sender ID Field */}
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <h2 className="text-lg font-medium text-gray-800">Sender ID</h2>
+              <span className="text-red-500 text-sm">*</span>
+            </div>
+            <input
+              type="text"
+              placeholder="e.g., YourBrand, MyShop, CompanyName"
+              value={senderId}
+              onChange={(e) => setSenderId(e.target.value.toUpperCase())}
+              maxLength={11}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+            />
+            <div className="flex items-start gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <Info className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+              <div className="flex flex-col gap-1">
+                <p className="text-xs text-blue-800 font-medium">
+                  Sender ID Requirements:
+                </p>
+                <ul className="text-xs text-blue-700 space-y-0.5 list-disc list-inside">
+                  <li>3-11 characters only</li>
+                  <li>Letters and numbers only (no spaces or special characters)</li>
+                  <li>Example: NKWABIZ, MyShop123, CompanyGH</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
           {/* Message */}
           <div className="flex flex-col gap-2">
             <h2 className="text-lg font-medium text-gray-800">Message</h2>
@@ -515,14 +569,14 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
               "items-center justify-center text-white cursor-pointer",
               {
                 "bg-blue-600 hover:bg-blue-700":
-                  !sending && hasEnoughBalance && recipientCount > 0,
+                  !sending && hasEnoughBalance && recipientCount > 0 && senderId.trim(),
                 "bg-gray-400 cursor-not-allowed":
-                  sending || !hasEnoughBalance || recipientCount === 0,
+                  sending || !hasEnoughBalance || recipientCount === 0 || !senderId.trim(),
               }
             )}
             onClick={handleSend}
             disabled={
-              sending || !hasEnoughBalance || recipientCount === 0 || !message
+              sending || !hasEnoughBalance || recipientCount === 0 || !message || !senderId.trim()
             }
           >
             {sending ? (
