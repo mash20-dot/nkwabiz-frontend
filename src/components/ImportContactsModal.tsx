@@ -24,6 +24,7 @@ const ImportContactsModal: React.FC<ImportContactsModalProps> = ({
     const [file, setFile] = useState<File | null>(null);
     const [category, setCategory] = useState<string>("");
     const [isProcessing, setIsProcessing] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState(0);
     const [parsedContacts, setParsedContacts] = useState<ParsedContact[]>([]);
     const [showPreview, setShowPreview] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -53,14 +54,37 @@ const ImportContactsModal: React.FC<ImportContactsModalProps> = ({
             const lines = text.split(/\r?\n/).filter((line) => line.trim());
 
             const contacts: ParsedContact[] = lines.map((line) => {
-                // Remove any non-digit characters and validate
-                const phone = line.trim().replace(/[^0-9]/g, "");
+                const trimmed = line.trim();
 
-                if (!phone) {
+                if (!trimmed) {
                     return { phone: line, valid: false, error: "Empty line" };
                 }
 
-                if (phone.length < 10) {
+                // Remove any non-digit characters
+                let phone = trimmed.replace(/[^0-9]/g, "");
+
+                if (!phone) {
+                    return { phone: trimmed, valid: false, error: "No digits found" };
+                }
+
+                // If phone starts with 0 and is 10 digits, it's valid (e.g., 0552148347)
+                if (phone.startsWith("0") && phone.length === 10) {
+                    return { phone, valid: true };
+                }
+
+                // If phone doesn't start with 0 and is 9 digits, add 0 prefix
+                if (!phone.startsWith("0") && phone.length === 9) {
+                    phone = "0" + phone;
+                    return { phone, valid: true };
+                }
+
+                // International format: 233XXXXXXXXX (12 digits)
+                if (phone.startsWith("233") && phone.length === 12) {
+                    return { phone, valid: true };
+                }
+
+                // Check length constraints
+                if (phone.length < 9) {
                     return { phone, valid: false, error: "Phone number too short" };
                 }
 
@@ -98,11 +122,14 @@ const ImportContactsModal: React.FC<ImportContactsModalProps> = ({
         }
 
         setIsProcessing(true);
+        setUploadProgress(0);
         let successCount = 0;
         let failCount = 0;
 
         try {
-            for (const contact of validContacts) {
+            // Process contacts one by one with progress updates
+            for (let i = 0; i < validContacts.length; i++) {
+                const contact = validContacts[i];
                 try {
                     await addNewContact(contact.phone, category);
                     successCount++;
@@ -110,6 +137,10 @@ const ImportContactsModal: React.FC<ImportContactsModalProps> = ({
                     console.error(`Failed to add ${contact.phone}:`, err);
                     failCount++;
                 }
+
+                // Update progress
+                const progress = Math.round(((i + 1) / validContacts.length) * 100);
+                setUploadProgress(progress);
             }
 
             if (successCount > 0) {
@@ -124,6 +155,7 @@ const ImportContactsModal: React.FC<ImportContactsModalProps> = ({
             onError("An error occurred during import");
         } finally {
             setIsProcessing(false);
+            setUploadProgress(0);
         }
     };
 
@@ -148,8 +180,19 @@ const ImportContactsModal: React.FC<ImportContactsModalProps> = ({
     const invalidCount = parsedContacts.length - validCount;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+        <div
+            className="fixed inset-0 bg-gray-900 bg-opacity-30 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            onClick={(e) => {
+                // Only close if clicking the backdrop and not processing
+                if (e.target === e.currentTarget && !isProcessing) {
+                    onClose();
+                }
+            }}
+        >
+            <div
+                className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col"
+                onClick={(e) => e.stopPropagation()}
+            >
                 {/* Header */}
                 <div className="flex items-center justify-between p-6 border-b border-gray-200">
                     <div>
@@ -162,7 +205,8 @@ const ImportContactsModal: React.FC<ImportContactsModalProps> = ({
                     </div>
                     <button
                         onClick={onClose}
-                        className="text-gray-400 hover:text-gray-600 transition-colors"
+                        disabled={isProcessing}
+                        className="text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         <X className="h-6 w-6" />
                     </button>
@@ -267,6 +311,22 @@ const ImportContactsModal: React.FC<ImportContactsModalProps> = ({
                                     </div>
                                 )}
                             </div>
+
+                            {/* Upload Progress Bar */}
+                            {isProcessing && (
+                                <div className="space-y-2">
+                                    <div className="flex justify-between text-sm">
+                                        <span className="text-gray-600">Uploading contacts...</span>
+                                        <span className="text-blue-600 font-medium">{uploadProgress}%</span>
+                                    </div>
+                                    <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                                        <div
+                                            className="bg-blue-600 h-2.5 rounded-full transition-all duration-300 ease-out"
+                                            style={{ width: `${uploadProgress}%` }}
+                                        ></div>
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Contacts List */}
                             <div className="border border-gray-200 rounded-lg max-h-60 overflow-y-auto">
