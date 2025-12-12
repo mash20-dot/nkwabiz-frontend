@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import Button from "@/components/Button";
-import { MessageCircle, Send, CircleX } from "lucide-react";
+import { MessageCircle, Send, CircleX, X, Info } from "lucide-react";
 import SummaryCard from "@/components/SummaryCard";
 import { Table, TableCard } from "@/components/application/table/table";
 import { Badge } from "@/components/base/badges/badges";
@@ -10,6 +11,20 @@ import { useSms } from "@/context/BulkSmsContext";
 const SmsDashboard = () => {
   const navigate = useNavigate();
   const { smsData, loading, error } = useSms();
+  const [showNote, setShowNote] = useState(true);
+
+  // Check if user has dismissed the note before
+  useEffect(() => {
+    const dismissed = localStorage.getItem("sms_first_message_note_dismissed");
+    if (dismissed === "true") {
+      setShowNote(false);
+    }
+  }, []);
+
+  const handleDismissNote = () => {
+    setShowNote(false);
+    localStorage.setItem("sms_first_message_note_dismissed", "true");
+  };
 
   const stats = {
     total_sms: smsData?.total_sms ?? 0,
@@ -67,6 +82,37 @@ const SmsDashboard = () => {
           </Button>
         </div>
       </div>
+
+      {/* Important Note Banner */}
+      {showNote && (
+        <div className="w-full bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 rounded-lg p-4 shadow-sm">
+          <div className="flex items-start gap-3">
+            <div className="flex-shrink-0">
+              <Info className="h-5 w-5 text-green-600 mt-0.5" />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <h3 className="text-sm font-semibold text-green-900 mb-1">
+                    📌 IMPORTANT NOTE
+                  </h3>
+                  <p className="text-sm text-green-800">
+                    Your first SMS might experience a delay due to business name (Sender ID) confirmation.
+                    Subsequent messages will be delivered instantly once verification is complete.
+                  </p>
+                </div>
+                <button
+                  onClick={handleDismissNote}
+                  className="flex-shrink-0 text-green-600 hover:text-green-800 transition-colors p-1 rounded-full hover:bg-green-100"
+                  aria-label="Dismiss note"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* SMS Overview */}
       <div className="w-full grid grid-cols-2 gap-3 md:gap-4 lg:gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -157,8 +203,8 @@ const SmsDashboard = () => {
                           message.status === "delivered"
                             ? "success"
                             : message.status === "pending"
-                            ? "warning"
-                            : "error"
+                              ? "warning"
+                              : "error"
                         }
                         size="sm"
                       >
@@ -193,8 +239,8 @@ const SmsDashboard = () => {
                         message.status === "delivered"
                           ? "success"
                           : message.status === "pending"
-                          ? "warning"
-                          : "error"
+                            ? "warning"
+                            : "error"
                       }
                       size="sm"
                     >
