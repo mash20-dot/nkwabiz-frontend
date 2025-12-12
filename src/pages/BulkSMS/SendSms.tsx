@@ -69,10 +69,13 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
   const previousSenderIds = Array.from(
     new Set(
       (smsData?.history || [])
-        .map((sms: any) => sms.sender)
+        .map((sms: any) => sms.sender || sms.sender_id || sms.senderId)
         .filter((sender: string) => sender && sender.trim())
     )
   ) as string[];
+
+  console.log("SMS Data:", smsData); // Debug
+  console.log("Previous Sender IDs:", previousSenderIds); // Debug
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -365,20 +368,22 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
                 <div className="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
                   <div className="py-1">
                     <div className="px-3 py-2 text-xs font-medium text-gray-500 border-b border-gray-200">
-                      Previously Used Sender IDs
+                      Previously Used Sender IDs ({previousSenderIds.length})
                     </div>
                     {previousSenderIds
-                      .filter((id) => id.toUpperCase().includes(senderId.toUpperCase()))
-                      .map((id) => (
+                      .filter((id) =>
+                        !senderId || id.toUpperCase().includes(senderId.toUpperCase())
+                      )
+                      .map((id, index) => (
                         <div
-                          key={id}
+                          key={`${id}-${index}`}
                           onClick={() => {
                             setSenderId(id);
                             setIsSenderIdDropdownOpen(false);
                           }}
                           className={classNames(
-                            "px-3 py-2 cursor-pointer hover:bg-gray-50 flex items-center justify-between",
-                            senderId === id && "bg-blue-50"
+                            "px-3 py-2.5 cursor-pointer hover:bg-blue-50 flex items-center justify-between transition-colors",
+                            senderId === id && "bg-blue-100"
                           )}
                         >
                           <span className="text-sm font-medium text-gray-900">
@@ -401,6 +406,13 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
                           )}
                         </div>
                       ))}
+                    {previousSenderIds.filter((id) =>
+                      !senderId || id.toUpperCase().includes(senderId.toUpperCase())
+                    ).length === 0 && (
+                        <div className="px-3 py-4 text-center text-sm text-gray-500">
+                          No matching Sender IDs
+                        </div>
+                      )}
                   </div>
                 </div>
               )}
