@@ -21,6 +21,7 @@ export interface SmsHistoryResponse {
   total_delivered: number;
   total_failed: number;
   total_pending: number;
+  sender_id: string[];
   history: SmsHistory[];
 }
 
