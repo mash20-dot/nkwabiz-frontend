@@ -1,4 +1,4 @@
-import { X, SendHorizontal, Users, ChevronDown } from "lucide-react";
+import { X, SendHorizontal, Users, ChevronDown, Info, Clock } from "lucide-react";
 import Button from "@/components/Button";
 import classNames from "classnames";
 import { TextArea } from "@/components/base/textarea/textarea";
@@ -46,21 +46,47 @@ const Summary = ({
 };
 
 const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
-  const { refetch } = useSms();
+  const { refetch, smsData } = useSms();
   const { contacts, getAllCategories, getContactsByCategory } = useContacts();
   const { smsBalance, setSmsBalance } = useAuthStore();
 
   const [message, setMessage] = useState("");
+  const [senderId, setSenderId] = useState("");
   const [recipientsInput, setRecipientsInput] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isSenderIdDropdownOpen, setIsSenderIdDropdownOpen] = useState(false);
   const [sending, setSending] = useState(false);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const senderIdDropdownRef = useRef<HTMLDivElement>(null);
 
   const COST_PER_SMS = 0.04;
+  const STORAGE_KEY = 'sms_sender_ids';
   const currentBalance = smsBalance || 0;
   const categories = getAllCategories();
+
+  // Load previous sender IDs from localStorage
+  const [previousSenderIds, setPreviousSenderIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    const loadSenderIds = () => {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          const ids = JSON.parse(stored);
+          setPreviousSenderIds(ids);
+          // Set the most recent sender ID as default
+          if (ids.length > 0 && !senderId) {
+            setSenderId(ids[0]);
+          }
+        }
+      } catch (error) {
+        console.log('No previous sender IDs found');
+      }
+    };
+    loadSenderIds();
+  }, []);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -70,6 +96,12 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
         !dropdownRef.current.contains(event.target as Node)
       ) {
         setIsDropdownOpen(false);
+      }
+      if (
+        senderIdDropdownRef.current &&
+        !senderIdDropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsSenderIdDropdownOpen(false);
       }
     };
 
@@ -134,8 +166,30 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
     return ghanaPattern.test(cleaned);
   };
 
+  // Validate Sender ID
+  const validateSenderId = (id: string): boolean => {
+    // Sender ID should be alphanumeric, 3-11 characters
+    return /^[a-zA-Z0-9]{3,11}$/.test(id);
+  };
+
   const handleSend = async () => {
     // Validation
+    if (!senderId.trim()) {
+      toast.error("Please enter a Sender ID", {
+        duration: 5000,
+        closeButton: true,
+      });
+      return;
+    }
+
+    if (!validateSenderId(senderId)) {
+      toast.error("Sender ID must be 3-11 alphanumeric characters (no spaces or special characters)", {
+        duration: 7000,
+        closeButton: true,
+      });
+      return;
+    }
+
     if (!message.trim()) {
       toast.error("Please enter a message", {
         duration: 5000,
@@ -180,7 +234,22 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
     try {
       setSending(true);
 
-      const response = await sendSms(allRecipients, message);
+      const response = await sendSms(allRecipients, message, senderId);
+
+      // Save sender ID to localStorage if it's new or move to front if exists
+      const trimmedSenderId = senderId.trim();
+      const updatedIds = [
+        trimmedSenderId,
+        ...previousSenderIds.filter(id => id !== trimmedSenderId)
+      ].slice(0, 10); // Keep last 10
+
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedIds));
+        setPreviousSenderIds(updatedIds);
+        console.log('Sender ID saved successfully:', trimmedSenderId);
+      } catch (error) {
+        console.error('Failed to save sender ID:', error);
+      }
 
       // Show success toast with response details from backend
       toast.success(
@@ -207,7 +276,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
         );
       }
 
-      // Reset form
+      // Reset form (keep sender ID for convenience)
       setMessage("");
       setRecipientsInput("");
       setSelectedCategories([]);
@@ -244,6 +313,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
 
   const handleClose = () => {
     setMessage("");
+    setSenderId("");
     setRecipientsInput("");
     setSelectedCategories([]);
     closeForm();
@@ -274,6 +344,108 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
       {/* Form Area */}
       <div className="flex flex-col md:flex-col lg:flex-row w-full gap-6">
         <div className="flex flex-col gap-6 w-full p-0 md:p-6 lg:p-6 bg-none md:bg-white border-0 md:border lg:border border-gray-200 md:shadow-sm lg:shadow-sm rounded-none md:rounded-md">
+          {/* Sender ID Field */}
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <h2 className="text-lg font-medium text-gray-800">Sender ID</h2>
+              <span className="text-red-500 text-sm">*</span>
+            </div>
+
+            <div className="relative" ref={senderIdDropdownRef}>
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="e.g., YourBrand, MyShop, CompanyName"
+                  value={senderId}
+                  onChange={(e) => {
+                    setSenderId(e.target.value);
+                  }}
+                  onFocus={() => previousSenderIds.length > 0 && setIsSenderIdDropdownOpen(true)}
+                  maxLength={11}
+                  className="w-full px-4 py-2.5 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                />
+                {previousSenderIds.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setIsSenderIdDropdownOpen(!isSenderIdDropdownOpen)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <ChevronDown
+                      className={classNames(
+                        "h-4 w-4 transition-transform duration-200",
+                        isSenderIdDropdownOpen && "transform rotate-180"
+                      )}
+                    />
+                  </button>
+                )}
+              </div>
+
+              {/* Dropdown for previous sender IDs */}
+              {isSenderIdDropdownOpen && previousSenderIds.length > 0 && (
+                <div className="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                  <div className="py-1">
+                    <div className="px-3 py-2 text-xs font-semibold text-gray-500 bg-gray-50 border-b border-gray-200 flex items-center gap-2">
+                      <Clock className="h-3 w-3" />
+                      Recently Used ({previousSenderIds.length})
+                    </div>
+                    {previousSenderIds.map((id, index) => (
+                      <div
+                        key={`${id}-${index}`}
+                        onClick={() => {
+                          setSenderId(id);
+                          setIsSenderIdDropdownOpen(false);
+                        }}
+                        className={classNames(
+                          "px-3 py-2.5 cursor-pointer hover:bg-blue-50 flex items-center justify-between transition-colors group",
+                          senderId === id && "bg-blue-50 border-l-2 border-blue-600"
+                        )}
+                      >
+                        <span className={classNames(
+                          "text-sm font-medium",
+                          senderId === id ? "text-blue-700" : "text-gray-900 group-hover:text-blue-600"
+                        )}>
+                          {id}
+                        </span>
+                        {senderId === id && (
+                          <div className="flex items-center justify-center w-5 h-5 bg-blue-600 rounded-full text-white">
+                            <svg
+                              className="w-3 h-3"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-start gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <Info className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+              <div className="flex flex-col gap-1">
+                <p className="text-xs text-blue-800 font-medium">
+                  Sender ID Requirements:
+                </p>
+                <ul className="text-xs text-blue-700 space-y-0.5 list-disc list-inside">
+                  <li>3-11 characters only</li>
+                  <li>Letters and numbers only (no spaces or special characters)</li>
+                  <li>Example: NKWABIZ, MyShop123, CompanyGH</li>
+                  {previousSenderIds.length > 0 && (
+                    <li className="font-medium">Click the dropdown to reuse a previous Sender ID</li>
+                  )}
+                </ul>
+              </div>
+            </div>
+          </div>
+
           {/* Message */}
           <div className="flex flex-col gap-2">
             <h2 className="text-lg font-medium text-gray-800">Message</h2>
@@ -426,7 +598,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
             ) : (
               <div className="p-3 bg-gray-50 border border-gray-200 rounded-md">
                 <p className="text-xs text-gray-600">
-                  💡 No saved contacts yet. You can add contacts from the
+                  No saved contacts yet. You can add contacts from the
                   Contacts page.
                 </p>
               </div>
@@ -515,14 +687,14 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
               "items-center justify-center text-white cursor-pointer",
               {
                 "bg-blue-600 hover:bg-blue-700":
-                  !sending && hasEnoughBalance && recipientCount > 0,
+                  !sending && hasEnoughBalance && recipientCount > 0 && senderId.trim(),
                 "bg-gray-400 cursor-not-allowed":
-                  sending || !hasEnoughBalance || recipientCount === 0,
+                  sending || !hasEnoughBalance || recipientCount === 0 || !senderId.trim(),
               }
             )}
             onClick={handleSend}
             disabled={
-              sending || !hasEnoughBalance || recipientCount === 0 || !message
+              sending || !hasEnoughBalance || recipientCount === 0 || !message || !senderId.trim()
             }
           >
             {sending ? (

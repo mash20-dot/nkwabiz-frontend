@@ -21,6 +21,7 @@ export interface SmsHistoryResponse {
   total_delivered: number;
   total_failed: number;
   total_pending: number;
+  sender_id: string[];
   history: SmsHistory[];
 }
 
@@ -102,7 +103,8 @@ export async function getSmsHistoryFull(): Promise<SmsHistoryResponse> {
 // Send SMS to multiple recipients
 export async function sendSms(
   recipients: string[],
-  message: string
+  message: string,
+  sender: string
 ): Promise<SendSmsResponse> {
   try {
     const response = await apiFetch(
@@ -112,6 +114,7 @@ export async function sendSms(
         body: JSON.stringify({
           recipients,
           message,
+          sender,
         }),
       },
       true
