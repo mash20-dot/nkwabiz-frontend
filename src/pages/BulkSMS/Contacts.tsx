@@ -334,7 +334,7 @@ const ContactsPage = () => {
                     <Button
                       className="border-none hover:text-red-500"
                       onClick={() =>
-                        handleDeleteClick(contact.contact_id, contact.contact)
+                        handleDeleteClick(contact.id, contact.contact)
                       }
                     >
                       <Trash2 className="h-5 w-5" />
