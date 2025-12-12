@@ -65,17 +65,23 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
   const currentBalance = smsBalance || 0;
   const categories = getAllCategories();
 
-  // Get unique sender IDs from SMS history
-  const previousSenderIds = Array.from(
-    new Set(
-      (smsData?.history || [])
-        .map((sms: any) => sms.sender || sms.sender_id || sms.senderId)
-        .filter((sender: string) => sender && sender.trim())
-    )
-  ) as string[];
+  // Load previous sender IDs from storage
+  const [previousSenderIds, setPreviousSenderIds] = useState<string[]>([]);
 
-  console.log("SMS Data:", smsData); // Debug
-  console.log("Previous Sender IDs:", previousSenderIds); // Debug
+  useEffect(() => {
+    const loadSenderIds = async () => {
+      try {
+        const result = await window.storage.get('sender-ids');
+        if (result) {
+          const ids = JSON.parse(result.value);
+          setPreviousSenderIds(ids);
+        }
+      } catch (error) {
+        console.log('No previous sender IDs found');
+      }
+    };
+    loadSenderIds();
+  }, []);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -231,6 +237,17 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
       setSending(true);
 
       const response = await sendSms(allRecipients, message, senderId);
+
+      // Save sender ID to storage if it's new
+      if (!previousSenderIds.includes(senderId)) {
+        const updatedIds = [senderId, ...previousSenderIds].slice(0, 10); // Keep last 10
+        try {
+          await window.storage.set('sender-ids', JSON.stringify(updatedIds));
+          setPreviousSenderIds(updatedIds);
+        } catch (error) {
+          console.error('Failed to save sender ID:', error);
+        }
+      }
 
       // Show success toast with response details from backend
       toast.success(
