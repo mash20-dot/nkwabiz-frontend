@@ -50,7 +50,21 @@ const ContactsPage = () => {
   };
 
   const handleCloseImportModal = () => {
+    // Don't close if we're currently processing
     setShowImportModal(false);
+  };
+
+  const handleImportSuccess = (message: string) => {
+    // Don't close the modal immediately, let the import finish
+    setTimeout(() => {
+      setShowImportModal(false);
+      toast.success(message || "Contacts imported successfully");
+    }, 500);
+  };
+
+  const handleImportError = (message: string) => {
+    // Keep modal open on error
+    toast.error(message || "Failed to import contacts");
   };
 
   const handleDeleteClick = (contactId: number, phoneNumber: string) => {
@@ -72,8 +86,8 @@ const ContactsPage = () => {
       console.error("Failed to delete contact:", err);
       toast.error(
         err?.response?.data?.message ||
-          err?.message ||
-          "Failed to delete contact. Please try again."
+        err?.message ||
+        "Failed to delete contact. Please try again."
       );
     } finally {
       setIsDeleting(false);
@@ -92,8 +106,6 @@ const ContactsPage = () => {
   if (error) {
     return <p className="text-red-600">{error}</p>;
   }
-
-  console.log("Contacts:", contacts);
 
   return (
     <>
@@ -119,15 +131,8 @@ const ContactsPage = () => {
       {showImportModal && (
         <ImportContactsModal
           onClose={handleCloseImportModal}
-          onSuccess={(message) => {
-            handleCloseImportModal();
-            setTimeout(() => {
-              toast.success(message || "Contacts imported successfully");
-            }, 100);
-          }}
-          onError={(message) => {
-            toast.error(message || "Failed to import contacts");
-          }}
+          onSuccess={handleImportSuccess}
+          onError={handleImportError}
         />
       )}
 
@@ -180,11 +185,10 @@ const ContactsPage = () => {
             <div className="flex gap-2 flex-wrap">
               <button
                 onClick={() => setSelectedCategory("all")}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-                  selectedCategory === "all"
-                    ? "bg-blue-100 text-blue-600 border border-blue-300"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200"
-                }`}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${selectedCategory === "all"
+                  ? "bg-blue-100 text-blue-600 border border-blue-300"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200"
+                  }`}
               >
                 All ({contacts.length})
               </button>
@@ -192,11 +196,10 @@ const ContactsPage = () => {
                 <div key={category} className="flex items-center gap-1">
                   <button
                     onClick={() => setSelectedCategory(category)}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-                      selectedCategory === category
-                        ? "bg-blue-100 text-blue-600 border border-blue-300"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200"
-                    }`}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${selectedCategory === category
+                      ? "bg-blue-100 text-blue-600 border border-blue-300"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200"
+                      }`}
                   >
                     {category} (
                     {contacts.filter((c) => c.category === category).length})
@@ -285,7 +288,10 @@ const ContactsPage = () => {
                         <Button
                           className="border-none hover:text-red-500"
                           onClick={() =>
-                            handleDeleteClick(contact.id, contact.contact)
+                            handleDeleteClick(
+                              contact.id,
+                              contact.contact
+                            )
                           }
                         >
                           <Trash2 />
@@ -328,7 +334,7 @@ const ContactsPage = () => {
                     <Button
                       className="border-none hover:text-red-500"
                       onClick={() =>
-                        handleDeleteClick(contact.id, contact.contact)
+                        handleDeleteClick(contact.contact_id, contact.contact)
                       }
                     >
                       <Trash2 className="h-5 w-5" />

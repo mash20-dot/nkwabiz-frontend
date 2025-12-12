@@ -29,7 +29,7 @@ const ImportContactsModal: React.FC<ImportContactsModalProps> = ({
     const [showPreview, setShowPreview] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const { addNewContact, getAllCategories } = useContacts();
+    const { addNewContact, getAllCategories, refetch } = useContacts();
     const existingCategories = getAllCategories();
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -131,6 +131,7 @@ const ImportContactsModal: React.FC<ImportContactsModalProps> = ({
             for (let i = 0; i < validContacts.length; i++) {
                 const contact = validContacts[i];
                 try {
+                    // Don't wait for refetch on each contact
                     await addNewContact(contact.phone, category);
                     successCount++;
                 } catch (err) {
@@ -143,6 +144,16 @@ const ImportContactsModal: React.FC<ImportContactsModalProps> = ({
                 setUploadProgress(progress);
             }
 
+            // Wait a moment to show 100% before closing
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            // Refetch all contacts once at the end
+            await refetch();
+
+            setIsProcessing(false);
+            setUploadProgress(0);
+
+            // Call onSuccess AFTER we've finished processing and set isProcessing to false
             if (successCount > 0) {
                 onSuccess(
                     `Successfully imported ${successCount} contact${successCount > 1 ? "s" : ""}${failCount > 0 ? `. ${failCount} failed.` : ""
@@ -152,10 +163,9 @@ const ImportContactsModal: React.FC<ImportContactsModalProps> = ({
                 onError("Failed to import contacts");
             }
         } catch (err) {
-            onError("An error occurred during import");
-        } finally {
             setIsProcessing(false);
             setUploadProgress(0);
+            onError("An error occurred during import");
         }
     };
 
@@ -181,7 +191,11 @@ const ImportContactsModal: React.FC<ImportContactsModalProps> = ({
 
     return (
         <div
-            className="fixed inset-0 bg-gray-900 bg-opacity-30 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+            className="fixed inset-0 flex items-center justify-center z-50 p-4"
+            style={{
+                backgroundColor: 'rgba(107, 114, 128, 0.3)',
+                backdropFilter: 'blur(4px)'
+            }}
             onClick={(e) => {
                 // Only close if clicking the backdrop and not processing
                 if (e.target === e.currentTarget && !isProcessing) {
