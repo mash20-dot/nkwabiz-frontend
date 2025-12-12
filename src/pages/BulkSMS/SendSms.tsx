@@ -357,8 +357,10 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
                   placeholder="e.g., YourBrand, MyShop, CompanyName"
                   value={senderId}
                   onChange={(e) => {
-                    setSenderId(e.target.value.toUpperCase());
-                    setIsSenderIdDropdownOpen(true);
+                    setSenderId(e.target.value);
+                    if (e.target.value.length > 0) {
+                      setIsSenderIdDropdownOpen(true);
+                    }
                   }}
                   onFocus={() => previousSenderIds.length > 0 && setIsSenderIdDropdownOpen(true)}
                   maxLength={11}
@@ -389,7 +391,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
                     </div>
                     {previousSenderIds
                       .filter((id) =>
-                        !senderId || id.toUpperCase().includes(senderId.toUpperCase())
+                        !senderId || id.toLowerCase().includes(senderId.toLowerCase())
                       )
                       .map((id, index) => (
                         <div
@@ -424,7 +426,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
                         </div>
                       ))}
                     {previousSenderIds.filter((id) =>
-                      !senderId || id.toUpperCase().includes(senderId.toUpperCase())
+                      !senderId || id.toLowerCase().includes(senderId.toLowerCase())
                     ).length === 0 && (
                         <div className="px-3 py-4 text-center text-sm text-gray-500">
                           No matching Sender IDs
