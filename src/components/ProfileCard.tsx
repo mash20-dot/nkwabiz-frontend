@@ -1,25 +1,29 @@
-import Tab from "./Tab";
-import { Settings, LogOut } from "lucide-react";
+import { cx } from "@/utils/cx";
 
 type ProfileCardProps = {
-  onClick?: () => void;
   isActive?: boolean;
+  children: React.ReactNode;
+  className?: string;
+  title?: string;
 };
 
 export default function ProfileCard({
-  onClick,
   isActive,
+  className,
+  children,
+  title,
 }: ProfileCardProps) {
   return (
     <aside
-      className={`${isActive ? "flex" : "hidden"
-        } flex-col gap-1 fixed right-4 top-16 w-[220px] bg-white shadow-lg border border-gray-200 rounded-lg p-2`}
+      className={cx(
+        "flex-col gap-1 fixed w-[220px]",
+        "bg-white shadow-lg border border-gray-200 rounded-lg p-2",
+        isActive ? "flex" : "hidden",
+        className,
+      )}
     >
-      <a href="/settings" className="w-full">
-        <Tab tabName="Account Settings" icon={Settings} />
-      </a>
-
-      <Tab tabName="Sign out" icon={LogOut} onClick={onClick} />
+      {title && <h2 className="text-sm font-medium text-gray-800">{title}</h2>}
+      {children}
     </aside>
   );
 }

@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Menu, Bell, User } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Menu, Bell, User, ChevronDown } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { logout } from "../../utils/auth";
 import { apiFetch } from "../../utils/api";
 import ProfileCard from "../ProfileCard";
+
+import Tab from "../Tab";
+import { Settings, LogOut } from "lucide-react";
 
 interface HeaderProps {
   sidebarOpen: boolean;
@@ -12,42 +15,76 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
   const [isProfileActive, setIsProfileActive] = useState<boolean>(false);
+  const [isSmsBalanceOpen, setIsSmsBalanceOpen] = useState<boolean>(false);
   const [userFirstName, setUserFirstName] = useState<string>("");
+  const [smsBalance, setSmsBalance] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
 
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Check if we're on BulkSMS related pages
+  const isBulkSmsPage =
+    location.pathname.startsWith("/sms") ||
+    location.pathname.includes("bulk-sms");
 
   useEffect(() => {
     // Fetch user info
     setLoading(true);
-    console.log("Environment:", window.location.hostname); // Debug: check environment
-    console.log("Fetching from /security/user-info"); // Debug log
+    console.log("Environment:", window.location.hostname);
+    console.log("Fetching from /security/user-info");
 
     apiFetch("/security/user-info", {}, true)
       .then((data) => {
-        console.log("User info response:", data); // Debug log
-        console.log("Response keys:", Object.keys(data)); // Debug: see all available keys
+        console.log("User info response:", data);
+        console.log("Response keys:", Object.keys(data));
 
-        // Try different possible field names
-        const firstName = data.firstname || data.firstName || data.first_name || data.name;
+        // Try different possible field names for first name
+        const firstName =
+          data.firstname || data.firstName || data.first_name || data.name;
 
         if (firstName) {
           setUserFirstName(firstName);
-          console.log("First name set to:", firstName); // Debug log
+          console.log("First name set to:", firstName);
         } else {
-          console.warn("No firstname found in response. Full data:", JSON.stringify(data));
+          console.warn(
+            "No firstname found in response. Full data:",
+            JSON.stringify(data)
+          );
           setError("Name not found in response");
+        }
+
+        // Get SMS balance
+        if (data.sms_balance !== undefined) {
+          setSmsBalance(data.sms_balance);
+          console.log("SMS balance set to:", data.sms_balance);
+        } else {
+          console.warn("No sms_balance found in response");
         }
       })
       .catch((err) => {
         console.error("Failed to fetch user info:", err);
-        console.error("Error details:", JSON.stringify(err)); // More detailed error
+        console.error("Error details:", JSON.stringify(err));
         setError(err.message || "Failed to fetch user info");
       })
       .finally(() => {
         setLoading(false);
       });
+  }, []);
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.sms-balance-dropdown') && !target.closest('.profile-dropdown')) {
+        setIsSmsBalanceOpen(false);
+        setIsProfileActive(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   function handleLogout() {
@@ -57,14 +94,25 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
 
   function handleProfileClick() {
     setIsProfileActive(!isProfileActive);
+    setIsSmsBalanceOpen(false); // Close SMS dropdown when opening profile
+  }
+
+  function toggleSmsBalance() {
+    setIsSmsBalanceOpen(!isSmsBalanceOpen);
+    setIsProfileActive(false); // Close profile dropdown when opening SMS
   }
 
   return (
-    <header className="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white border-b border-b-gray-300">
-      <ProfileCard
-        onClick={handleLogout}
-        isActive={isProfileActive}
-      />
+    <header className="sticky top-0 z-10 shrink-0 flex h-16 bg-white border-b border-b-gray-300">
+      <ProfileCard isActive={isProfileActive} className="right-4 top-16">
+        <a href="/settings" className="w-full">
+          <Tab tabName="Account Settings" icon={Settings} />
+        </a>
+
+        <Tab tabName="Sign out" icon={LogOut} onClick={handleLogout} />
+      </ProfileCard>
+
+      {/* Mobile menu button */}
       <button
         type="button"
         className="px-4 border-r border-gray-200 text-gray-500 md:hidden"
@@ -73,42 +121,106 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
         <span className="sr-only">Open sidebar</span>
         <Menu className="h-6 w-6" aria-hidden="true" />
       </button>
-      <div className="flex-1 px-4 flex justify-between items-center">
-        <div className="flex-1 flex items-center">
-          <h1 className="text-base font-medium text-gray-700">
-            Dashboard
-          </h1>
+
+      <div className="flex-1 px-3 md:px-4 flex justify-between items-center">
+        {/* Dashboard title - Hidden on mobile */}
+        <div className="hidden md:flex flex-1 items-center">
+          <h1 className="text-base font-medium text-gray-700">Dashboard</h1>
         </div>
-        <div className="flex items-center space-x-2 md:space-x-3">
-          {/* User greeting - Shows on all screens */}
-          {loading ? (
-            <div className="flex items-center mr-1">
-              <span className="text-sm text-gray-400">Loading...</span>
+
+        {/* Right side icons and info */}
+        <div className="flex items-center gap-2 ml-auto">
+          {/* User Info & SMS Balance - Combined dropdown on mobile, separate on desktop */}
+          <div className="relative sms-balance-dropdown">
+            {/* Desktop view - User greeting visible, SMS balance on bulk pages */}
+            <div className="hidden sm:flex items-center gap-2">
+              {/* User greeting - Always visible on desktop */}
+              {loading ? (
+                <div className="flex items-center">
+                  <span className="text-sm text-gray-400">Loading...</span>
+                </div>
+              ) : error ? (
+                <div className="flex items-center">
+                  <span className="text-sm text-red-500">Error</span>
+                </div>
+              ) : userFirstName ? (
+                <div className="flex items-center">
+                  <span className="text-sm text-gray-700 whitespace-nowrap">
+                    Hi, <span className="font-semibold">{userFirstName}</span>
+                  </span>
+                </div>
+              ) : null}
+
+              {/* SMS Balance - Only on bulk SMS pages */}
+              {isBulkSmsPage && (
+                <div className="flex items-center gap-1 px-3 py-1.5 bg-blue-50 border border-blue-200 rounded-lg">
+                  <span className="text-sm text-blue-600 font-medium">
+                    SMS Balance:
+                  </span>
+                  <span className="text-sm font-semibold text-blue-700">
+                    {smsBalance?.toLocaleString() || 0}
+                  </span>
+                </div>
+              )}
             </div>
-          ) : error ? (
-            <div className="flex items-center mr-1">
-              <span className="text-sm text-red-500">{error}</span>
-            </div>
-          ) : userFirstName ? (
-            <div className="flex items-center mr-1">
-              <span className="text-sm text-gray-700 whitespace-nowrap">
-                Hi, <span className="font-semibold">{userFirstName}</span>
+
+            {/* Mobile view - Combined dropdown button */}
+            <button
+              onClick={toggleSmsBalance}
+              className="sm:hidden flex items-center gap-1 px-2.5 py-1.5 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
+            >
+              <span className="text-xs text-blue-600 font-medium">
+                {isBulkSmsPage ? "Info" : "Account"}
               </span>
-            </div>
-          ) : (
-            <div className="flex items-center mr-1">
-              <span className="text-sm text-gray-400">No name</span>
-            </div>
-          )}
+              <ChevronDown
+                className={`h-3.5 w-3.5 text-blue-600 transition-transform ${isSmsBalanceOpen ? "rotate-180" : ""
+                  }`}
+              />
+            </button>
+
+            {/* Mobile dropdown content - Shows user info and SMS balance */}
+            {isSmsBalanceOpen && (
+              <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-20">
+                {/* User greeting section */}
+                <div className="px-3 py-2 border-b border-gray-200">
+                  {loading ? (
+                    <span className="text-sm text-gray-400">Loading...</span>
+                  ) : error ? (
+                    <span className="text-sm text-red-500">Error loading info</span>
+                  ) : userFirstName ? (
+                    <div className="text-sm text-gray-700">
+                      Hi, <span className="font-semibold">{userFirstName}</span>
+                    </div>
+                  ) : (
+                    <span className="text-sm text-gray-400">No name</span>
+                  )}
+                </div>
+
+                {/* SMS Balance section - Only show on bulk SMS pages */}
+                {isBulkSmsPage && (
+                  <div className="px-3 py-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-blue-600 font-medium">
+                        SMS Balance:
+                      </span>
+                      <span className="text-sm font-semibold text-blue-700">
+                        {smsBalance?.toLocaleString() || 0}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
 
           {/* Notification button */}
-          <button className="p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+          <button className="p-1.5 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
             <span className="sr-only">View notifications</span>
-            <Bell className="h-5 w-5 sm:h-6 sm:w-6" aria-hidden="true" />
+            <Bell className="h-5 w-5" aria-hidden="true" />
           </button>
 
           {/* Profile dropdown */}
-          <div className="relative">
+          <div className="relative profile-dropdown">
             <button
               onClick={handleProfileClick}
               className="flex items-center space-x-1 max-w-xs bg-white text-sm rounded-full hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors p-1"
@@ -120,12 +232,18 @@ const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
               </div>
               {/* Dropdown arrow indicator */}
               <svg
-                className={`h-4 w-4 text-gray-400 transition-transform ${isProfileActive ? 'rotate-180' : ''}`}
+                className={`h-4 w-4 text-gray-400 transition-transform ${isProfileActive ? "rotate-180" : ""
+                  }`}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </button>
           </div>

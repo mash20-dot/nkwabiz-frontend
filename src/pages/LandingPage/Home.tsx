@@ -14,12 +14,14 @@ import Feedback from "../../components/LandingPage/Feedback";
 import LaptopAndMobile from "../../components/LandingPage/LaptopAndMobile";
 
 const Home = () => {
-  const pageTitle = "Nkwabiz – Bulk SMS Ghana | Best Business Management Software";
+  const pageTitle =
+    "Nkwabiz – Bulk SMS Ghana | Best Business Management Software";
   const pageDescription =
     "Send bulk SMS to thousands of customers in Ghana instantly. Affordable SMS marketing platform with inventory management. Reach customers via SMS, manage sales, track inventory & grow your business faster.";
   const pageURL = "https://www.nkwabiz.com/";
   const pageImage = "https://www.nkwabiz.com/og-image.png";
-  const pageKeywords = "bulk sms ghana, bulk sms service ghana, send bulk sms, sms marketing ghana, mass sms ghana, business sms, promotional sms ghana, inventory management ghana, sales management, business management software ghana";
+  const pageKeywords =
+    "bulk sms ghana, bulk sms service ghana, send bulk sms, sms marketing ghana, mass sms ghana, business sms, promotional sms ghana, inventory management ghana, sales management, business management software ghana";
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -57,20 +59,20 @@ const Home = () => {
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "SoftwareApplication",
-            "name": "Nkwabiz",
-            "applicationCategory": "BusinessApplication",
-            "offers": {
+            name: "Nkwabiz",
+            applicationCategory: "BusinessApplication",
+            offers: {
               "@type": "Offer",
-              "price": "0",
-              "priceCurrency": "GHS"
+              price: "0",
+              priceCurrency: "GHS",
             },
-            "aggregateRating": {
+            aggregateRating: {
               "@type": "AggregateRating",
-              "ratingValue": "4.8",
-              "ratingCount": "150"
+              ratingValue: "4.8",
+              ratingCount: "150",
             },
-            "description": "Bulk SMS and business management platform for Ghana",
-            "operatingSystem": "Web, iOS, Android"
+            description: "Bulk SMS and business management platform for Ghana",
+            operatingSystem: "Web, iOS, Android",
           })}
         </script>
 
@@ -79,27 +81,28 @@ const Home = () => {
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "Organization",
-            "name": "Nkwabiz",
-            "url": "https://www.nkwabiz.com",
-            "logo": "https://www.nkwabiz.com/asset/nkwabiz-logo-big.svg",
-            "description": "Leading bulk SMS service and business management platform in Ghana",
-            "address": {
+            name: "Nkwabiz",
+            url: "https://www.nkwabiz.com",
+            logo: "https://www.nkwabiz.com/asset/nkwabiz-logo-big.svg",
+            description:
+              "Leading bulk SMS service and business management platform in Ghana",
+            address: {
               "@type": "PostalAddress",
-              "addressCountry": "GH"
+              addressCountry: "GH",
             },
-            "contactPoint": {
+            contactPoint: {
               "@type": "ContactPoint",
-              "telephone": "+233552148347",
-              "contactType": "Customer Service",
-              "availableLanguage": "English"
-            }
+              telephone: "+233552148347",
+              contactType: "Customer Service",
+              availableLanguage: "English",
+            },
           })}
         </script>
       </Helmet>
 
       {/* Page Sections */}
       <Navbar />
-      <main className="flex-grow">
+      <main className="grow">
         <Hero />
         <HowItWorks />
         <LaptopAndMobile />

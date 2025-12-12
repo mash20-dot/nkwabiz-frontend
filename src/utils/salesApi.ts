@@ -33,12 +33,15 @@ export type MonthlySalesItem = {
 
 export type MonthlySalesSummaryResponse = {
   user: string;
-  filter_used: { year: number; month: number; };
+  filter_used: { year: number; month: number };
   monthly_sales_summary: MonthlySalesItem[];
 };
 
 // Premium: Get full sales history with analytics (requires premium)
-export async function getSalesHistory(): Promise<{ sales_history: SaleHistoryItem[]; summary?: any }> {
+export async function getSalesHistory(): Promise<{
+  sales_history: SaleHistoryItem[];
+  summary?: any;
+}> {
   return apiFetch("/stock_manage/stocks/history", { method: "GET" }, true);
 }
 
