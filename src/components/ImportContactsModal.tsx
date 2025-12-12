@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { X, Upload, FileText, CheckCircle, AlertCircle, Download } from "lucide-react";
+import { addContact as addContactAPI } from "@/utils/BulkSMS/smsService";
 import { useContacts } from "@/context/ContactsContext";
 import Button from "@/components/Button";
 
@@ -29,7 +30,7 @@ const ImportContactsModal: React.FC<ImportContactsModalProps> = ({
     const [showPreview, setShowPreview] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const { addNewContact, getAllCategories, refetch } = useContacts();
+    const { getAllCategories, refetch } = useContacts();
     const existingCategories = getAllCategories();
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -128,11 +129,12 @@ const ImportContactsModal: React.FC<ImportContactsModalProps> = ({
 
         try {
             // Process contacts one by one with progress updates
+            // Using the API directly to avoid triggering refetch on each contact
             for (let i = 0; i < validContacts.length; i++) {
                 const contact = validContacts[i];
                 try {
-                    // Don't wait for refetch on each contact
-                    await addNewContact(contact.phone, category);
+                    // Call API directly without triggering context refetch
+                    await addContactAPI(contact.phone, category);
                     successCount++;
                 } catch (err) {
                     console.error(`Failed to add ${contact.phone}:`, err);
