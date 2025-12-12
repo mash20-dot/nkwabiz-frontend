@@ -109,7 +109,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
     if (previousSenderIds.length > 0 && !senderId) {
       setSenderId(previousSenderIds[0]);
     }
-  }, [previousSenderIds.length]);
+  }, [previousSenderIds]);
 
   // Check if category is selected
   const isCategorySelected = (category: string) => {
@@ -239,8 +239,18 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
       const response = await sendSms(allRecipients, message, senderId);
 
       // Save sender ID to storage if it's new
-      if (!previousSenderIds.includes(senderId)) {
-        const updatedIds = [senderId, ...previousSenderIds].slice(0, 10); // Keep last 10
+      const trimmedSenderId = senderId.trim();
+      if (!previousSenderIds.includes(trimmedSenderId)) {
+        const updatedIds = [trimmedSenderId, ...previousSenderIds].slice(0, 10); // Keep last 10
+        try {
+          await window.storage.set('sender-ids', JSON.stringify(updatedIds));
+          setPreviousSenderIds(updatedIds);
+        } catch (error) {
+          console.error('Failed to save sender ID:', error);
+        }
+      } else {
+        // Move the existing sender ID to the front (most recent)
+        const updatedIds = [trimmedSenderId, ...previousSenderIds.filter(id => id !== trimmedSenderId)];
         try {
           await window.storage.set('sender-ids', JSON.stringify(updatedIds));
           setPreviousSenderIds(updatedIds);
