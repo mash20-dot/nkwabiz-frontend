@@ -65,10 +65,14 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
   const currentBalance = smsBalance || 0;
   const categories = getAllCategories();
 
-  // Get unique sender IDs from backend
-  const existingSenderIds = smsData?.sender_id
-    ? [...new Set(smsData.sender_id)].filter(id => id && id.trim() !== '')
-    : [];
+  // Get unique sender IDs from SMS history
+  const previousSenderIds = Array.from(
+    new Set(
+      (smsData?.history || [])
+        .map((sms: any) => sms.sender)
+        .filter((sender: string) => sender && sender.trim())
+    )
+  ) as string[];
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -90,6 +94,13 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Set the most recent sender ID as default when component loads
+  useEffect(() => {
+    if (previousSenderIds.length > 0 && !senderId) {
+      setSenderId(previousSenderIds[0]);
+    }
+  }, [previousSenderIds.length]);
 
   // Check if category is selected
   const isCategorySelected = (category: string) => {
@@ -128,12 +139,6 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
       .filter((num) => num.length > 0);
 
     return [...new Set(recipients)];
-  };
-
-  // Handle sender ID selection from dropdown
-  const handleSenderIdSelect = (id: string) => {
-    setSenderId(id);
-    setIsSenderIdDropdownOpen(false);
   };
 
   // Get all recipients (selected categories + manual)
@@ -318,7 +323,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
       {/* Form Area */}
       <div className="flex flex-col md:flex-col lg:flex-row w-full gap-6">
         <div className="flex flex-col gap-6 w-full p-0 md:p-6 lg:p-6 bg-none md:bg-white border-0 md:border lg:border border-gray-200 md:shadow-sm lg:shadow-sm rounded-none md:rounded-md">
-          {/* Sender ID Field with Dropdown */}
+          {/* Sender ID Field */}
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2">
               <h2 className="text-lg font-medium text-gray-800">Sender ID</h2>
@@ -331,13 +336,15 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
                   type="text"
                   placeholder="e.g., YourBrand, MyShop, CompanyName"
                   value={senderId}
-                  onChange={(e) => setSenderId(e.target.value)}
-                  onFocus={() => existingSenderIds.length > 0 && setIsSenderIdDropdownOpen(true)}
+                  onChange={(e) => {
+                    setSenderId(e.target.value.toUpperCase());
+                    setIsSenderIdDropdownOpen(true);
+                  }}
+                  onFocus={() => previousSenderIds.length > 0 && setIsSenderIdDropdownOpen(true)}
                   maxLength={11}
-                  className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
                 />
-
-                {existingSenderIds.length > 0 && (
+                {previousSenderIds.length > 0 && (
                   <button
                     type="button"
                     onClick={() => setIsSenderIdDropdownOpen(!isSenderIdDropdownOpen)}
@@ -353,36 +360,47 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
                 )}
               </div>
 
-              {/* Sender ID Dropdown */}
-              {isSenderIdDropdownOpen && existingSenderIds.length > 0 && (
+              {/* Dropdown for previous sender IDs */}
+              {isSenderIdDropdownOpen && previousSenderIds.length > 0 && (
                 <div className="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
                   <div className="py-1">
                     <div className="px-3 py-2 text-xs font-medium text-gray-500 border-b border-gray-200">
                       Previously Used Sender IDs
                     </div>
-                    {existingSenderIds.map((id) => (
-                      <div
-                        key={id}
-                        onClick={() => handleSenderIdSelect(id)}
-                        className={classNames(
-                          "px-3 py-2 cursor-pointer hover:bg-gray-50 flex items-center justify-between",
-                          senderId === id && "bg-blue-50"
-                        )}
-                      >
-                        <span className="text-sm font-medium text-gray-900">{id}</span>
-                        {senderId === id && (
-                          <div className="flex items-center justify-center w-5 h-5 bg-blue-600 rounded text-white">
-                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                              <path
-                                fillRule="evenodd"
-                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                          </div>
-                        )}
-                      </div>
-                    ))}
+                    {previousSenderIds
+                      .filter((id) => id.toUpperCase().includes(senderId.toUpperCase()))
+                      .map((id) => (
+                        <div
+                          key={id}
+                          onClick={() => {
+                            setSenderId(id);
+                            setIsSenderIdDropdownOpen(false);
+                          }}
+                          className={classNames(
+                            "px-3 py-2 cursor-pointer hover:bg-gray-50 flex items-center justify-between",
+                            senderId === id && "bg-blue-50"
+                          )}
+                        >
+                          <span className="text-sm font-medium text-gray-900">
+                            {id}
+                          </span>
+                          {senderId === id && (
+                            <div className="flex items-center justify-center w-5 h-5 bg-blue-600 rounded text-white">
+                              <svg
+                                className="w-3 h-3"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            </div>
+                          )}
+                        </div>
+                      ))}
                   </div>
                 </div>
               )}
@@ -392,7 +410,9 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
               <Info className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
               <div className="flex flex-col gap-1">
                 <p className="text-xs text-blue-800 font-medium">
-                  Sender ID Requirements:
+                  {previousSenderIds.length > 0
+                    ? "Select a previous Sender ID or enter a new one:"
+                    : "Sender ID Requirements:"}
                 </p>
                 <ul className="text-xs text-blue-700 space-y-0.5 list-disc list-inside">
                   <li>3-11 characters only</li>
