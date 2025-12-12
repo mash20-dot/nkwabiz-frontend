@@ -439,7 +439,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
                   <li>Letters and numbers only (no spaces or special characters)</li>
                   <li>Example: NKWABIZ, MyShop123, CompanyGH</li>
                   {previousSenderIds.length > 0 && (
-                    <li className="font-medium">💡 Click the dropdown to reuse a previous Sender ID</li>
+                    <li className="font-medium">Click the dropdown to reuse a previous Sender ID</li>
                   )}
                 </ul>
               </div>
@@ -598,7 +598,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
             ) : (
               <div className="p-3 bg-gray-50 border border-gray-200 rounded-md">
                 <p className="text-xs text-gray-600">
-                  💡 No saved contacts yet. You can add contacts from the
+                  No saved contacts yet. You can add contacts from the
                   Contacts page.
                 </p>
               </div>
