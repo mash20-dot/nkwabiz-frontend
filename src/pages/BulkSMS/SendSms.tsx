@@ -62,18 +62,19 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
   const senderIdDropdownRef = useRef<HTMLDivElement>(null);
 
   const COST_PER_SMS = 0.04;
+  const STORAGE_KEY = 'sms_sender_ids';
   const currentBalance = smsBalance || 0;
   const categories = getAllCategories();
 
-  // Load previous sender IDs from storage
+  // Load previous sender IDs from localStorage
   const [previousSenderIds, setPreviousSenderIds] = useState<string[]>([]);
 
   useEffect(() => {
-    const loadSenderIds = async () => {
+    const loadSenderIds = () => {
       try {
-        const result = await window.storage.get('sender-ids');
-        if (result) {
-          const ids = JSON.parse(result.value);
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          const ids = JSON.parse(stored);
           setPreviousSenderIds(ids);
           // Set the most recent sender ID as default
           if (ids.length > 0 && !senderId) {
@@ -235,7 +236,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
 
       const response = await sendSms(allRecipients, message, senderId);
 
-      // Save sender ID to storage if it's new or move to front if exists
+      // Save sender ID to localStorage if it's new or move to front if exists
       const trimmedSenderId = senderId.trim();
       const updatedIds = [
         trimmedSenderId,
@@ -243,8 +244,9 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
       ].slice(0, 10); // Keep last 10
 
       try {
-        await window.storage.set('sender-ids', JSON.stringify(updatedIds));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedIds));
         setPreviousSenderIds(updatedIds);
+        console.log('Sender ID saved successfully:', trimmedSenderId);
       } catch (error) {
         console.error('Failed to save sender ID:', error);
       }
