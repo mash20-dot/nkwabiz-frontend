@@ -62,6 +62,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
   const senderIdDropdownRef = useRef<HTMLDivElement>(null);
 
   const COST_PER_SMS = 0.04;
+  const MAX_RECIPIENTS_PER_BULK = 80; // Maximum recipients allowed per bulk SMS
   const STORAGE_KEY = 'sms_sender_ids';
   const currentBalance = smsBalance || 0;
   const categories = getAllCategories();
@@ -158,6 +159,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
   const recipientCount = allRecipients.length;
   const estimatedCost = recipientCount * COST_PER_SMS;
   const hasEnoughBalance = currentBalance >= recipientCount;
+  const exceedsMaxRecipients = recipientCount > MAX_RECIPIENTS_PER_BULK;
 
   // Validate phone numbers
   const validateNumber = (number: string): boolean => {
@@ -201,6 +203,16 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
     if (allRecipients.length === 0) {
       toast.error("Please add at least one recipient", {
         duration: 5000,
+        closeButton: true,
+      });
+      return;
+    }
+
+    // Check if recipients exceed maximum
+    if (allRecipients.length > MAX_RECIPIENTS_PER_BULK) {
+      toast.error(`Maximum ${MAX_RECIPIENTS_PER_BULK} recipients allowed per bulk SMS`, {
+        description: `You have ${allRecipients.length} recipients. Please reduce to ${MAX_RECIPIENTS_PER_BULK} or fewer.`,
+        duration: 7000,
         closeButton: true,
       });
       return;
@@ -439,7 +451,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
                   <li>Letters and numbers only (no spaces or special characters)</li>
                   <li>Example: NKWABIZ, MyShop123, CompanyGH</li>
                   {previousSenderIds.length > 0 && (
-                    <li className="font-medium">Click the dropdown to reuse a previous Sender ID</li>
+                    <li className="font-medium">💡 Click the dropdown to reuse a previous Sender ID</li>
                   )}
                 </ul>
               </div>
@@ -598,7 +610,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
             ) : (
               <div className="p-3 bg-gray-50 border border-gray-200 rounded-md">
                 <p className="text-xs text-gray-600">
-                  No saved contacts yet. You can add contacts from the
+                  💡 No saved contacts yet. You can add contacts from the
                   Contacts page.
                 </p>
               </div>
@@ -628,18 +640,37 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
 
             {/* Total Recipients Summary */}
             {recipientCount > 0 && (
-              <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
-                <p className="text-sm font-semibold text-blue-800">
+              <div className={classNames(
+                "p-3 border rounded-md",
+                exceedsMaxRecipients
+                  ? "bg-red-50 border-red-200"
+                  : "bg-blue-50 border-blue-200"
+              )}>
+                <p className={classNames(
+                  "text-sm font-semibold",
+                  exceedsMaxRecipients ? "text-red-800" : "text-blue-800"
+                )}>
                   Total: {recipientCount} recipient
                   {recipientCount !== 1 ? "s" : ""}
                 </p>
                 {categoryContactNumbers.length > 0 &&
                   manualNumbers.length > 0 && (
-                    <p className="text-xs text-blue-600 mt-1">
+                    <p className={classNames(
+                      "text-xs mt-1",
+                      exceedsMaxRecipients ? "text-red-600" : "text-blue-600"
+                    )}>
                       ({categoryContactNumbers.length} from categories +{" "}
                       {manualNumbers.length} manual)
                     </p>
                   )}
+                {exceedsMaxRecipients && (
+                  <p className="text-xs text-red-700 font-medium mt-2 flex items-start gap-1">
+                    <span className="text-red-600">⚠️</span>
+                    <span>
+                      Maximum {MAX_RECIPIENTS_PER_BULK} recipients allowed. Please remove {recipientCount - MAX_RECIPIENTS_PER_BULK} recipient{recipientCount - MAX_RECIPIENTS_PER_BULK !== 1 ? "s" : ""}.
+                    </span>
+                  </p>
+                )}
               </div>
             )}
           </div>
@@ -654,6 +685,13 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
               value={`GH₵${COST_PER_SMS.toFixed(3)}`}
             />
             <Summary title="Total Recipients" value={recipientCount} />
+            {exceedsMaxRecipients && (
+              <div className="p-2 bg-red-50 border border-red-200 rounded-md">
+                <p className="text-xs text-red-700 font-medium">
+                  ⚠️ Exceeds maximum of {MAX_RECIPIENTS_PER_BULK} recipients
+                </p>
+              </div>
+            )}
             <hr className="bg-gray-200" />
             <Summary
               title="Estimated Cost"
@@ -687,14 +725,14 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
               "items-center justify-center text-white cursor-pointer",
               {
                 "bg-blue-600 hover:bg-blue-700":
-                  !sending && hasEnoughBalance && recipientCount > 0 && senderId.trim(),
+                  !sending && hasEnoughBalance && recipientCount > 0 && senderId.trim() && !exceedsMaxRecipients,
                 "bg-gray-400 cursor-not-allowed":
-                  sending || !hasEnoughBalance || recipientCount === 0 || !senderId.trim(),
+                  sending || !hasEnoughBalance || recipientCount === 0 || !senderId.trim() || exceedsMaxRecipients,
               }
             )}
             onClick={handleSend}
             disabled={
-              sending || !hasEnoughBalance || recipientCount === 0 || !message || !senderId.trim()
+              sending || !hasEnoughBalance || recipientCount === 0 || !message || !senderId.trim() || exceedsMaxRecipients
             }
           >
             {sending ? (
