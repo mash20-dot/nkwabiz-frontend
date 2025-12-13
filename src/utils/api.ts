@@ -1,3 +1,8 @@
+// ============================================
+// FIXED VERSION OF @/utils/api.ts
+// This version is iOS Safari compatible
+// ============================================
+
 import { API_BASE_URL } from "./config";
 import { useAuthStore } from "../store/useAuthStore";
 import { isTokenExpired } from "./tokenUtils";
@@ -13,8 +18,10 @@ export async function apiFetch(
 ): Promise<any> {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
+    "Accept": "application/json",
     ...(options.headers as Record<string, string>),
   };
+
   if (auth) {
     const token = getToken();
     if (!token) throw { message: "Not authenticated" };
@@ -26,23 +33,61 @@ export async function apiFetch(
     }
     headers["Authorization"] = `Bearer ${token}`;
   }
-  const res = await fetch(`${API_BASE_URL}${path}`, { ...options, headers });
 
-  // If token expired, your backend should respond with 401
-  if (res.status === 401) {
-    useAuthStore.getState().clearAuth();
-    window.location.href = "/login";
-    throw { message: "Session expired. Please log in again." };
-  }
+  // Create abort controller for timeout (iOS Safari needs this)
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
 
-  let data;
   try {
-    const text = await res.text();
-    data = text ? JSON.parse(text) : {};
-  } catch {
-    data = {};
-  }
+    const res = await fetch(`${API_BASE_URL}${path}`, {
+      ...options,
+      headers,
+      credentials: 'include', // CRITICAL: This fixes iOS Safari cookie/auth issues
+      signal: controller.signal, // Add timeout support
+    });
 
-  if (!res.ok) throw data;
-  return data;
+    clearTimeout(timeoutId);
+
+    // If token expired, your backend should respond with 401
+    if (res.status === 401) {
+      useAuthStore.getState().clearAuth();
+      window.location.href = "/login";
+      throw { message: "Session expired. Please log in again." };
+    }
+
+    let data;
+    try {
+      const text = await res.text();
+      data = text ? JSON.parse(text) : {};
+    } catch {
+      data = {};
+    }
+
+    if (!res.ok) throw data;
+    return data;
+
+  } catch (error: any) {
+    clearTimeout(timeoutId);
+
+    // Handle timeout errors for iOS Safari
+    if (error.name === 'AbortError') {
+      throw {
+        message: "Request timed out. Please check your connection and try again.",
+        timeout: true
+      };
+    }
+
+    // Handle network errors for iOS Safari
+    if (error instanceof TypeError &&
+      (error.message?.includes('Failed to fetch') ||
+        error.message?.includes('NetworkError') ||
+        error.message?.includes('Network request failed'))) {
+      throw {
+        message: "Network error. Please check your internet connection.",
+        network: true
+      };
+    }
+
+    throw error;
+  }
 }
