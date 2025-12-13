@@ -62,7 +62,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
   const senderIdDropdownRef = useRef<HTMLDivElement>(null);
 
   const COST_PER_SMS = 0.04;
-  const MAX_RECIPIENTS_PER_BULK = 1; // Maximum recipients allowed per bulk SMS
+  const MAX_RECIPIENTS_PER_BULK = 80; // Maximum recipients allowed per bulk SMS
   const STORAGE_KEY = 'sms_sender_ids';
   const currentBalance = smsBalance || 0;
   const categories = getAllCategories();
@@ -451,7 +451,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
                   <li>Letters and numbers only (no spaces or special characters)</li>
                   <li>Example: NKWABIZ, MyShop123, CompanyGH</li>
                   {previousSenderIds.length > 0 && (
-                    <li className="font-medium">💡 Click the dropdown to reuse a previous Sender ID</li>
+                    <li className="font-medium">Click the dropdown to reuse a previous Sender ID</li>
                   )}
                 </ul>
               </div>
