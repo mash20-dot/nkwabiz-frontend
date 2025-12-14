@@ -6,14 +6,15 @@ import React, {
   ReactNode,
   useCallback,
   useRef,
-  useMemo,
 } from "react";
 import {
   getAllContacts,
   addContact as addContactAPI,
   deleteContact as deleteContactAPI,
+  getContactCategories,
   Contact,
   AddContactResponse,
+  CategoryInfo,
 } from "@/utils/BulkSMS/smsService";
 
 interface ContactsContextType {
@@ -32,6 +33,8 @@ interface ContactsContextType {
   getContactsByCategory: (category: string) => Contact[];
   getAllCategories: () => string[];
   categoryCounts: Record<string, number>;
+  categories: CategoryInfo[];
+  refreshCategories: () => Promise<void>;
 }
 
 const ContactsContext = createContext<ContactsContextType | undefined>(
@@ -52,6 +55,10 @@ export const ContactsProvider: React.FC<ContactsProviderProps> = ({
   const [totalContacts, setTotalContacts] = useState(0);
   const [page, setPage] = useState(1);
   const isFetchingRef = useRef(false);
+
+  // NEW: Store categories from API
+  const [categories, setCategories] = useState<CategoryInfo[]>([]);
+  const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({});
 
   const fetchContacts = async (pageNum: number, append: boolean = false) => {
     // Prevent duplicate requests
@@ -84,9 +91,29 @@ export const ContactsProvider: React.FC<ContactsProviderProps> = ({
     }
   };
 
-  // Load first page on mount
+  // NEW: Fetch categories from API
+  const fetchCategories = async () => {
+    try {
+      const data = await getContactCategories();
+      setCategories(data.categories);
+
+      // Convert to counts object
+      const counts: Record<string, number> = {};
+      data.categories.forEach(cat => {
+        counts[cat.category] = cat.count;
+      });
+      setCategoryCounts(counts);
+
+      console.log(`✅ Loaded ${data.categories.length} categories with ${data.total_contacts} total contacts`);
+    } catch (err) {
+      console.error("Failed to load categories:", err);
+    }
+  };
+
+  // Load contacts and categories on mount
   useEffect(() => {
     fetchContacts(1, false);
+    fetchCategories();
   }, []);
 
   // Load more contacts (for infinite scroll)
@@ -102,6 +129,12 @@ export const ContactsProvider: React.FC<ContactsProviderProps> = ({
     setPage(1);
     setContacts([]); // Clear existing contacts
     await fetchContacts(1, false);
+    await fetchCategories(); // Also refresh categories
+  };
+
+  // Refresh only categories
+  const refreshCategories = async () => {
+    await fetchCategories();
   };
 
   // FIXED: Optimistically add contact to the top of the list
@@ -115,6 +148,30 @@ export const ContactsProvider: React.FC<ContactsProviderProps> = ({
       // Update total count
       setTotalContacts(prev => prev + 1);
 
+      // Optimistically update category counts
+      setCategoryCounts(prev => ({
+        ...prev,
+        [category]: (prev[category] || 0) + 1
+      }));
+
+      // Check if it's a new category
+      const categoryExists = categories.some(cat => cat.category === category);
+      if (!categoryExists) {
+        setCategories(prev => [...prev, { category, count: 1 }]);
+      } else {
+        // Update existing category count
+        setCategories(prev =>
+          prev.map(cat =>
+            cat.category === category
+              ? { ...cat, count: cat.count + 1 }
+              : cat
+          )
+        );
+      }
+
+      // Refresh from API to ensure accuracy
+      await fetchCategories();
+
       return response;
     } catch (err) {
       setError("Failed to add contact");
@@ -125,12 +182,43 @@ export const ContactsProvider: React.FC<ContactsProviderProps> = ({
   // FIXED: Optimistically remove contact from the list
   const deleteContact = async (contactId: number): Promise<void> => {
     try {
+      // Find the contact to get its category
+      const contactToDelete = contacts.find(c => c.id === contactId);
+
       // Remove from UI immediately
       setContacts(prev => prev.filter(c => c.id !== contactId));
       setTotalContacts(prev => prev - 1);
 
+      // Optimistically update category counts
+      if (contactToDelete) {
+        const category = contactToDelete.category;
+        setCategoryCounts(prev => ({
+          ...prev,
+          [category]: Math.max((prev[category] || 0) - 1, 0)
+        }));
+
+        // Update category list
+        setCategories(prev => {
+          const newCount = (categoryCounts[category] || 0) - 1;
+          if (newCount <= 0) {
+            // Remove category if count reaches 0
+            return prev.filter(cat => cat.category !== category);
+          } else {
+            // Update count
+            return prev.map(cat =>
+              cat.category === category
+                ? { ...cat, count: newCount }
+                : cat
+            );
+          }
+        });
+      }
+
       // Then delete from API
       await deleteContactAPI(contactId);
+
+      // Refresh from API to ensure accuracy
+      await fetchCategories();
     } catch (err) {
       setError("Failed to delete contact");
       console.error("Error deleting contact:", err);
@@ -145,20 +233,10 @@ export const ContactsProvider: React.FC<ContactsProviderProps> = ({
     return contacts.filter((contact) => contact.category === category);
   };
 
-  // FIXED: Memoize categories to ensure they update when contacts change
+  // Get all category names
   const getAllCategories = useCallback(() => {
-    const categories = contacts.map((contact) => contact.category);
-    return Array.from(new Set(categories));
-  }, [contacts]);
-
-  // FIXED: Calculate category counts dynamically
-  const categoryCounts = useMemo(() => {
-    const counts: Record<string, number> = {};
-    contacts.forEach((contact) => {
-      counts[contact.category] = (counts[contact.category] || 0) + 1;
-    });
-    return counts;
-  }, [contacts]);
+    return categories.map(cat => cat.category);
+  }, [categories]);
 
   return (
     <ContactsContext.Provider
@@ -175,6 +253,8 @@ export const ContactsProvider: React.FC<ContactsProviderProps> = ({
         getContactsByCategory,
         getAllCategories,
         categoryCounts,
+        categories,
+        refreshCategories,
       }}
     >
       {children}

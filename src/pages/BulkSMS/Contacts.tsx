@@ -21,6 +21,7 @@ const ContactsPage = () => {
     loadMore,
     getAllCategories,
     categoryCounts,
+    categories,
     deleteContact
   } = useContacts();
 
@@ -58,8 +59,8 @@ const ContactsPage = () => {
     [loading, hasMore, loadMore]
   );
 
-  // Get all categories - this will now update when contacts change
-  const categories = getAllCategories();
+  // Get all category names from API
+  const categoryNames = getAllCategories();
 
   // Filter contacts based on selected category
   const filteredContacts =
@@ -180,7 +181,7 @@ const ContactsPage = () => {
             <h1 className="text-2xl font-medium text-gray-900">Contacts</h1>
             <p className="text-sm text-gray-600 font-normal">
               Total: {totalContacts} contacts
-              {categories.length > 0 && ` in ${categories.length} categories`}
+              {categoryNames.length > 0 && ` in ${categoryNames.length} categories`}
               {loading && contacts.length === 0 && " (Loading...)"}
             </p>
           </div>
@@ -208,8 +209,8 @@ const ContactsPage = () => {
           </div>
         </div>
 
-        {/* Category Filter - NOW WILL SHOW NEW CATEGORIES */}
-        {categories.length > 0 && (
+        {/* Category Filter - NOW USES API DATA */}
+        {categoryNames.length > 0 && (
           <div className="w-full">
             <div className="flex gap-2 flex-wrap">
               <button
@@ -221,7 +222,7 @@ const ContactsPage = () => {
               >
                 All ({totalContacts})
               </button>
-              {categories.map((category) => (
+              {categoryNames.map((category) => (
                 <div key={category} className="flex items-center gap-1">
                   <button
                     onClick={() => setSelectedCategory(category)}
