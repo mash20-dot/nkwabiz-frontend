@@ -102,10 +102,17 @@ export const ContactsProvider: React.FC<ContactsProviderProps> = ({
     await fetchContacts(1, false);
   };
 
+  // FIXED: Optimistically add contact to the top of the list
   const addNewContact = async (contact: string, category: string) => {
     try {
       const response = await addContactAPI(contact, category);
-      await refetch();
+
+      // Add the new contact to the TOP of the list immediately
+      setContacts(prev => [response, ...prev]);
+
+      // Update total count
+      setTotalContacts(prev => prev + 1);
+
       return response;
     } catch (err) {
       setError("Failed to add contact");
@@ -113,13 +120,21 @@ export const ContactsProvider: React.FC<ContactsProviderProps> = ({
     }
   };
 
+  // FIXED: Optimistically remove contact from the list
   const deleteContact = async (contactId: number): Promise<void> => {
     try {
+      // Remove from UI immediately
+      setContacts(prev => prev.filter(c => c.id !== contactId));
+      setTotalContacts(prev => prev - 1);
+
+      // Then delete from API
       await deleteContactAPI(contactId);
-      await refetch();
     } catch (err) {
       setError("Failed to delete contact");
       console.error("Error deleting contact:", err);
+
+      // Revert on error by refetching
+      await refetch();
       throw err;
     }
   };

@@ -1,5 +1,5 @@
 import { Users, UserPlus, Trash2, Upload } from "lucide-react";
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useMemo } from "react";
 import { useContacts } from "@/context/ContactsContext";
 import Button from "@/components/Button";
 import { Table, TableCard } from "@/components/application/table/table";
@@ -57,7 +57,17 @@ const ContactsPage = () => {
     [loading, hasMore, loadMore]
   );
 
+  // Get all categories with their counts
   const categories = getAllCategories();
+
+  // Calculate category counts from current contacts
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    contacts.forEach((contact) => {
+      counts[contact.category] = (counts[contact.category] || 0) + 1;
+    });
+    return counts;
+  }, [contacts]);
 
   const filteredContacts =
     selectedCategory === "all"
@@ -212,8 +222,8 @@ const ContactsPage = () => {
               <button
                 onClick={() => setSelectedCategory("all")}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${selectedCategory === "all"
-                  ? "bg-blue-100 text-blue-600 border border-blue-300"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200"
+                    ? "bg-blue-100 text-blue-600 border border-blue-300"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200"
                   }`}
               >
                 All ({totalContacts})
@@ -223,12 +233,11 @@ const ContactsPage = () => {
                   <button
                     onClick={() => setSelectedCategory(category)}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${selectedCategory === category
-                      ? "bg-blue-100 text-blue-600 border border-blue-300"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200"
+                        ? "bg-blue-100 text-blue-600 border border-blue-300"
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200"
                       }`}
                   >
-                    {category} (
-                    {contacts.filter((c) => c.category === category).length})
+                    {category} ({categoryCounts[category] || 0})
                   </button>
                 </div>
               ))}
