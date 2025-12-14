@@ -1,5 +1,5 @@
 import { Users, UserPlus, Trash2, Upload } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useContacts } from "@/context/ContactsContext";
 import Button from "@/components/Button";
 import { Table, TableCard } from "@/components/application/table/table";
@@ -12,8 +12,17 @@ import ImportContactsModal from "@/components/ImportContactsModal";
 import { toast } from "sonner";
 
 const ContactsPage = () => {
-  const { contacts, loading, error, getAllCategories, deleteContact } =
-    useContacts();
+  const {
+    contacts,
+    loading,
+    error,
+    hasMore,
+    totalContacts,
+    loadMore,
+    getAllCategories,
+    deleteContact
+  } = useContacts();
+
   const [showAddContactModal, setShowAddContactModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
@@ -28,6 +37,25 @@ const ContactsPage = () => {
     phone: string;
   } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Infinite scroll observer
+  const observer = useRef<IntersectionObserver>();
+  const lastContactRef = useCallback(
+    (node: HTMLDivElement | HTMLTableRowElement | null) => {
+      if (loading) return;
+      if (observer.current) observer.current.disconnect();
+
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          console.log("Last contact visible - loading more...");
+          loadMore();
+        }
+      });
+
+      if (node) observer.current.observe(node);
+    },
+    [loading, hasMore, loadMore]
+  );
 
   const categories = getAllCategories();
 
@@ -50,12 +78,10 @@ const ContactsPage = () => {
   };
 
   const handleCloseImportModal = () => {
-    // Don't close if we're currently processing
     setShowImportModal(false);
   };
 
   const handleImportSuccess = (message: string) => {
-    // Don't close the modal immediately, let the import finish
     setTimeout(() => {
       setShowImportModal(false);
       toast.success(message || "Contacts imported successfully");
@@ -63,7 +89,6 @@ const ContactsPage = () => {
   };
 
   const handleImportError = (message: string) => {
-    // Keep modal open on error
     toast.error(message || "Failed to import contacts");
   };
 
@@ -99,7 +124,7 @@ const ContactsPage = () => {
     setContactToDelete(null);
   };
 
-  if (loading) {
+  if (loading && contacts.length === 0) {
     return <p className="text-gray-600">Loading contacts...</p>;
   }
 
@@ -151,8 +176,9 @@ const ContactsPage = () => {
           <div className="flex flex-col gap-1">
             <h1 className="text-2xl font-medium text-gray-900">Contacts</h1>
             <p className="text-sm text-gray-600 font-normal">
-              Total: {contacts.length} contacts
+              Total: {totalContacts} contacts
               {categories.length > 0 && ` in ${categories.length} categories`}
+              {loading && contacts.length === 0 && " (Loading...)"}
             </p>
           </div>
           <div className="flex gap-3">
@@ -190,7 +216,7 @@ const ContactsPage = () => {
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200"
                   }`}
               >
-                All ({contacts.length})
+                All ({totalContacts})
               </button>
               {categories.map((category) => (
                 <div key={category} className="flex items-center gap-1">
@@ -211,7 +237,7 @@ const ContactsPage = () => {
         )}
 
         {/* Empty State and Table */}
-        {filteredContacts.length === 0 ? (
+        {filteredContacts.length === 0 && !loading ? (
           <div className="w-full border border-gray-200 rounded-md flex items-center justify-center overflow-hidden px-8 py-20">
             <EmptyState size="sm">
               <EmptyState.Header pattern="none">
@@ -266,83 +292,110 @@ const ContactsPage = () => {
                 </Table.Header>
 
                 <Table.Body className="w-full">
-                  {filteredContacts.map((contact, index) => (
-                    <Table.Row
-                      key={index}
-                      className="cursor-pointer bg-white hover:bg-gray-50 border-b border-gray-200 last:border-b-0"
-                    >
-                      <Table.Cell>{index + 1}</Table.Cell>
-                      <Table.Cell>
-                        <span className="font-normal text-gray-800">
-                          {contact.contact}
-                        </span>
-                      </Table.Cell>
+                  {filteredContacts.map((contact, index) => {
+                    const isLastItem = filteredContacts.length === index + 1;
 
-                      <Table.Cell>
-                        <Badge color="gray" size="sm">
-                          {contact.category}
-                        </Badge>
-                      </Table.Cell>
+                    return (
+                      <Table.Row
+                        key={contact.id}
+                        ref={isLastItem ? lastContactRef : null}
+                        className="cursor-pointer bg-white hover:bg-gray-50 border-b border-gray-200 last:border-b-0"
+                      >
+                        <Table.Cell>{index + 1}</Table.Cell>
+                        <Table.Cell>
+                          <span className="font-normal text-gray-800">
+                            {contact.contact}
+                          </span>
+                        </Table.Cell>
 
-                      <Table.Cell>
-                        <Button
-                          className="border-none hover:text-red-500"
-                          onClick={() =>
-                            handleDeleteClick(
-                              contact.id,
-                              contact.contact
-                            )
-                          }
-                        >
-                          <Trash2 />
-                        </Button>
-                      </Table.Cell>
-                    </Table.Row>
-                  ))}
+                        <Table.Cell>
+                          <Badge color="gray" size="sm">
+                            {contact.category}
+                          </Badge>
+                        </Table.Cell>
+
+                        <Table.Cell>
+                          <Button
+                            className="border-none hover:text-red-500"
+                            onClick={() =>
+                              handleDeleteClick(
+                                contact.id,
+                                contact.contact
+                              )
+                            }
+                          >
+                            <Trash2 />
+                          </Button>
+                        </Table.Cell>
+                      </Table.Row>
+                    );
+                  })}
                 </Table.Body>
               </Table>
             </TableCard.Root>
 
             {/* Mobile Card View - Hidden on Desktop */}
             <div className="md:hidden w-full space-y-4">
-              {filteredContacts.map((contact, index) => (
-                <div
-                  key={index}
-                  className="bg-white border border-gray-200 rounded-lg p-4 space-y-3"
-                >
-                  {/* ID and Category Row */}
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-gray-500">
-                      ID: {index + 1}
-                    </span>
-                    <Badge color="gray" size="sm">
-                      {contact.category}
-                    </Badge>
-                  </div>
+              {filteredContacts.map((contact, index) => {
+                const isLastItem = filteredContacts.length === index + 1;
 
-                  {/* Phone Number */}
-                  <div className="flex justify-between items-end">
-                    <div>
-                      <span className="text-xs font-medium text-gray-500 block mb-1">
-                        Phone Number
+                return (
+                  <div
+                    key={contact.id}
+                    ref={isLastItem ? lastContactRef : null}
+                    className="bg-white border border-gray-200 rounded-lg p-4 space-y-3"
+                  >
+                    {/* ID and Category Row */}
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-500">
+                        ID: {index + 1}
                       </span>
-                      <p className="text-sm text-gray-800 font-medium">
-                        {contact.contact}
-                      </p>
+                      <Badge color="gray" size="sm">
+                        {contact.category}
+                      </Badge>
                     </div>
 
-                    <Button
-                      className="border-none hover:text-red-500"
-                      onClick={() =>
-                        handleDeleteClick(contact.id, contact.contact)
-                      }
-                    >
-                      <Trash2 className="h-5 w-5" />
-                    </Button>
+                    {/* Phone Number */}
+                    <div className="flex justify-between items-end">
+                      <div>
+                        <span className="text-xs font-medium text-gray-500 block mb-1">
+                          Phone Number
+                        </span>
+                        <p className="text-sm text-gray-800 font-medium">
+                          {contact.contact}
+                        </p>
+                      </div>
+
+                      <Button
+                        className="border-none hover:text-red-500"
+                        onClick={() =>
+                          handleDeleteClick(contact.id, contact.contact)
+                        }
+                      >
+                        <Trash2 className="h-5 w-5" />
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
+
+            {/* Loading Indicator - shows while loading more */}
+            {loading && contacts.length > 0 && (
+              <div className="w-full text-center py-4">
+                <div className="inline-flex items-center gap-2 text-gray-600">
+                  <div className="w-5 h-5 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
+                  <span>Loading more contacts...</span>
+                </div>
+              </div>
+            )}
+
+            {/* End Message - shows when all contacts loaded */}
+            {!hasMore && contacts.length > 0 && (
+              <div className="w-full text-center py-4 text-gray-500">
+                All contacts loaded ({contacts.length} of {totalContacts})
+              </div>
+            )}
           </>
         )}
       </div>

@@ -4,6 +4,8 @@ import React, {
   useState,
   useEffect,
   ReactNode,
+  useCallback,
+  useRef,
 } from "react";
 import {
   getAllContacts,
@@ -17,6 +19,9 @@ interface ContactsContextType {
   contacts: Contact[];
   loading: boolean;
   error: string | null;
+  hasMore: boolean;
+  totalContacts: number;
+  loadMore: () => Promise<void>;
   refetch: () => Promise<void>;
   addNewContact: (
     contact: string,
@@ -41,33 +46,66 @@ export const ContactsProvider: React.FC<ContactsProviderProps> = ({
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(true);
+  const [totalContacts, setTotalContacts] = useState(0);
+  const [page, setPage] = useState(1);
+  const isFetchingRef = useRef(false);
 
-  const fetchContacts = async () => {
+  const fetchContacts = async (pageNum: number, append: boolean = false) => {
+    // Prevent duplicate requests
+    if (isFetchingRef.current) return;
+
     try {
+      isFetchingRef.current = true;
       setLoading(true);
       setError(null);
-      const data = await getAllContacts();
-      setContacts(data);
+
+      const data = await getAllContacts(pageNum, 50);
+
+      if (append) {
+        // Append new contacts to existing ones (for infinite scroll)
+        setContacts(prev => [...prev, ...data.contacts]);
+      } else {
+        // Replace contacts (for initial load or refetch)
+        setContacts(data.contacts);
+      }
+
+      setHasMore(data.pagination.has_next);
+      setTotalContacts(data.pagination.total);
+      setPage(pageNum);
     } catch (err) {
       setError("Failed to load contacts");
+      console.error("Error fetching contacts:", err);
     } finally {
       setLoading(false);
+      isFetchingRef.current = false;
     }
   };
 
+  // Load first page on mount
   useEffect(() => {
-    fetchContacts();
+    fetchContacts(1, false);
   }, []);
 
+  // Load more contacts (for infinite scroll)
+  const loadMore = useCallback(async () => {
+    if (!hasMore || loading || isFetchingRef.current) return;
+
+    console.log(`Loading page ${page + 1}...`);
+    await fetchContacts(page + 1, true);
+  }, [hasMore, loading, page]);
+
+  // Refetch from beginning (after add/delete)
   const refetch = async () => {
-    await fetchContacts();
+    setPage(1);
+    setContacts([]); // Clear existing contacts
+    await fetchContacts(1, false);
   };
 
   const addNewContact = async (contact: string, category: string) => {
     try {
       const response = await addContactAPI(contact, category);
       await refetch();
-
       return response;
     } catch (err) {
       setError("Failed to add contact");
@@ -101,6 +139,9 @@ export const ContactsProvider: React.FC<ContactsProviderProps> = ({
         contacts,
         loading,
         error,
+        hasMore,
+        totalContacts,
+        loadMore,
         refetch,
         addNewContact,
         deleteContact,

@@ -82,6 +82,19 @@ export interface DeleteContactResponse {
   message: string;
 }
 
+// NEW: Paginated response interface
+export interface PaginatedContactsResponse {
+  contacts: Contact[];
+  pagination: {
+    page: number;
+    per_page: number;
+    total: number;
+    total_pages: number;
+    has_next: boolean;
+    has_prev: boolean;
+  };
+}
+
 export type ContactsResponse = Contact[] | { message: string; contacts: [] };
 
 // Get full SMS response (stats + history)
@@ -127,29 +140,68 @@ export async function sendSms(
   }
 }
 
-// Get all contacts
-export async function getAllContacts(): Promise<Contact[]> {
+// UPDATED: Get all contacts with pagination
+export async function getAllContacts(
+  page: number = 1,
+  perPage: number = 50
+): Promise<PaginatedContactsResponse> {
   try {
     const response = await apiFetch(
-      "/sms/all/contact",
+      `/sms/all/contact?page=${page}&per_page=${perPage}`,
       { method: "GET" },
       true
     );
 
-    if (
-      response &&
-      typeof response === "object" &&
-      "message" in response &&
-      "contacts" in response
-    ) {
-      return [];
+    // Handle paginated response from backend
+    if (response && typeof response === "object") {
+      // If backend returns paginated response
+      if ("contacts" in response && "pagination" in response) {
+        return response as PaginatedContactsResponse;
+      }
+
+      // If backend returns old format (array), wrap it for compatibility
+      if (Array.isArray(response)) {
+        return {
+          contacts: response as Contact[],
+          pagination: {
+            page: 1,
+            per_page: response.length,
+            total: response.length,
+            total_pages: 1,
+            has_next: false,
+            has_prev: false,
+          },
+        };
+      }
+
+      // Empty state with message
+      if ("message" in response) {
+        return {
+          contacts: [],
+          pagination: {
+            page: 1,
+            per_page: perPage,
+            total: 0,
+            total_pages: 0,
+            has_next: false,
+            has_prev: false,
+          },
+        };
+      }
     }
 
-    if (Array.isArray(response)) {
-      return response as Contact[];
-    }
-
-    return [];
+    // Default empty response
+    return {
+      contacts: [],
+      pagination: {
+        page: 1,
+        per_page: perPage,
+        total: 0,
+        total_pages: 0,
+        has_next: false,
+        has_prev: false,
+      },
+    };
   } catch (error) {
     console.error("Error fetching contacts:", error);
     throw error;
@@ -240,7 +292,7 @@ export async function initializeSMSPayment(
     if (response.paystack_data?.data) {
       return {
         bundle: response.bundle,
-        paystack_data: response.paystack_data.data, // Extract the nested data object
+        paystack_data: response.paystack_data.data,
       };
     }
 
