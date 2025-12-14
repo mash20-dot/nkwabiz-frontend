@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Edit, Trash2, Eye, AlertCircle } from "lucide-react";
+import { Plus, Edit, Trash2, Eye, AlertCircle, MessageSquare, CheckCircle, Clock, XCircle } from "lucide-react";
 import { apiFetch } from "../../utils/api";
 import Button from "../../components/Button";
 
@@ -14,15 +14,25 @@ interface BlogPost {
   published: boolean;
 }
 
+interface SMSStats {
+  total_sms: number;
+  total_delivered: number;
+  total_pending: number;
+  total_failed: number;
+}
+
 const AdminBlogDashboard = () => {
   const navigate = useNavigate();
   const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [smsStats, setSmsStats] = useState<SMSStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [statsLoading, setStatsLoading] = useState(true);
   const [error, setError] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     checkAdminAndFetchPosts();
+    fetchSMSStats();
   }, []);
 
   async function checkAdminAndFetchPosts() {
@@ -44,6 +54,17 @@ const AdminBlogDashboard = () => {
       setError(err.message || "Failed to load blog posts");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function fetchSMSStats() {
+    try {
+      const stats = await apiFetch("/blog/sms/processed", {}, true);
+      setSmsStats(stats);
+    } catch (err: any) {
+      console.error("Failed to load SMS stats:", err);
+    } finally {
+      setStatsLoading(false);
     }
   }
 
@@ -123,6 +144,101 @@ const AdminBlogDashboard = () => {
           </div>
         </div>
 
+        {/* SMS Statistics Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          {/* Total SMS */}
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total SMS</p>
+                {statsLoading ? (
+                  <div className="mt-2 h-8 w-20 bg-gray-200 animate-pulse rounded"></div>
+                ) : (
+                  <p className="mt-2 text-3xl font-bold text-gray-900">
+                    {smsStats?.total_sms.toLocaleString() || 0}
+                  </p>
+                )}
+              </div>
+              <div className="p-3 bg-blue-100 rounded-lg">
+                <MessageSquare className="h-6 w-6 text-blue-600" />
+              </div>
+            </div>
+            <p className="mt-4 text-xs text-gray-500">
+              Platform-wide SMS count
+            </p>
+          </div>
+
+          {/* Delivered SMS */}
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Delivered</p>
+                {statsLoading ? (
+                  <div className="mt-2 h-8 w-20 bg-gray-200 animate-pulse rounded"></div>
+                ) : (
+                  <p className="mt-2 text-3xl font-bold text-green-600">
+                    {smsStats?.total_delivered.toLocaleString() || 0}
+                  </p>
+                )}
+              </div>
+              <div className="p-3 bg-green-100 rounded-lg">
+                <CheckCircle className="h-6 w-6 text-green-600" />
+              </div>
+            </div>
+            {smsStats && smsStats.total_sms > 0 && (
+              <p className="mt-4 text-xs text-gray-500">
+                {((smsStats.total_delivered / smsStats.total_sms) * 100).toFixed(1)}% delivery rate
+              </p>
+            )}
+          </div>
+
+          {/* Pending SMS */}
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Pending</p>
+                {statsLoading ? (
+                  <div className="mt-2 h-8 w-20 bg-gray-200 animate-pulse rounded"></div>
+                ) : (
+                  <p className="mt-2 text-3xl font-bold text-yellow-600">
+                    {smsStats?.total_pending.toLocaleString() || 0}
+                  </p>
+                )}
+              </div>
+              <div className="p-3 bg-yellow-100 rounded-lg">
+                <Clock className="h-6 w-6 text-yellow-600" />
+              </div>
+            </div>
+            <p className="mt-4 text-xs text-gray-500">
+              Awaiting delivery
+            </p>
+          </div>
+
+          {/* Failed SMS */}
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Failed</p>
+                {statsLoading ? (
+                  <div className="mt-2 h-8 w-20 bg-gray-200 animate-pulse rounded"></div>
+                ) : (
+                  <p className="mt-2 text-3xl font-bold text-red-600">
+                    {smsStats?.total_failed.toLocaleString() || 0}
+                  </p>
+                )}
+              </div>
+              <div className="p-3 bg-red-100 rounded-lg">
+                <XCircle className="h-6 w-6 text-red-600" />
+              </div>
+            </div>
+            {smsStats && smsStats.total_sms > 0 && (
+              <p className="mt-4 text-xs text-gray-500">
+                {((smsStats.total_failed / smsStats.total_sms) * 100).toFixed(1)}% failure rate
+              </p>
+            )}
+          </div>
+        </div>
+
         {/* Error Message */}
         {error && (
           <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-6 flex items-center">
@@ -144,6 +260,9 @@ const AdminBlogDashboard = () => {
           </div>
         ) : (
           <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-900">Blog Posts</h2>
+            </div>
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
@@ -186,11 +305,10 @@ const AdminBlogDashboard = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <button
                         onClick={() => togglePublish(post.id, post.published)}
-                        className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                          post.published
+                        className={`px-2 py-1 text-xs font-semibold rounded-full ${post.published
                             ? "bg-green-100 text-green-800 hover:bg-green-200"
                             : "bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
-                        }`}
+                          }`}
                       >
                         {post.published ? "Published" : "Draft"}
                       </button>
