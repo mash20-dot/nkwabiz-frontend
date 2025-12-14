@@ -20,6 +20,8 @@ const ContactsPage = () => {
     totalContacts,
     loadMore,
     getAllCategories,
+    categoryCounts,
+    categories,
     deleteContact
   } = useContacts();
 
@@ -57,8 +59,10 @@ const ContactsPage = () => {
     [loading, hasMore, loadMore]
   );
 
-  const categories = getAllCategories();
+  // Get all category names from API
+  const categoryNames = getAllCategories();
 
+  // Filter contacts based on selected category
   const filteredContacts =
     selectedCategory === "all"
       ? contacts
@@ -177,7 +181,7 @@ const ContactsPage = () => {
             <h1 className="text-2xl font-medium text-gray-900">Contacts</h1>
             <p className="text-sm text-gray-600 font-normal">
               Total: {totalContacts} contacts
-              {categories.length > 0 && ` in ${categories.length} categories`}
+              {categoryNames.length > 0 && ` in ${categoryNames.length} categories`}
               {loading && contacts.length === 0 && " (Loading...)"}
             </p>
           </div>
@@ -205,30 +209,29 @@ const ContactsPage = () => {
           </div>
         </div>
 
-        {/* Category Filter */}
-        {categories.length > 0 && (
+        {/* Category Filter - NOW USES API DATA */}
+        {categoryNames.length > 0 && (
           <div className="w-full">
             <div className="flex gap-2 flex-wrap">
               <button
                 onClick={() => setSelectedCategory("all")}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${selectedCategory === "all"
-                  ? "bg-blue-100 text-blue-600 border border-blue-300"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200"
+                    ? "bg-blue-100 text-blue-600 border border-blue-300"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200"
                   }`}
               >
                 All ({totalContacts})
               </button>
-              {categories.map((category) => (
+              {categoryNames.map((category) => (
                 <div key={category} className="flex items-center gap-1">
                   <button
                     onClick={() => setSelectedCategory(category)}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${selectedCategory === category
-                      ? "bg-blue-100 text-blue-600 border border-blue-300"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200"
+                        ? "bg-blue-100 text-blue-600 border border-blue-300"
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200"
                       }`}
                   >
-                    {category} (
-                    {contacts.filter((c) => c.category === category).length})
+                    {category} ({categoryCounts[category] || 0})
                   </button>
                 </div>
               ))}
