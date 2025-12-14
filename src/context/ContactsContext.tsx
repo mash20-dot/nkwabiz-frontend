@@ -71,6 +71,7 @@ export const ContactsProvider: React.FC<ContactsProviderProps> = ({
 
       const data = await getAllContacts(pageNum, 50);
 
+      // API now returns contacts sorted by newest first, no need to sort here
       if (append) {
         // Append new contacts to existing ones (for infinite scroll)
         setContacts(prev => [...prev, ...data.contacts]);
@@ -96,14 +97,14 @@ export const ContactsProvider: React.FC<ContactsProviderProps> = ({
     try {
       const data = await getContactCategories();
       setCategories(data.categories);
-
+      
       // Convert to counts object
       const counts: Record<string, number> = {};
       data.categories.forEach(cat => {
         counts[cat.category] = cat.count;
       });
       setCategoryCounts(counts);
-
+      
       console.log(`✅ Loaded ${data.categories.length} categories with ${data.total_contacts} total contacts`);
     } catch (err) {
       console.error("Failed to load categories:", err);
@@ -137,41 +138,57 @@ export const ContactsProvider: React.FC<ContactsProviderProps> = ({
     await fetchCategories();
   };
 
-  // FIXED: Optimistically add contact to the top of the list
+  // FIXED: Add contact to the top of the list with proper ID
   const addNewContact = async (contact: string, category: string) => {
     try {
       const response = await addContactAPI(contact, category);
-
+      
+      console.log("API Response:", response); // Debug log
+      
+      // IMPORTANT: Create a properly formed contact object
+      // Handle different possible API response structures
+      const newContact: Contact = {
+        id: response.id,
+        contact: contact, // Use the input contact directly since API might not return it
+        category: category, // Use the input category directly
+      };
+      
+      console.log("New contact object:", newContact); // Debug log
+      
       // Add the new contact to the TOP of the list immediately
-      setContacts(prev => [response, ...prev]);
-
+      setContacts(prev => {
+        const updated = [newContact, ...prev];
+        console.log("Updated contacts array:", updated); // Debug log
+        return updated;
+      });
+      
       // Update total count
       setTotalContacts(prev => prev + 1);
-
+      
       // Optimistically update category counts
       setCategoryCounts(prev => ({
         ...prev,
         [category]: (prev[category] || 0) + 1
       }));
-
+      
       // Check if it's a new category
       const categoryExists = categories.some(cat => cat.category === category);
       if (!categoryExists) {
         setCategories(prev => [...prev, { category, count: 1 }]);
       } else {
         // Update existing category count
-        setCategories(prev =>
-          prev.map(cat =>
-            cat.category === category
+        setCategories(prev => 
+          prev.map(cat => 
+            cat.category === category 
               ? { ...cat, count: cat.count + 1 }
               : cat
           )
         );
       }
-
+      
       // Refresh from API to ensure accuracy
       await fetchCategories();
-
+      
       return response;
     } catch (err) {
       setError("Failed to add contact");
@@ -184,11 +201,11 @@ export const ContactsProvider: React.FC<ContactsProviderProps> = ({
     try {
       // Find the contact to get its category
       const contactToDelete = contacts.find(c => c.id === contactId);
-
+      
       // Remove from UI immediately
       setContacts(prev => prev.filter(c => c.id !== contactId));
       setTotalContacts(prev => prev - 1);
-
+      
       // Optimistically update category counts
       if (contactToDelete) {
         const category = contactToDelete.category;
@@ -196,7 +213,7 @@ export const ContactsProvider: React.FC<ContactsProviderProps> = ({
           ...prev,
           [category]: Math.max((prev[category] || 0) - 1, 0)
         }));
-
+        
         // Update category list
         setCategories(prev => {
           const newCount = (categoryCounts[category] || 0) - 1;
@@ -205,24 +222,24 @@ export const ContactsProvider: React.FC<ContactsProviderProps> = ({
             return prev.filter(cat => cat.category !== category);
           } else {
             // Update count
-            return prev.map(cat =>
-              cat.category === category
+            return prev.map(cat => 
+              cat.category === category 
                 ? { ...cat, count: newCount }
                 : cat
             );
           }
         });
       }
-
+      
       // Then delete from API
       await deleteContactAPI(contactId);
-
+      
       // Refresh from API to ensure accuracy
       await fetchCategories();
     } catch (err) {
       setError("Failed to delete contact");
       console.error("Error deleting contact:", err);
-
+      
       // Revert on error by refetching
       await refetch();
       throw err;
