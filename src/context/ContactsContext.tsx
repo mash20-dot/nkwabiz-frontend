@@ -6,6 +6,7 @@ import React, {
   ReactNode,
   useCallback,
   useRef,
+  useMemo,
 } from "react";
 import {
   getAllContacts,
@@ -30,6 +31,7 @@ interface ContactsContextType {
   deleteContact: (contactId: number) => Promise<void>;
   getContactsByCategory: (category: string) => Contact[];
   getAllCategories: () => string[];
+  categoryCounts: Record<string, number>;
 }
 
 const ContactsContext = createContext<ContactsContextType | undefined>(
@@ -143,10 +145,20 @@ export const ContactsProvider: React.FC<ContactsProviderProps> = ({
     return contacts.filter((contact) => contact.category === category);
   };
 
-  const getAllCategories = () => {
+  // FIXED: Memoize categories to ensure they update when contacts change
+  const getAllCategories = useCallback(() => {
     const categories = contacts.map((contact) => contact.category);
     return Array.from(new Set(categories));
-  };
+  }, [contacts]);
+
+  // FIXED: Calculate category counts dynamically
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    contacts.forEach((contact) => {
+      counts[contact.category] = (counts[contact.category] || 0) + 1;
+    });
+    return counts;
+  }, [contacts]);
 
   return (
     <ContactsContext.Provider
@@ -162,6 +174,7 @@ export const ContactsProvider: React.FC<ContactsProviderProps> = ({
         deleteContact,
         getContactsByCategory,
         getAllCategories,
+        categoryCounts,
       }}
     >
       {children}

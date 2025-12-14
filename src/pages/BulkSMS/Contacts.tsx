@@ -1,5 +1,5 @@
 import { Users, UserPlus, Trash2, Upload } from "lucide-react";
-import { useState, useRef, useCallback, useMemo } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useContacts } from "@/context/ContactsContext";
 import Button from "@/components/Button";
 import { Table, TableCard } from "@/components/application/table/table";
@@ -20,6 +20,7 @@ const ContactsPage = () => {
     totalContacts,
     loadMore,
     getAllCategories,
+    categoryCounts,
     deleteContact
   } = useContacts();
 
@@ -57,18 +58,10 @@ const ContactsPage = () => {
     [loading, hasMore, loadMore]
   );
 
-  // Get all categories with their counts
+  // Get all categories - this will now update when contacts change
   const categories = getAllCategories();
 
-  // Calculate category counts from current contacts
-  const categoryCounts = useMemo(() => {
-    const counts: Record<string, number> = {};
-    contacts.forEach((contact) => {
-      counts[contact.category] = (counts[contact.category] || 0) + 1;
-    });
-    return counts;
-  }, [contacts]);
-
+  // Filter contacts based on selected category
   const filteredContacts =
     selectedCategory === "all"
       ? contacts
@@ -215,7 +208,7 @@ const ContactsPage = () => {
           </div>
         </div>
 
-        {/* Category Filter */}
+        {/* Category Filter - NOW WILL SHOW NEW CATEGORIES */}
         {categories.length > 0 && (
           <div className="w-full">
             <div className="flex gap-2 flex-wrap">
