@@ -624,7 +624,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
             ) : (
               <div className="p-3 bg-gray-50 border border-gray-200 rounded-md">
                 <p className="text-xs text-gray-600">
-                  💡 No saved contacts yet. You can add contacts from the Contacts page.
+                  No saved contacts yet. You can add contacts from the Contacts page.
                 </p>
               </div>
             )}
@@ -682,7 +682,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
                 )}
                 {exceedsMaxRecipients && (
                   <p className="text-xs text-red-700 font-medium mt-2 flex items-start gap-1">
-                    <span className="text-red-600">⚠️</span>
+                    <span className="text-red-600"></span>
                     <span>
                       Maximum {MAX_RECIPIENTS_PER_BULK} recipients allowed. Please remove {recipientCount - MAX_RECIPIENTS_PER_BULK} recipient{recipientCount - MAX_RECIPIENTS_PER_BULK !== 1 ? "s" : ""}.
                     </span>
@@ -705,7 +705,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
             {exceedsMaxRecipients && (
               <div className="p-2 bg-red-50 border border-red-200 rounded-md">
                 <p className="text-xs text-red-700 font-medium">
-                  ⚠️ Exceeds maximum of {MAX_RECIPIENTS_PER_BULK} recipients
+                  Exceeds maximum of {MAX_RECIPIENTS_PER_BULK} recipients
                 </p>
               </div>
             )}
