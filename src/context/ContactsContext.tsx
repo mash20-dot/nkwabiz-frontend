@@ -137,13 +137,29 @@ export const ContactsProvider: React.FC<ContactsProviderProps> = ({
     await fetchCategories();
   };
 
-  // FIXED: Optimistically add contact to the top of the list
+  // FIXED: Add contact to the top of the list with proper ID
   const addNewContact = async (contact: string, category: string) => {
     try {
       const response = await addContactAPI(contact, category);
 
+      console.log("API Response:", response); // Debug log
+
+      // IMPORTANT: Create a properly formed contact object
+      // Handle different possible API response structures
+      const newContact: Contact = {
+        id: response.id,
+        contact: contact, // Use the input contact directly since API might not return it
+        category: category, // Use the input category directly
+      };
+
+      console.log("New contact object:", newContact); // Debug log
+
       // Add the new contact to the TOP of the list immediately
-      setContacts(prev => [response, ...prev]);
+      setContacts(prev => {
+        const updated = [newContact, ...prev];
+        console.log("Updated contacts array:", updated); // Debug log
+        return updated;
+      });
 
       // Update total count
       setTotalContacts(prev => prev + 1);

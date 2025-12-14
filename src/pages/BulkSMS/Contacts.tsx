@@ -66,7 +66,14 @@ const ContactsPage = () => {
   const filteredContacts =
     selectedCategory === "all"
       ? contacts
-      : contacts.filter((c) => c.category === selectedCategory);
+      : contacts.filter((c) => {
+        console.log(`Checking contact: ${c.contact}, category: "${c.category}" === "${selectedCategory}"?`, c.category === selectedCategory);
+        return c.category === selectedCategory;
+      });
+
+  console.log("Selected category:", selectedCategory);
+  console.log("All contacts:", contacts);
+  console.log("Filtered contacts:", filteredContacts);
 
   const handleCloseModal = () => {
     setShowAddContactModal(false);
