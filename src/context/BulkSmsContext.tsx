@@ -9,15 +9,20 @@ import React, {
 } from "react";
 import {
   getSmsHistory,
-  SmsMessage,
+  SmsHistory,
 } from "@/utils/BulkSMS/smsService";
 
 interface SmsContextType {
-  messages: SmsMessage[];
+  messages: SmsHistory[];
   loading: boolean;
   error: string | null;
   hasMore: boolean;
   totalMessages: number;
+  stats: {
+    total_delivered: number;
+    total_failed: number;
+    total_pending: number;
+  };
   loadMore: () => Promise<void>;
   refetch: () => Promise<void>;
 }
@@ -29,16 +34,20 @@ interface SmsProviderProps {
 }
 
 export const SmsProvider: React.FC<SmsProviderProps> = ({ children }) => {
-  const [messages, setMessages] = useState<SmsMessage[]>([]);
+  const [messages, setMessages] = useState<SmsHistory[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [totalMessages, setTotalMessages] = useState(0);
   const [page, setPage] = useState(1);
+  const [stats, setStats] = useState({
+    total_delivered: 0,
+    total_failed: 0,
+    total_pending: 0,
+  });
   const isFetchingRef = useRef(false);
 
   const fetchMessages = async (pageNum: number, append: boolean = false) => {
-    // Prevent duplicate requests
     if (isFetchingRef.current) return;
 
     try {
@@ -46,19 +55,21 @@ export const SmsProvider: React.FC<SmsProviderProps> = ({ children }) => {
       setLoading(true);
       setError(null);
 
-      // Assuming getSmsHistory accepts page and per_page parameters
       const data = await getSmsHistory(pageNum, 50);
 
       if (append) {
-        // Append new messages to existing ones (for infinite scroll)
         setMessages(prev => [...prev, ...data.history]);
       } else {
-        // Replace messages (for initial load or refetch)
         setMessages(data.history);
       }
 
       setHasMore(data.pagination.has_next);
       setTotalMessages(data.pagination.total);
+      setStats({
+        total_delivered: data.total_delivered,
+        total_failed: data.total_failed,
+        total_pending: data.total_pending,
+      });
       setPage(pageNum);
     } catch (err) {
       setError("Failed to load SMS history");
@@ -69,12 +80,10 @@ export const SmsProvider: React.FC<SmsProviderProps> = ({ children }) => {
     }
   };
 
-  // Load first page on mount
   useEffect(() => {
     fetchMessages(1, false);
   }, []);
 
-  // Load more messages (for infinite scroll)
   const loadMore = useCallback(async () => {
     if (!hasMore || loading || isFetchingRef.current) return;
 
@@ -82,12 +91,11 @@ export const SmsProvider: React.FC<SmsProviderProps> = ({ children }) => {
     await fetchMessages(page + 1, true);
   }, [hasMore, loading, page]);
 
-  // Refetch from beginning (after sending new SMS)
-  const refetch = async () => {
+  const refetch = useCallback(async () => {
     setPage(1);
-    setMessages([]); // Clear existing messages
+    setMessages([]);
     await fetchMessages(1, false);
-  };
+  }, []);
 
   return (
     <SmsContext.Provider
@@ -97,6 +105,7 @@ export const SmsProvider: React.FC<SmsProviderProps> = ({ children }) => {
         error,
         hasMore,
         totalMessages,
+        stats,
         loadMore,
         refetch,
       }}

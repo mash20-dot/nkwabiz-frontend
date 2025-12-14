@@ -25,9 +25,26 @@ export interface SmsHistoryResponse {
   history: SmsHistory[];
 }
 
+// NEW: Paginated SMS History Response
+export interface PaginatedSmsHistoryResponse {
+  history: SmsHistory[];
+  pagination: {
+    page: number;
+    per_page: number;
+    total: number;
+    total_pages: number;
+    has_next: boolean;
+    has_prev: boolean;
+  };
+  total_sms: number;
+  total_delivered: number;
+  total_failed: number;
+  total_pending: number;
+}
+
 export interface SendSmsRequest {
   recipients?: string[];
-  category?: string;  // NEW: Send to entire category
+  category?: string;
   message: string;
   sender: string;
 }
@@ -47,7 +64,6 @@ export interface Contact {
   category: string;
 }
 
-// NEW: Category info interface
 export interface CategoryInfo {
   category: string;
   count: number;
@@ -96,7 +112,6 @@ export interface DeleteContactResponse {
   message: string;
 }
 
-// NEW: Paginated response interface
 export interface PaginatedContactsResponse {
   contacts: Contact[];
   pagination: {
@@ -111,7 +126,7 @@ export interface PaginatedContactsResponse {
 
 export type ContactsResponse = Contact[] | { message: string; contacts: [] };
 
-// Get full SMS response (stats + history)
+// Get full SMS response (stats + history) - NO PAGINATION
 export async function getSmsHistoryFull(): Promise<SmsHistoryResponse> {
   try {
     const response = await apiFetch("/sms/all/sms", { method: "GET" }, true);
@@ -127,7 +142,51 @@ export async function getSmsHistoryFull(): Promise<SmsHistoryResponse> {
   }
 }
 
-// NEW: Get categories with counts (INSTANT - for display)
+// NEW: Get SMS history with pagination
+export async function getSmsHistory(
+  page: number = 1,
+  perPage: number = 50
+): Promise<PaginatedSmsHistoryResponse> {
+  try {
+    const response = await apiFetch(
+      `/sms/all/sms?page=${page}&per_page=${perPage}`,
+      { method: "GET" },
+      true
+    );
+
+    if (response && typeof response === "object" && "history" in response) {
+      // If backend returns paginated response
+      if ("pagination" in response) {
+        return response as PaginatedSmsHistoryResponse;
+      }
+
+      // If backend returns non-paginated response, create pagination wrapper
+      const historyResponse = response as SmsHistoryResponse;
+      return {
+        history: historyResponse.history,
+        total_sms: historyResponse.total_sms,
+        total_delivered: historyResponse.total_delivered,
+        total_failed: historyResponse.total_failed,
+        total_pending: historyResponse.total_pending,
+        pagination: {
+          page: 1,
+          per_page: historyResponse.history.length,
+          total: historyResponse.total_sms,
+          total_pages: 1,
+          has_next: false,
+          has_prev: false,
+        },
+      };
+    }
+
+    throw new Error("Unexpected API response structure");
+  } catch (error) {
+    console.error("Error fetching SMS history:", error);
+    throw error;
+  }
+}
+
+// Get categories with counts (INSTANT - for display)
 export async function getContactCategories(): Promise<CategoriesResponse> {
   try {
     const response = await apiFetch(
@@ -143,12 +202,12 @@ export async function getContactCategories(): Promise<CategoriesResponse> {
   }
 }
 
-// UPDATED: Send SMS with category support
+// Send SMS with category support
 export async function sendSms(
   recipients: string[] | string,
   message: string,
   sender: string,
-  category?: string  // NEW: optional category parameter
+  category?: string
 ): Promise<SendSmsResponse> {
   try {
     const payload: SendSmsRequest = {
@@ -156,11 +215,9 @@ export async function sendSms(
       sender,
     };
 
-    // If category is provided, send to that category
     if (category) {
       payload.category = category;
     } else {
-      // Otherwise, use recipients list
       payload.recipients = Array.isArray(recipients) ? recipients : [recipients];
     }
 
@@ -180,7 +237,7 @@ export async function sendSms(
   }
 }
 
-// Get contacts with pagination (for viewing in ContactsPage)
+// Get contacts with pagination
 export async function getAllContacts(
   page: number = 1,
   perPage: number = 50,
