@@ -3,9 +3,8 @@ import Button from "@/components/Button";
 import classNames from "classnames";
 import { TextArea } from "@/components/base/textarea/textarea";
 import { useState, useRef, useEffect } from "react";
-import { sendSms } from "@/utils/BulkSMS/smsService";
+import { sendSms, getContactCategories, CategoryInfo } from "@/utils/BulkSMS/smsService";
 import { useSms } from "@/context/BulkSmsContext";
-import { useContacts } from "@/context/ContactsContext";
 import { useAuthStore } from "@/store/useAuthStore";
 import { apiFetch } from "@/utils/api";
 import { toast } from "sonner";
@@ -30,14 +29,12 @@ const Summary = ({
   return (
     <div className={className ? style : "flex flex-row w-full justify-between"}>
       <span
-        className={`font-normal text-sm text-start ${textColor ? textColor : "text-gray-600"
-          }`}
+        className={`font-normal text-sm text-start ${textColor ? textColor : "text-gray-600"}`}
       >
         {title}
       </span>
       <span
-        className={`text-sm font-semibold text-end ${textColor ? textColor : "text-gray-800"
-          }`}
+        className={`text-sm font-semibold text-end ${textColor ? textColor : "text-gray-800"}`}
       >
         {value}
       </span>
@@ -46,8 +43,7 @@ const Summary = ({
 };
 
 const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
-  const { refetch, smsData } = useSms();
-  const { contacts, getAllCategories, getContactsByCategory } = useContacts();
+  const { refetch } = useSms();
   const { smsBalance, setSmsBalance } = useAuthStore();
 
   const [message, setMessage] = useState("");
@@ -58,18 +54,44 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
   const [isSenderIdDropdownOpen, setIsSenderIdDropdownOpen] = useState(false);
   const [sending, setSending] = useState(false);
 
+  // NEW: Category state
+  const [categories, setCategories] = useState<CategoryInfo[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [totalContacts, setTotalContacts] = useState(0);
+
   const dropdownRef = useRef<HTMLDivElement>(null);
   const senderIdDropdownRef = useRef<HTMLDivElement>(null);
 
   const COST_PER_SMS = 0.04;
-  const MAX_RECIPIENTS_PER_BULK = 80; // Maximum recipients allowed per bulk SMS
+  const MAX_RECIPIENTS_PER_BULK = 80;
   const STORAGE_KEY = 'sms_sender_ids';
   const currentBalance = smsBalance || 0;
-  const categories = getAllCategories();
 
-  // Load previous sender IDs from localStorage
   const [previousSenderIds, setPreviousSenderIds] = useState<string[]>([]);
 
+  // NEW: Load categories on mount (INSTANT!)
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        setCategoriesLoading(true);
+        const data = await getContactCategories();
+        setCategories(data.categories);
+        setTotalContacts(data.total_contacts);
+        console.log(`✅ Loaded ${data.categories.length} categories with ${data.total_contacts} total contacts`);
+      } catch (error) {
+        console.error("Failed to load categories:", error);
+        toast.error("Failed to load contact categories");
+      } finally {
+        setCategoriesLoading(false);
+      }
+    };
+
+    if (showForm) {
+      loadCategories();
+    }
+  }, [showForm]);
+
+  // Load previous sender IDs from localStorage
   useEffect(() => {
     const loadSenderIds = () => {
       try {
@@ -77,7 +99,6 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
         if (stored) {
           const ids = JSON.parse(stored);
           setPreviousSenderIds(ids);
-          // Set the most recent sender ID as default
           if (ids.length > 0 && !senderId) {
             setSenderId(ids[0]);
           }
@@ -110,12 +131,10 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Check if category is selected
   const isCategorySelected = (category: string) => {
     return selectedCategories.includes(category);
   };
 
-  // Toggle category selection
   const toggleCategorySelection = (category: string) => {
     if (isCategorySelected(category)) {
       setSelectedCategories(selectedCategories.filter((c) => c !== category));
@@ -124,20 +143,18 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
     }
   };
 
-  // Remove selected category tag
   const removeCategory = (category: string) => {
     setSelectedCategories(selectedCategories.filter((c) => c !== category));
   };
 
-  // Get all contacts from selected categories
-  const getContactsFromSelectedCategories = (): string[] => {
-    const categoryContacts = selectedCategories.flatMap((category) =>
-      getContactsByCategory(category).map((c) => c.contact)
-    );
-    return [...new Set(categoryContacts)];
+  // NEW: Calculate total contacts from selected categories
+  const getCategoryContactCount = (): number => {
+    return selectedCategories.reduce((total, category) => {
+      const cat = categories.find(c => c.category === category);
+      return total + (cat?.count || 0);
+    }, 0);
   };
 
-  // Parse manual recipients from textarea
   const parseRecipients = (input: string): string[] => {
     if (!input.trim()) return [];
 
@@ -149,33 +166,29 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
     return [...new Set(recipients)];
   };
 
-  // Get all recipients (selected categories + manual)
-  const categoryContactNumbers = getContactsFromSelectedCategories();
+  const categoryContactCount = getCategoryContactCount();
   const manualNumbers = parseRecipients(recipientsInput);
   const allRecipients = [
-    ...new Set([...categoryContactNumbers, ...manualNumbers]),
+    ...new Set([...manualNumbers]),
   ];
 
-  const recipientCount = allRecipients.length;
+  // Total recipients = category count + manual numbers
+  const recipientCount = categoryContactCount + manualNumbers.length;
   const estimatedCost = recipientCount * COST_PER_SMS;
   const hasEnoughBalance = currentBalance >= recipientCount;
   const exceedsMaxRecipients = recipientCount > MAX_RECIPIENTS_PER_BULK;
 
-  // Validate phone numbers
   const validateNumber = (number: string): boolean => {
     const cleaned = number.replace(/[\s-]/g, "");
     const ghanaPattern = /^(0[2-5][0-9]{8}|233[2-5][0-9]{8})$/;
     return ghanaPattern.test(cleaned);
   };
 
-  // Validate Sender ID
   const validateSenderId = (id: string): boolean => {
-    // Sender ID should be alphanumeric, 3-11 characters
     return /^[a-zA-Z0-9]{3,11}$/.test(id);
   };
 
   const handleSend = async () => {
-    // Validation
     if (!senderId.trim()) {
       toast.error("Please enter a Sender ID", {
         duration: 5000,
@@ -200,36 +213,36 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
       return;
     }
 
-    if (allRecipients.length === 0) {
-      toast.error("Please add at least one recipient", {
+    if (recipientCount === 0) {
+      toast.error("Please select at least one category or add recipients", {
         duration: 5000,
         closeButton: true,
       });
       return;
     }
 
-    // Check if recipients exceed maximum
-    if (allRecipients.length > MAX_RECIPIENTS_PER_BULK) {
+    if (recipientCount > MAX_RECIPIENTS_PER_BULK) {
       toast.error(`Maximum ${MAX_RECIPIENTS_PER_BULK} recipients allowed per bulk SMS`, {
-        description: `You have ${allRecipients.length} recipients. Please reduce to ${MAX_RECIPIENTS_PER_BULK} or fewer.`,
+        description: `You have ${recipientCount} recipients. Please reduce to ${MAX_RECIPIENTS_PER_BULK} or fewer.`,
         duration: 7000,
         closeButton: true,
       });
       return;
     }
 
-    // Validate all recipients are Ghana numbers
-    const invalidNumbers = allRecipients.filter((num) => !validateNumber(num));
-    if (invalidNumbers.length > 0) {
-      toast.error(
-        `Invalid Ghana phone numbers: ${invalidNumbers.slice(0, 3).join(", ")}${invalidNumbers.length > 3 ? "..." : ""
-        }`,
-        {
-          duration: 7000,
-          closeButton: true,
-        }
-      );
-      return;
+    // Validate manual recipients
+    if (manualNumbers.length > 0) {
+      const invalidNumbers = manualNumbers.filter((num) => !validateNumber(num));
+      if (invalidNumbers.length > 0) {
+        toast.error(
+          `Invalid Ghana phone numbers: ${invalidNumbers.slice(0, 3).join(", ")}${invalidNumbers.length > 3 ? "..." : ""}`,
+          {
+            duration: 7000,
+            closeButton: true,
+          }
+        );
+        return;
+      }
     }
 
     if (!hasEnoughBalance) {
@@ -246,27 +259,48 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
     try {
       setSending(true);
 
-      const response = await sendSms(allRecipients, message, senderId);
+      let response;
 
-      // Save sender ID to localStorage if it's new or move to front if exists
+      // NEW: If categories are selected, send to entire categories
+      if (selectedCategories.length > 0 && manualNumbers.length === 0) {
+        // Send to categories only
+        console.log(`📤 Sending to ${selectedCategories.length} categories: ${selectedCategories.join(", ")}`);
+
+        // Send to each category
+        for (const category of selectedCategories) {
+          const catResponse = await sendSms([], message, senderId, category);
+          response = catResponse; // Keep last response for display
+          console.log(`✅ Sent to category "${category}": ${catResponse.queued} messages queued`);
+        }
+      } else if (selectedCategories.length > 0 && manualNumbers.length > 0) {
+        // Mixed: categories + manual numbers
+        // First send to categories
+        for (const category of selectedCategories) {
+          await sendSms([], message, senderId, category);
+        }
+        // Then send to manual numbers
+        response = await sendSms(manualNumbers, message, senderId);
+      } else {
+        // Manual numbers only
+        response = await sendSms(manualNumbers, message, senderId);
+      }
+
+      // Save sender ID
       const trimmedSenderId = senderId.trim();
       const updatedIds = [
         trimmedSenderId,
         ...previousSenderIds.filter(id => id !== trimmedSenderId)
-      ].slice(0, 10); // Keep last 10
+      ].slice(0, 10);
 
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedIds));
         setPreviousSenderIds(updatedIds);
-        console.log('Sender ID saved successfully:', trimmedSenderId);
       } catch (error) {
         console.error('Failed to save sender ID:', error);
       }
 
-      // Show success toast with response details from backend
       toast.success(
-        `Successfully queued ${response?.queued || recipientCount} SMS message${(response?.queued || recipientCount) > 1 ? "s" : ""
-        }!`,
+        `Successfully queued ${recipientCount} SMS message${recipientCount > 1 ? "s" : ""}!`,
         {
           description: response?.message || "Messages are being sent",
           duration: Infinity,
@@ -274,29 +308,24 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
         }
       );
 
-      // Optionally show failed count if any
       if (response?.failed && response.failed > 0) {
         toast.warning(
-          `${response.failed} message${response.failed > 1 ? "s" : ""
-          } failed to queue`,
+          `${response.failed} message${response.failed > 1 ? "s" : ""} failed to queue`,
           {
-            description:
-              response?.errors?.join(", ") || "Some messages could not be sent",
+            description: response?.errors?.join(", ") || "Some messages could not be sent",
             duration: Infinity,
             closeButton: true,
           }
         );
       }
 
-      // Reset form (keep sender ID for convenience)
+      // Reset form
       setMessage("");
       setRecipientsInput("");
       setSelectedCategories([]);
 
-      // Refresh SMS data
       await refetch();
 
-      // Refresh SMS balance
       try {
         const userData = await apiFetch("/security/user-info", {}, true);
         if (userData.sms_balance !== undefined) {
@@ -306,7 +335,6 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
         console.error("Failed to refresh balance:", error);
       }
     } catch (err: any) {
-      // Show detailed error from backend
       const errorMessage =
         err.response?.data?.message ||
         err.response?.data?.error ||
@@ -392,7 +420,6 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
                 )}
               </div>
 
-              {/* Dropdown for previous sender IDs */}
               {isSenderIdDropdownOpen && previousSenderIds.length > 0 && (
                 <div className="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
                   <div className="py-1">
@@ -420,11 +447,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
                         </span>
                         {senderId === id && (
                           <div className="flex items-center justify-center w-5 h-5 bg-blue-600 rounded-full text-white">
-                            <svg
-                              className="w-3 h-3"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                            >
+                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                               <path
                                 fillRule="evenodd"
                                 d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -480,13 +503,17 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
               </p>
             </div>
 
-            {/* Category Selection with Tags Inside */}
-            {contacts.length > 0 && categories.length > 0 ? (
+            {/* Category Selection */}
+            {categoriesLoading ? (
+              <div className="p-4 bg-gray-50 border border-gray-200 rounded-md">
+                <p className="text-sm text-gray-600">Loading categories...</p>
+              </div>
+            ) : categories.length > 0 ? (
               <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-2 mb-1">
                   <Users className="h-4 w-4 text-gray-600" />
                   <p className="text-sm font-medium text-gray-800">
-                    Select Contact Categories ({categories.length} available)
+                    Select Contact Categories ({categories.length} available, {totalContacts} total contacts)
                   </p>
                 </div>
 
@@ -501,10 +528,10 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
                           : "border-gray-200 hover:border-gray-300"
                       )}
                     >
-                      {/* Selected Category Tags */}
                       {selectedCategories.length > 0 ? (
                         selectedCategories.map((category) => {
-                          const count = getContactsByCategory(category).length;
+                          const cat = categories.find(c => c.category === category);
+                          const count = cat?.count || 0;
                           return (
                             <span
                               key={category}
@@ -533,7 +560,6 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
                         </span>
                       )}
 
-                      {/* Chevron Icon */}
                       <ChevronDown
                         className={classNames(
                           "ml-auto h-4 w-4 text-gray-400 transition-transform",
@@ -542,21 +568,16 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
                       />
                     </div>
 
-                    {/* Dropdown Menu */}
                     {isDropdownOpen && (
                       <div className="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg max-h-64 overflow-y-auto">
                         {categories.length > 0 ? (
                           <div className="py-1">
-                            {categories.map((category) => {
-                              const isSelected = isCategorySelected(category);
-                              const count =
-                                getContactsByCategory(category).length;
+                            {categories.map((cat) => {
+                              const isSelected = isCategorySelected(cat.category);
                               return (
                                 <div
-                                  key={category}
-                                  onClick={() =>
-                                    toggleCategorySelection(category)
-                                  }
+                                  key={cat.category}
+                                  onClick={() => toggleCategorySelection(cat.category)}
                                   className={classNames(
                                     "px-3 py-2 cursor-pointer hover:bg-gray-50 flex items-center justify-between",
                                     isSelected && "bg-blue-50"
@@ -564,19 +585,15 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
                                 >
                                   <div className="flex-1">
                                     <p className="text-sm font-medium text-gray-900">
-                                      {category}
+                                      {cat.category}
                                     </p>
                                     <p className="text-xs text-gray-500">
-                                      {count} contact{count !== 1 ? "s" : ""}
+                                      {cat.count} contact{cat.count !== 1 ? "s" : ""}
                                     </p>
                                   </div>
                                   {isSelected && (
                                     <div className="flex items-center justify-center w-5 h-5 bg-blue-600 rounded text-white">
-                                      <svg
-                                        className="w-3 h-3"
-                                        fill="currentColor"
-                                        viewBox="0 0 20 20"
-                                      >
+                                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                                         <path
                                           fillRule="evenodd"
                                           d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -600,18 +617,14 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
                 </div>
 
                 <p className="text-xs text-gray-500">
-                  {selectedCategories.length} categor
-                  {selectedCategories.length !== 1 ? "ies" : "y"} selected
-                  {categoryContactNumbers.length > 0 &&
-                    ` • ${categoryContactNumbers.length} contact${categoryContactNumbers.length !== 1 ? "s" : ""
-                    }`}
+                  {selectedCategories.length} categor{selectedCategories.length !== 1 ? "ies" : "y"} selected
+                  {categoryContactCount > 0 && ` • ${categoryContactCount} contact${categoryContactCount !== 1 ? "s" : ""}`}
                 </p>
               </div>
             ) : (
               <div className="p-3 bg-gray-50 border border-gray-200 rounded-md">
                 <p className="text-xs text-gray-600">
-                  💡 No saved contacts yet. You can add contacts from the
-                  Contacts page.
+                  💡 No saved contacts yet. You can add contacts from the Contacts page.
                 </p>
               </div>
             )}
@@ -632,8 +645,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
               </p>
               {manualNumbers.length > 0 && (
                 <p className="text-xs text-gray-700 font-medium">
-                  {manualNumbers.length} manual recipient
-                  {manualNumbers.length !== 1 ? "s" : ""} entered
+                  {manualNumbers.length} manual recipient{manualNumbers.length !== 1 ? "s" : ""} entered
                 </p>
               )}
             </div>
@@ -650,19 +662,24 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
                   "text-sm font-semibold",
                   exceedsMaxRecipients ? "text-red-800" : "text-blue-800"
                 )}>
-                  Total: {recipientCount} recipient
-                  {recipientCount !== 1 ? "s" : ""}
+                  Total: {recipientCount} recipient{recipientCount !== 1 ? "s" : ""}
                 </p>
-                {categoryContactNumbers.length > 0 &&
-                  manualNumbers.length > 0 && (
-                    <p className={classNames(
-                      "text-xs mt-1",
-                      exceedsMaxRecipients ? "text-red-600" : "text-blue-600"
-                    )}>
-                      ({categoryContactNumbers.length} from categories +{" "}
-                      {manualNumbers.length} manual)
-                    </p>
-                  )}
+                {categoryContactCount > 0 && manualNumbers.length > 0 && (
+                  <p className={classNames(
+                    "text-xs mt-1",
+                    exceedsMaxRecipients ? "text-red-600" : "text-blue-600"
+                  )}>
+                    ({categoryContactCount} from categories + {manualNumbers.length} manual)
+                  </p>
+                )}
+                {categoryContactCount > 0 && manualNumbers.length === 0 && (
+                  <p className={classNames(
+                    "text-xs mt-1",
+                    exceedsMaxRecipients ? "text-red-600" : "text-blue-600"
+                  )}>
+                    (All from {selectedCategories.length} selected categor{selectedCategories.length !== 1 ? "ies" : "y"})
+                  </p>
+                )}
                 {exceedsMaxRecipients && (
                   <p className="text-xs text-red-700 font-medium mt-2 flex items-start gap-1">
                     <span className="text-red-600">⚠️</span>

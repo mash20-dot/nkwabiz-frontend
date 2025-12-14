@@ -26,8 +26,10 @@ export interface SmsHistoryResponse {
 }
 
 export interface SendSmsRequest {
-  recipients: string[];
+  recipients?: string[];
+  category?: string;  // NEW: Send to entire category
   message: string;
+  sender: string;
 }
 
 export interface SendSmsResponse {
@@ -35,6 +37,7 @@ export interface SendSmsResponse {
   queued: number;
   failed?: number;
   errors?: string[];
+  category?: string;
 }
 
 export interface Contact {
@@ -42,6 +45,17 @@ export interface Contact {
   id: number;
   contact: string;
   category: string;
+}
+
+// NEW: Category info interface
+export interface CategoryInfo {
+  category: string;
+  count: number;
+}
+
+export interface CategoriesResponse {
+  total_contacts: number;
+  categories: CategoryInfo[];
 }
 
 export interface AddContactRequest {
@@ -113,22 +127,48 @@ export async function getSmsHistoryFull(): Promise<SmsHistoryResponse> {
   }
 }
 
-// Send SMS to multiple recipients
+// NEW: Get categories with counts (INSTANT - for display)
+export async function getContactCategories(): Promise<CategoriesResponse> {
+  try {
+    const response = await apiFetch(
+      "/sms/contact/categories",
+      { method: "GET" },
+      true
+    );
+
+    return response as CategoriesResponse;
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    throw error;
+  }
+}
+
+// UPDATED: Send SMS with category support
 export async function sendSms(
-  recipients: string[],
+  recipients: string[] | string,
   message: string,
-  sender: string
+  sender: string,
+  category?: string  // NEW: optional category parameter
 ): Promise<SendSmsResponse> {
   try {
+    const payload: SendSmsRequest = {
+      message,
+      sender,
+    };
+
+    // If category is provided, send to that category
+    if (category) {
+      payload.category = category;
+    } else {
+      // Otherwise, use recipients list
+      payload.recipients = Array.isArray(recipients) ? recipients : [recipients];
+    }
+
     const response = await apiFetch(
       "/sms/api/sms/send",
       {
         method: "POST",
-        body: JSON.stringify({
-          recipients,
-          message,
-          sender,
-        }),
+        body: JSON.stringify(payload),
       },
       true
     );
@@ -140,26 +180,26 @@ export async function sendSms(
   }
 }
 
-// UPDATED: Get all contacts with pagination
+// Get contacts with pagination (for viewing in ContactsPage)
 export async function getAllContacts(
   page: number = 1,
-  perPage: number = 50
+  perPage: number = 50,
+  category?: string
 ): Promise<PaginatedContactsResponse> {
   try {
-    const response = await apiFetch(
-      `/sms/all/contact?page=${page}&per_page=${perPage}`,
-      { method: "GET" },
-      true
-    );
+    let url = `/sms/all/contact?page=${page}&per_page=${perPage}`;
 
-    // Handle paginated response from backend
+    if (category && category !== 'all') {
+      url += `&category=${encodeURIComponent(category)}`;
+    }
+
+    const response = await apiFetch(url, { method: "GET" }, true);
+
     if (response && typeof response === "object") {
-      // If backend returns paginated response
       if ("contacts" in response && "pagination" in response) {
         return response as PaginatedContactsResponse;
       }
 
-      // If backend returns old format (array), wrap it for compatibility
       if (Array.isArray(response)) {
         return {
           contacts: response as Contact[],
@@ -174,7 +214,6 @@ export async function getAllContacts(
         };
       }
 
-      // Empty state with message
       if ("message" in response) {
         return {
           contacts: [],
@@ -190,7 +229,6 @@ export async function getAllContacts(
       }
     }
 
-    // Default empty response
     return {
       contacts: [],
       pagination: {
@@ -288,7 +326,6 @@ export async function initializeSMSPayment(
 
     console.log("Raw backend response:", response);
 
-    // Extract the nested data
     if (response.paystack_data?.data) {
       return {
         bundle: response.bundle,
@@ -296,7 +333,6 @@ export async function initializeSMSPayment(
       };
     }
 
-    // If structure is different, return as is
     return response as PaystackInitializeResponse;
   } catch (error) {
     console.error("Error initializing payment:", error);
