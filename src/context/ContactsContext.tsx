@@ -71,12 +71,16 @@ export const ContactsProvider: React.FC<ContactsProviderProps> = ({
 
       const data = await getAllContacts(pageNum, 50);
 
+      // Sort contacts by ID in descending order (newest first)
+      // Assuming newer contacts have higher IDs
+      const sortedContacts = [...data.contacts].sort((a, b) => b.id - a.id);
+
       if (append) {
         // Append new contacts to existing ones (for infinite scroll)
-        setContacts(prev => [...prev, ...data.contacts]);
+        setContacts(prev => [...prev, ...sortedContacts]);
       } else {
         // Replace contacts (for initial load or refetch)
-        setContacts(data.contacts);
+        setContacts(sortedContacts);
       }
 
       setHasMore(data.pagination.has_next);
