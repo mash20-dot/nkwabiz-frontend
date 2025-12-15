@@ -53,7 +53,10 @@ const Sidebar: React.FC<SidebarProps> = ({
     }
   }
 
-  // Reports dropdown item
+  // Check if we're in the SMS section (only show Reports in SMS)
+  const isSMSSection = location.pathname.startsWith("/sms");
+
+  // Reports dropdown item (only for SMS section)
   const reportsNavItem: NavigationProps = {
     name: "Reports",
     href: "#",
@@ -67,20 +70,36 @@ const Sidebar: React.FC<SidebarProps> = ({
     ],
   };
 
-  // Add Reports and Blog Admin to navigation
-  const allNavigation: NavigationProps[] = [
-    ...navigation,
-    reportsNavItem,
-    ...(isAdmin
+  // Add Reports before Settings (only in SMS section), and Blog Admin at the end
+  const settingsIndex = navigation.findIndex(item => item.name === "Settings");
+  const allNavigation: NavigationProps[] =
+    settingsIndex !== -1 && isSMSSection
       ? [
-        {
-          name: "Blog Admin",
-          href: "/admin/blog",
-          icon: FileText,
-        },
+        ...navigation.slice(0, settingsIndex), // Items before Settings
+        reportsNavItem,                         // Reports (only in SMS)
+        ...navigation.slice(settingsIndex),     // Settings and after
+        ...(isAdmin
+          ? [
+            {
+              name: "Blog Admin",
+              href: "/admin/blog",
+              icon: FileText,
+            },
+          ]
+          : []),
       ]
-      : []),
-  ];
+      : [
+        ...navigation,
+        ...(isAdmin
+          ? [
+            {
+              name: "Blog Admin",
+              href: "/admin/blog",
+              icon: FileText,
+            },
+          ]
+          : []),
+      ];
 
   const NavItem = ({ item, isMobile = false }: { item: NavigationProps; isMobile?: boolean }) => {
     const hasChildren = item.children && item.children.length > 0;
@@ -206,8 +225,8 @@ const Sidebar: React.FC<SidebarProps> = ({
         {/* Backdrop */}
         <div
           className={`fixed inset-0 bg-gray-600 ${sidebarOpen
-              ? "opacity-75 transition-opacity ease-linear duration-300"
-              : "opacity-0 transition-opacity ease-linear duration-300"
+            ? "opacity-75 transition-opacity ease-linear duration-300"
+            : "opacity-0 transition-opacity ease-linear duration-300"
             }`}
           onClick={() => setSidebarOpen(false)}
         />
