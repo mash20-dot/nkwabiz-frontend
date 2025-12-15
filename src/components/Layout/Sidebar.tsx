@@ -106,12 +106,17 @@ const Sidebar: React.FC<SidebarProps> = ({
                 : "text-blue-100 hover:bg-blue-700"
               }`}
           >
-            <div className="flex items-center">
+            <div className="flex items-center gap-2">
               <item.icon
-                className="mr-2 h-4 w-4 text-blue-200"
+                className="h-4 w-4 text-blue-200"
                 aria-hidden="true"
               />
               {item.name}
+              {isReportsItem && (
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-green-500 text-white">
+                  NEW
+                </span>
+              )}
             </div>
             {isOpen ? (
               <ChevronDown className="h-4 w-4 text-blue-200" />
