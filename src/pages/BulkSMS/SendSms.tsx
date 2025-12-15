@@ -77,9 +77,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
         const data = await getContactCategories();
         setCategories(data.categories);
         setTotalContacts(data.total_contacts);
-        console.log(`✅ Loaded ${data.categories.length} categories with ${data.total_contacts} total contacts`);
       } catch (error) {
-        console.error("Failed to load categories:", error);
         toast.error("Failed to load contact categories");
       } finally {
         setCategoriesLoading(false);
@@ -264,13 +262,12 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
       // NEW: If categories are selected, send to entire categories
       if (selectedCategories.length > 0 && manualNumbers.length === 0) {
         // Send to categories only
-        console.log(`📤 Sending to ${selectedCategories.length} categories: ${selectedCategories.join(", ")}`);
+
 
         // Send to each category
         for (const category of selectedCategories) {
           const catResponse = await sendSms([], message, senderId, category);
           response = catResponse; // Keep last response for display
-          console.log(`✅ Sent to category "${category}": ${catResponse.queued} messages queued`);
         }
       } else if (selectedCategories.length > 0 && manualNumbers.length > 0) {
         // Mixed: categories + manual numbers
