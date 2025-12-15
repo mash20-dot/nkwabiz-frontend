@@ -37,6 +37,7 @@ import SmsDashboard from "./pages/BulkSMS/Dashboard";
 import BulkSMS from "./pages/BulkSMS/BulkSms";
 import SettingsPage from "./pages/Inventory/Settings";
 import ContactsPage from "./pages/BulkSMS/Contacts";
+import PaymentHistoryPage from "./pages/BulkSMS/PaymentHistory";
 
 // Services Page
 import Services from "./pages/Services";
@@ -90,9 +91,8 @@ const WhatsAppButton: React.FC = (): JSX.Element | null => {
     >
       {/* Label */}
       <div
-        className={`bg-white px-4 py-2 rounded-lg shadow-lg border-2 border-green-500 whitespace-nowrap transition-all duration-300 ${
-          showLabel ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
-        }`}
+        className={`bg-white px-4 py-2 rounded-lg shadow-lg border-2 border-green-500 whitespace-nowrap transition-all duration-300 ${showLabel ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
+          }`}
       >
         <span className="text-sm font-semibold text-gray-800">
           contact us for help
@@ -390,6 +390,20 @@ export function App() {
                     isAuthenticated() ? (
                       <Layout>
                         <SettingsPage />
+                      </Layout>
+                    ) : (
+                      <Navigate to="/login" />
+                    )
+                  }
+                />
+
+                {/* Payment History Route */}
+                <Route
+                  path="/sms/payment-history"
+                  element={
+                    isAuthenticated() ? (
+                      <Layout>
+                        <PaymentHistoryPage />
                       </Layout>
                     ) : (
                       <Navigate to="/login" />

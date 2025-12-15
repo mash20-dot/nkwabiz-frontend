@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { LucideIcon, FileText, X } from "lucide-react";
+import { LucideIcon, FileText, X, ChevronDown, ChevronRight, Receipt } from "lucide-react";
 import { useAuthStore } from "../../store/useAuthStore";
 import { apiFetch } from "../../utils/api";
 import ProfileCard from "../ProfileCard";
@@ -12,6 +12,7 @@ type NavigationProps = {
   name: string;
   href: string;
   icon: LucideIcon;
+  children?: NavigationProps[];
 };
 
 interface SidebarProps {
@@ -26,6 +27,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   navigation,
 }) => {
   const [isServicesCardOpen, setIsServicesCardOpen] = useState<boolean>(false);
+  const [reportsOpen, setReportsOpen] = useState<boolean>(false);
   const businessName = useAuthStore((state) => state.businessName);
   const location = useLocation();
   const [isAdmin, setIsAdmin] = useState(false);
@@ -33,6 +35,13 @@ const Sidebar: React.FC<SidebarProps> = ({
   useEffect(() => {
     checkAdminStatus();
   }, []);
+
+  // Auto-open Reports dropdown if on payment history page
+  useEffect(() => {
+    if (location.pathname === "/sms/payment-history") {
+      setReportsOpen(true);
+    }
+  }, [location.pathname]);
 
   async function checkAdminStatus() {
     try {
@@ -44,17 +53,127 @@ const Sidebar: React.FC<SidebarProps> = ({
     }
   }
 
-  // Add Blog Admin link only if user is admin
-  const allNavigation: NavigationProps[] = isAdmin
-    ? [
-        ...navigation,
+  // Reports dropdown item
+  const reportsNavItem: NavigationProps = {
+    name: "Reports",
+    href: "#",
+    icon: FileText,
+    children: [
+      {
+        name: "Payment History",
+        href: "/sms/payment-history",
+        icon: Receipt,
+      },
+    ],
+  };
+
+  // Add Reports and Blog Admin to navigation
+  const allNavigation: NavigationProps[] = [
+    ...navigation,
+    reportsNavItem,
+    ...(isAdmin
+      ? [
         {
           name: "Blog Admin",
           href: "/admin/blog",
           icon: FileText,
         },
       ]
-    : navigation;
+      : []),
+  ];
+
+  const NavItem = ({ item, isMobile = false }: { item: NavigationProps; isMobile?: boolean }) => {
+    const hasChildren = item.children && item.children.length > 0;
+    const isActive = location.pathname === item.href ||
+      (item.href === "/admin/blog" && location.pathname.startsWith("/admin/blog"));
+
+    const isReportsItem = item.name === "Reports";
+    const isOpen = isReportsItem ? reportsOpen : false;
+
+    if (hasChildren) {
+      return (
+        <div>
+          {/* Parent Item */}
+          <button
+            onClick={() => {
+              if (isReportsItem) {
+                setReportsOpen(!reportsOpen);
+              }
+            }}
+            className={`w-full group flex items-center justify-between px-2 py-2 ${isMobile ? "text-base" : "text-sm"
+              } font-medium rounded-md ${isActive
+                ? "bg-blue-900 text-white"
+                : "text-blue-100 hover:bg-blue-700"
+              }`}
+          >
+            <div className="flex items-center">
+              <item.icon
+                className="mr-2 h-4 w-4 text-blue-200"
+                aria-hidden="true"
+              />
+              {item.name}
+            </div>
+            {isOpen ? (
+              <ChevronDown className="h-4 w-4 text-blue-200" />
+            ) : (
+              <ChevronRight className="h-4 w-4 text-blue-200" />
+            )}
+          </button>
+
+          {/* Children Items */}
+          {isOpen && (
+            <div className="ml-6 mt-1 space-y-1">
+              {item.children?.map((child) => (
+                <Link
+                  key={child.name}
+                  to={child.href}
+                  className={`group flex items-center px-2 py-2 ${isMobile ? "text-base" : "text-sm"
+                    } font-medium rounded-md ${location.pathname === child.href
+                      ? "bg-blue-900 text-white"
+                      : "text-blue-100 hover:bg-blue-700"
+                    }`}
+                  onClick={() => {
+                    if (isMobile) {
+                      setSidebarOpen(false);
+                    }
+                  }}
+                >
+                  <child.icon
+                    className="mr-2 h-4 w-4 text-blue-200"
+                    aria-hidden="true"
+                  />
+                  {child.name}
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // Regular item without children
+    return (
+      <Link
+        to={item.href}
+        className={`group flex items-center px-2 py-2 ${isMobile ? "text-base" : "text-sm"
+          } font-medium rounded-md ${isActive
+            ? "bg-blue-900 text-white"
+            : "text-blue-100 hover:bg-blue-700"
+          }`}
+        onClick={() => {
+          if (isMobile) {
+            setSidebarOpen(false);
+          }
+        }}
+      >
+        <item.icon
+          className="mr-2 h-4 w-4 text-blue-200"
+          aria-hidden="true"
+        />
+        {item.name}
+      </Link>
+    );
+  };
 
   return (
     <>
@@ -75,25 +194,22 @@ const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Mobile sidebar */}
       <div
-        className={`fixed inset-0 z-40 flex md:hidden ${
-          sidebarOpen ? "visible" : "invisible"
-        }`}
+        className={`fixed inset-0 z-40 flex md:hidden ${sidebarOpen ? "visible" : "invisible"
+          }`}
         aria-hidden="true"
       >
         {/* Backdrop */}
         <div
-          className={`fixed inset-0 bg-gray-600 ${
-            sidebarOpen
+          className={`fixed inset-0 bg-gray-600 ${sidebarOpen
               ? "opacity-75 transition-opacity ease-linear duration-300"
               : "opacity-0 transition-opacity ease-linear duration-300"
-          }`}
+            }`}
           onClick={() => setSidebarOpen(false)}
         />
         {/* Sidebar */}
         <div
-          className={`relative flex-1 flex flex-col max-w-60 pt-5 pb-4 bg-blue-800 transition ease-in-out duration-300 transform ${
-            sidebarOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
+          className={`relative flex-1 flex flex-col max-w-60 pt-5 pb-4 bg-blue-800 transition ease-in-out duration-300 transform ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
+            }`}
         >
           <div className="absolute top-0 right-0 -mr-12 pt-2">
             <button
@@ -116,24 +232,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           <div className="mt-5 flex-1 h-0 overflow-y-auto">
             <nav className="px-2 space-y-1">
               {allNavigation.map((item) => (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  className={`group flex items-center px-2 py-2 text-base font-medium rounded-md ${
-                    location.pathname === item.href ||
-                    (item.href === "/admin/blog" &&
-                      location.pathname.startsWith("/admin/blog"))
-                      ? "bg-blue-900 text-white"
-                      : "text-blue-100 hover:bg-blue-700"
-                  }`}
-                  onClick={() => setSidebarOpen(false)}
-                >
-                  <item.icon
-                    className="mr-2 h-4 w-4 text-blue-200"
-                    aria-hidden="true"
-                  />
-                  {item.name}
-                </Link>
+                <NavItem key={item.name} item={item} isMobile={true} />
               ))}
             </nav>
           </div>
@@ -155,6 +254,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           {/* Dummy element to force sidebar to shrink to fit close icon */}
         </div>
       </div>
+
       {/* Static sidebar for desktop */}
       <div className="hidden md:flex md:shrink-0 w-60">
         <div className="flex flex-col w-64">
@@ -170,23 +270,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             <div className="flex-1 flex flex-col overflow-y-auto bg-blue-800">
               <nav className="flex-1 px-2 py-4 space-y-1">
                 {allNavigation.map((item) => (
-                  <Link
-                    key={item.name}
-                    to={item.href}
-                    className={`group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
-                      location.pathname === item.href ||
-                      (item.href === "/admin/blog" &&
-                        location.pathname.startsWith("/admin/blog"))
-                        ? "bg-blue-900 text-white"
-                        : "text-blue-100 hover:bg-blue-700"
-                    }`}
-                  >
-                    <item.icon
-                      className="mr-2 h-4 w-4 text-blue-200"
-                      aria-hidden="true"
-                    />
-                    {item.name}
-                  </Link>
+                  <NavItem key={item.name} item={item} isMobile={false} />
                 ))}
               </nav>
             </div>
