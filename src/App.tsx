@@ -38,6 +38,7 @@ import BulkSMS from "./pages/BulkSMS/BulkSms";
 import SettingsPage from "./pages/Inventory/Settings";
 import ContactsPage from "./pages/BulkSMS/Contacts";
 import PaymentHistoryPage from "./pages/BulkSMS/PaymentHistory";
+import FailedSmsPage from "./pages/BulkSMS/FailedSms";
 
 // Services Page
 import Services from "./pages/Services";
@@ -404,6 +405,20 @@ export function App() {
                     isAuthenticated() ? (
                       <Layout>
                         <PaymentHistoryPage />
+                      </Layout>
+                    ) : (
+                      <Navigate to="/login" />
+                    )
+                  }
+                />
+
+                {/* Failed SMS Route */}
+                <Route
+                  path="/sms/failed-sms"
+                  element={
+                    isAuthenticated() ? (
+                      <Layout>
+                        <FailedSmsPage />
                       </Layout>
                     ) : (
                       <Navigate to="/login" />

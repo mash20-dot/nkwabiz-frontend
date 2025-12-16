@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { LucideIcon, FileText, X, ChevronDown, ChevronRight, Receipt } from "lucide-react";
+import { LucideIcon, FileText, X, ChevronDown, ChevronRight, Receipt, AlertCircle } from "lucide-react";
 import { useAuthStore } from "../../store/useAuthStore";
 import { apiFetch } from "../../utils/api";
 import ProfileCard from "../ProfileCard";
@@ -36,9 +36,9 @@ const Sidebar: React.FC<SidebarProps> = ({
     checkAdminStatus();
   }, []);
 
-  // Auto-open Reports dropdown if on payment history page
+  // Auto-open Reports dropdown if on payment history or failed SMS page
   useEffect(() => {
-    if (location.pathname === "/sms/payment-history") {
+    if (location.pathname === "/sms/payment-history" || location.pathname === "/sms/failed-sms") {
       setReportsOpen(true);
     }
   }, [location.pathname]);
@@ -66,6 +66,11 @@ const Sidebar: React.FC<SidebarProps> = ({
         name: "Payment History",
         href: "/sms/payment-history",
         icon: Receipt,
+      },
+      {
+        name: "Failed SMS",
+        href: "/sms/failed-sms",
+        icon: AlertCircle,
       },
     ],
   };
