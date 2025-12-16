@@ -1,19 +1,53 @@
-// Update this file: src/pages/BulkSMS/FailedSms.tsx
-
 import { useState, useEffect } from "react";
-import { getFailedSMS, FailedSMS } from "@/utils/failedSmsService";
-import { Table, TableCard } from "@/components/application/table/table";
-import { Badge } from "@/components/base/badges/badges";
-import { EmptyState } from "@/components/application/empty-state/empty-state";
-import { AlertCircle, Loader2, RefreshCw } from "lucide-react";
-import { format } from "date-fns";
-import Button from "@/components/Button";
+import { AlertCircle, Loader2, RefreshCw, Copy, Check } from "lucide-react";
+
+// Types
+interface FailedSMS {
+    recipient: string;
+    message: string;
+    timestamp: string;
+}
+
+interface FailedSMSResponse {
+    failed_count: number;
+    failed_messages: FailedSMS[];
+}
+
+// Mock API function - replace with your actual implementation
+const getFailedSMS = async (): Promise<FailedSMSResponse> => {
+    // Simulated API call
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve({
+                failed_count: 3,
+                failed_messages: [
+                    {
+                        recipient: "+233241234567",
+                        message: "Your verification code is 123456",
+                        timestamp: "2024-12-16T10:30:00Z"
+                    },
+                    {
+                        recipient: "+233501234567",
+                        message: "Welcome to our service!",
+                        timestamp: "2024-12-16T09:15:00Z"
+                    },
+                    {
+                        recipient: "+233261234567",
+                        message: "Your order has been confirmed",
+                        timestamp: "2024-12-16T08:45:00Z"
+                    }
+                ]
+            });
+        }, 1000);
+    });
+};
 
 const FailedSmsPage = () => {
     const [failedMessages, setFailedMessages] = useState<FailedSMS[]>([]);
     const [failedCount, setFailedCount] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
     useEffect(() => {
         fetchFailedSMS();
@@ -36,9 +70,26 @@ const FailedSmsPage = () => {
 
     const formatDate = (dateString: string) => {
         try {
-            return format(new Date(dateString), "MMM dd, yyyy HH:mm");
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
         } catch {
             return dateString;
+        }
+    };
+
+    const handleCopy = async (recipient: string, index: number) => {
+        try {
+            await navigator.clipboard.writeText(recipient);
+            setCopiedIndex(index);
+            setTimeout(() => setCopiedIndex(null), 2000);
+        } catch (err) {
+            console.error("Failed to copy:", err);
         }
     };
 
@@ -60,17 +111,20 @@ const FailedSmsPage = () => {
                 <div className="text-center">
                     <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
                     <p className="text-red-600 font-medium mb-4">{error}</p>
-                    <Button onClick={handleRefresh} className="cursor-pointer">
+                    <button
+                        onClick={handleRefresh}
+                        className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
                         <RefreshCw className="h-4 w-4 mr-2" />
                         Try Again
-                    </Button>
+                    </button>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="flex flex-col items-start gap-6 w-full">
+        <div className="flex flex-col items-start gap-6 w-full p-6">
             {/* Page Header */}
             <div className="w-full flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
                 <div>
@@ -79,18 +133,18 @@ const FailedSmsPage = () => {
                         Review SMS messages that failed to deliver
                     </p>
                 </div>
-                <Button
+                <button
                     onClick={handleRefresh}
                     disabled={loading}
-                    className="cursor-pointer"
+                    className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
                     Refresh
-                </Button>
+                </button>
             </div>
 
             {/* Statistics Card */}
-            <div className="bg-white border border-gray-200 rounded-lg p-6 w-full md:w-auto">
+            <div className="bg-white border border-gray-200 rounded-lg p-6 w-full md:w-auto shadow-sm">
                 <div className="flex items-center gap-4">
                     <div className="p-3 bg-red-100 rounded-lg">
                         <AlertCircle className="h-6 w-6 text-red-600" />
@@ -109,76 +163,87 @@ const FailedSmsPage = () => {
 
             {/* Failed SMS Table/Cards */}
             {failedMessages.length === 0 ? (
-                <div className="w-full border border-gray-200 rounded-md flex items-center justify-center overflow-hidden px-8 py-20">
-                    <EmptyState size="sm">
-                        <EmptyState.Header pattern="none">
-                            <EmptyState.FeaturedIcon color="success" theme="light">
-                                <AlertCircle className="h-6 w-6" />
-                            </EmptyState.FeaturedIcon>
-                        </EmptyState.Header>
-
-                        <EmptyState.Content>
-                            <EmptyState.Title className="text-gray-800">
-                                No failed messages
-                            </EmptyState.Title>
-                            <EmptyState.Description className="text-gray-600">
-                                Great news! You don't have any failed SMS messages at the moment.
-                            </EmptyState.Description>
-                        </EmptyState.Content>
-                    </EmptyState>
+                <div className="w-full border border-gray-200 rounded-lg bg-white flex items-center justify-center px-8 py-20">
+                    <div className="text-center">
+                        <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-green-100 mb-4">
+                            <AlertCircle className="h-6 w-6 text-green-600" />
+                        </div>
+                        <h3 className="text-lg font-medium text-gray-800 mb-2">
+                            No failed messages
+                        </h3>
+                        <p className="text-sm text-gray-600">
+                            Great news! You don't have any failed SMS messages at the moment.
+                        </p>
+                    </div>
                 </div>
             ) : (
                 <>
                     {/* Desktop Table View */}
-                    <TableCard.Root
-                        className="hidden md:block w-full bg-white border border-gray-200"
-                        size="sm"
-                    >
-                        <TableCard.Header
-                            className="font-medium text-lg bg-white text-gray-800"
-                            title={`Failed Messages (${failedCount})`}
-                        />
+                    <div className="hidden md:block w-full bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+                        <div className="px-6 py-4 border-b border-gray-200 bg-white">
+                            <h2 className="text-lg font-medium text-gray-800">
+                                Failed Messages ({failedCount})
+                            </h2>
+                        </div>
 
-                        <Table className="react-aria-table w-full">
-                            <Table.Header className="w-full border-y border-gray-200">
-                                <Table.Row>
-                                    <Table.Head>Date & Time</Table.Head>
-                                    <Table.Head>Recipient</Table.Head>
-                                    <Table.Head>Message</Table.Head>
-                                    <Table.Head>Status</Table.Head>
-                                </Table.Row>
-                            </Table.Header>
-
-                            <Table.Body className="w-full">
-                                {failedMessages.map((message, index) => (
-                                    <Table.Row
-                                        key={index}
-                                        className="bg-white hover:bg-gray-50 border-b border-gray-200 last:border-b-0"
-                                    >
-                                        <Table.Cell className="text-sm text-gray-600">
-                                            {formatDate(message.timestamp)}
-                                        </Table.Cell>
-                                        <Table.Cell className="font-medium text-gray-900">
-                                            {message.recipient}
-                                        </Table.Cell>
-                                        <Table.Cell className="text-gray-600 max-w-md">
-                                            <span
-                                                className="block truncate"
-                                                title={message.message}
-                                            >
-                                                {message.message}
-                                            </span>
-                                        </Table.Cell>
-                                        <Table.Cell>
-                                            <Badge color="error" size="sm">
-                                                Failed
-                                            </Badge>
-                                        </Table.Cell>
-                                    </Table.Row>
-                                ))}
-                            </Table.Body>
-                        </Table>
-                    </TableCard.Root>
+                        <div className="overflow-x-auto">
+                            <table className="w-full">
+                                <thead className="bg-gray-50 border-b border-gray-200">
+                                    <tr>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Date & Time
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Recipient
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Message
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Status
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody className="bg-white divide-y divide-gray-200">
+                                    {failedMessages.map((message, index) => (
+                                        <tr key={index} className="hover:bg-gray-50 transition-colors">
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                                {formatDate(message.timestamp)}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="font-medium text-gray-900">
+                                                        {message.recipient}
+                                                    </span>
+                                                    <button
+                                                        onClick={() => handleCopy(message.recipient, index)}
+                                                        className="p-1.5 hover:bg-gray-100 rounded transition-colors group"
+                                                        title="Copy number"
+                                                    >
+                                                        {copiedIndex === index ? (
+                                                            <Check className="h-4 w-4 text-green-600" />
+                                                        ) : (
+                                                            <Copy className="h-4 w-4 text-gray-400 group-hover:text-gray-600" />
+                                                        )}
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 text-sm text-gray-600 max-w-md">
+                                                <span className="block truncate" title={message.message}>
+                                                    {message.message}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                    Failed
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
                     {/* Mobile Card View */}
                     <div className="md:hidden w-full">
@@ -189,16 +254,16 @@ const FailedSmsPage = () => {
                             {failedMessages.map((message, index) => (
                                 <div
                                     key={index}
-                                    className="bg-white border border-gray-200 rounded-lg p-4 space-y-3"
+                                    className="bg-white border border-gray-200 rounded-lg p-4 space-y-3 shadow-sm"
                                 >
                                     {/* Date and Status Row */}
                                     <div className="flex justify-between items-center">
                                         <span className="text-sm text-gray-500">
                                             {formatDate(message.timestamp)}
                                         </span>
-                                        <Badge color="error" size="sm">
+                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                                             Failed
-                                        </Badge>
+                                        </span>
                                     </div>
 
                                     {/* Recipient */}
@@ -206,9 +271,22 @@ const FailedSmsPage = () => {
                                         <span className="text-xs font-medium text-gray-500 block mb-1">
                                             Recipient
                                         </span>
-                                        <p className="text-sm font-medium text-gray-900">
-                                            {message.recipient}
-                                        </p>
+                                        <div className="flex items-center justify-between gap-2">
+                                            <p className="text-sm font-medium text-gray-900">
+                                                {message.recipient}
+                                            </p>
+                                            <button
+                                                onClick={() => handleCopy(message.recipient, index)}
+                                                className="p-2 hover:bg-gray-100 rounded transition-colors"
+                                                title="Copy number"
+                                            >
+                                                {copiedIndex === index ? (
+                                                    <Check className="h-4 w-4 text-green-600" />
+                                                ) : (
+                                                    <Copy className="h-4 w-4 text-gray-400" />
+                                                )}
+                                            </button>
+                                        </div>
                                     </div>
 
                                     {/* Message */}

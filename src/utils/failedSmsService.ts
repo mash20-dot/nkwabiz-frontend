@@ -1,4 +1,3 @@
-
 import { apiFetch } from "@/utils/api";
 
 export interface FailedSMS {
@@ -14,17 +13,13 @@ export interface FailedSMSResponse {
 
 /**
  * Fetch failed SMS messages for the current user
-
  */
 export const getFailedSMS = async (): Promise<FailedSMSResponse> => {
     try {
-        // Get current user info first to get user_id
-        const userInfo = await apiFetch("/security/user-info", {}, true);
-        const userId = userInfo.user_id;
-
-        // Fetch failed deliveries
+        // No need to fetch user info first - backend uses JWT token
+        // Directly fetch failed deliveries
         const response = await apiFetch(
-            `/sms/api/sms/failed-deliveries/${userId}`,
+            `/sms/api/sms/failed-deliveries`,  // ← Removed /${userId} from path
             {},
             true
         );
