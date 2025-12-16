@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { CheckCircle, XCircle, Loader2 } from "lucide-react";
 import Button from "../../components/Button";
@@ -9,25 +9,26 @@ const VerifyEmail = () => {
     const navigate = useNavigate();
     const [status, setStatus] = useState<"verifying" | "success" | "error">("verifying");
     const [message, setMessage] = useState("");
-
-    // Component mount debug
-    console.log("🚀 VerifyEmail Component MOUNTED!");
-    console.log("🌐 Current URL:", window.location.href);
-    console.log("🔑 Token from searchParams:", searchParams.get("token"));
+    const hasRunRef = useRef(false);
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
-        console.log("⚡ useEffect TRIGGERED!");
+        // Prevent double execution in React.StrictMode (development)
+        if (hasRunRef.current) {
+            console.log("⚠️ Verification already running, preventing duplicate");
+            return;
+        }
+        hasRunRef.current = true;
 
         const verifyEmail = async () => {
             const token = searchParams.get("token");
 
-            console.log("=== VERIFICATION DEBUG START ===");
-            console.log("1. Token from URL:", token);
-            console.log("2. Full URL:", window.location.href);
-            console.log("3. API Base URL:", import.meta.env.VITE_API_BASE_URL);
+            console.log("=== VERIFICATION START ===");
+            console.log("Token:", token);
+            console.log("API URL:", import.meta.env.VITE_API_BASE_URL);
 
             if (!token) {
-                console.log("❌ ERROR: No token found in URL");
+                console.log("❌ No token found");
                 setStatus("error");
                 setMessage("Invalid verification link. No token provided.");
                 return;
@@ -35,8 +36,7 @@ const VerifyEmail = () => {
 
             try {
                 const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/security/verify-email?token=${token}`;
-                console.log("4. Calling API:", apiUrl);
-                console.log("5. Making fetch request...");
+                console.log("Calling:", apiUrl);
 
                 const response = await fetch(apiUrl, {
                     method: "GET",
@@ -45,60 +45,70 @@ const VerifyEmail = () => {
                     },
                 });
 
-                console.log("6. Response received - Status:", response.status);
+                console.log("Response status:", response.status);
                 const data = await response.json();
-                console.log("7. Response data:", JSON.stringify(data, null, 2));
+                console.log("Response data:", data);
 
                 if (response.ok) {
-                    console.log("✅ SUCCESS: Email verified!");
+                    console.log("✅ SUCCESS!");
                     setStatus("success");
                     setMessage(data.message || "Email verified successfully!");
 
-                    console.log("8. Will redirect to login in 3 seconds...");
-                    // Redirect to login after 3 seconds
-                    setTimeout(() => {
-                        console.log("9. Redirecting to /login now");
-                        navigate("/login", { state: { verified: true } });
+                    // Use ref to store timeout so we can clean it up
+                    timeoutRef.current = setTimeout(() => {
+                        console.log("Redirecting to login...");
+                        navigate("/login", {
+                            state: { verified: true },
+                            replace: true  // Use replace to avoid back button issues
+                        });
                     }, 3000);
-                } else if (response.status === 400 && data.message?.toLowerCase().includes("already")) {
-                    // Handle already verified case
-                    console.log("ℹ️ Email already verified");
-                    setStatus("success");
-                    setMessage("This email has already been verified. You can log in now.");
+                } else if (response.status === 400) {
+                    console.log("❌ Verification failed:", data.message);
 
-                    setTimeout(() => {
-                        navigate("/login");
-                    }, 2000);
-                } else {
-                    console.log("❌ FAILED: Verification failed");
-                    console.log("Error message:", data.message);
-                    setStatus("error");
+                    // Check if already verified
+                    if (data.message?.toLowerCase().includes("already")) {
+                        setStatus("success");
+                        setMessage("Your email is already verified. You can log in now.");
 
-                    // Better error messages
-                    if (data.message?.toLowerCase().includes("expired")) {
-                        setMessage("This verification link has expired. Please request a new one.");
-                    } else if (data.message?.toLowerCase().includes("used")) {
-                        setMessage("This link has already been used. Please request a new verification link.");
-                    } else if (data.message?.toLowerCase().includes("invalid")) {
-                        setMessage("Invalid verification link. Please check your email or request a new link.");
+                        timeoutRef.current = setTimeout(() => {
+                            navigate("/login", { replace: true });
+                        }, 2000);
                     } else {
-                        setMessage(data.message || "Verification failed. Please try again.");
+                        setStatus("error");
+
+                        if (data.message?.toLowerCase().includes("expired")) {
+                            setMessage("This verification link has expired. Please request a new one.");
+                        } else if (data.message?.toLowerCase().includes("invalid")) {
+                            setMessage("Invalid verification link. Please request a new one.");
+                        } else {
+                            setMessage(data.message || "Verification failed. Please try again.");
+                        }
                     }
+                } else {
+                    console.log("❌ Unexpected error");
+                    setStatus("error");
+                    setMessage(data.message || "Verification failed. Please try again.");
                 }
             } catch (error: any) {
                 console.error("❌ NETWORK ERROR:", error);
                 console.error("Error details:", error.message);
                 setStatus("error");
-                setMessage("Network error. Please check your connection and try again.");
+                setMessage(`Network error: ${error.message}. Please check your connection.`);
             }
 
-            console.log("=== VERIFICATION DEBUG END ===");
+            console.log("=== VERIFICATION END ===");
         };
 
         verifyEmail();
-    }, [searchParams, navigate]);
 
-    console.log("🎨 Rendering with status:", status);
+        // Cleanup function - cancel redirect if component unmounts
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+                console.log("Cleanup: Cleared timeout");
+            }
+        };
+    }, [searchParams, navigate]);
 
     return (
         <>
@@ -124,6 +134,9 @@ const VerifyEmail = () => {
                                 <p className="text-gray-600">
                                     Please wait while we verify your email address...
                                 </p>
+                                <p className="text-xs text-gray-400 mt-4">
+                                    This should only take a moment
+                                </p>
                             </div>
                         )}
 
@@ -143,7 +156,12 @@ const VerifyEmail = () => {
                                     </p>
                                 </div>
                                 <Button
-                                    onClick={() => navigate("/login")}
+                                    onClick={() => {
+                                        if (timeoutRef.current) {
+                                            clearTimeout(timeoutRef.current);
+                                        }
+                                        navigate("/login", { replace: true });
+                                    }}
                                     className="w-full bg-blue-600 border-transparent shadow-sm hover:bg-blue-700 text-white rounded-md"
                                 >
                                     Go to Login Now
@@ -164,12 +182,13 @@ const VerifyEmail = () => {
 
                                 <div className="bg-red-50 rounded-lg p-4 mb-6 text-left">
                                     <p className="text-sm text-red-800 font-medium mb-2">
-                                        Possible reasons:
+                                        Common reasons:
                                     </p>
                                     <ul className="text-sm text-red-700 space-y-1 list-disc list-inside">
                                         <li>The verification link has expired</li>
                                         <li>The link has already been used</li>
                                         <li>The link is invalid or corrupted</li>
+                                        <li>Network connection issues</li>
                                     </ul>
                                 </div>
 
@@ -178,13 +197,13 @@ const VerifyEmail = () => {
                                         onClick={() => navigate("/resend-verification")}
                                         className="w-full bg-blue-600 border-transparent shadow-sm hover:bg-blue-700 text-white rounded-md"
                                     >
-                                        Resend Verification Email
+                                        Request New Verification Email
                                     </Button>
                                     <Button
-                                        onClick={() => navigate("/signup")}
+                                        onClick={() => navigate("/login")}
                                         className="w-full bg-gray-200 border-transparent shadow-sm hover:bg-gray-300 text-gray-700 rounded-md"
                                     >
-                                        Back to Signup
+                                        Back to Login
                                     </Button>
                                 </div>
                             </div>
