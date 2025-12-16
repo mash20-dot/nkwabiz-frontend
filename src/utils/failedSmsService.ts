@@ -16,7 +16,6 @@ export interface FailedSMSResponse {
  */
 export const getFailedSMS = async (): Promise<FailedSMSResponse> => {
     try {
-        // Use the correct path pattern matching other SMS endpoints
         const response = await apiFetch(
             `/sms/api/sms/failed-deliveries`,
             { method: "GET" },
