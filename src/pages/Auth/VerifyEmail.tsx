@@ -15,7 +15,6 @@ const VerifyEmail = () => {
     useEffect(() => {
         // Prevent double execution in React.StrictMode (development)
         if (hasRunRef.current) {
-            console.log("⚠️ Verification already running, preventing duplicate");
             return;
         }
         hasRunRef.current = true;
@@ -23,12 +22,8 @@ const VerifyEmail = () => {
         const verifyEmail = async () => {
             const token = searchParams.get("token");
 
-            console.log("=== VERIFICATION START ===");
-            console.log("Token:", token);
-            console.log("API URL:", import.meta.env.VITE_API_BASE_URL);
 
             if (!token) {
-                console.log("❌ No token found");
                 setStatus("error");
                 setMessage("Invalid verification link. No token provided.");
                 return;
@@ -36,7 +31,7 @@ const VerifyEmail = () => {
 
             try {
                 const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/security/verify-email?token=${token}`;
-                console.log("Calling:", apiUrl);
+
 
                 const response = await fetch(apiUrl, {
                     method: "GET",
@@ -44,26 +39,20 @@ const VerifyEmail = () => {
                         "Content-Type": "application/json",
                     },
                 });
-
-                console.log("Response status:", response.status);
                 const data = await response.json();
-                console.log("Response data:", data);
 
                 if (response.ok) {
-                    console.log("✅ SUCCESS!");
                     setStatus("success");
                     setMessage(data.message || "Email verified successfully!");
 
                     // Use ref to store timeout so we can clean it up
                     timeoutRef.current = setTimeout(() => {
-                        console.log("Redirecting to login...");
                         navigate("/login", {
                             state: { verified: true },
                             replace: true  // Use replace to avoid back button issues
                         });
                     }, 3000);
                 } else if (response.status === 400) {
-                    console.log("❌ Verification failed:", data.message);
 
                     // Check if already verified
                     if (data.message?.toLowerCase().includes("already")) {
@@ -85,18 +74,14 @@ const VerifyEmail = () => {
                         }
                     }
                 } else {
-                    console.log("❌ Unexpected error");
                     setStatus("error");
                     setMessage(data.message || "Verification failed. Please try again.");
                 }
             } catch (error: any) {
-                console.error("❌ NETWORK ERROR:", error);
-                console.error("Error details:", error.message);
                 setStatus("error");
                 setMessage(`Network error: ${error.message}. Please check your connection.`);
             }
 
-            console.log("=== VERIFICATION END ===");
         };
 
         verifyEmail();
@@ -105,7 +90,6 @@ const VerifyEmail = () => {
         return () => {
             if (timeoutRef.current) {
                 clearTimeout(timeoutRef.current);
-                console.log("Cleanup: Cleared timeout");
             }
         };
     }, [searchParams, navigate]);
