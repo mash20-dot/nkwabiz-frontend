@@ -10,7 +10,14 @@ const VerifyEmail = () => {
     const [status, setStatus] = useState<"verifying" | "success" | "error">("verifying");
     const [message, setMessage] = useState("");
 
+    // Component mount debug
+    console.log("🚀 VerifyEmail Component MOUNTED!");
+    console.log("🌐 Current URL:", window.location.href);
+    console.log("🔑 Token from searchParams:", searchParams.get("token"));
+
     useEffect(() => {
+        console.log("⚡ useEffect TRIGGERED!");
+
         const verifyEmail = async () => {
             const token = searchParams.get("token");
 
@@ -42,7 +49,7 @@ const VerifyEmail = () => {
                 const data = await response.json();
                 console.log("7. Response data:", JSON.stringify(data, null, 2));
 
-                if (response.ok || response.status === 200) {
+                if (response.ok) {
                     console.log("✅ SUCCESS: Email verified!");
                     setStatus("success");
                     setMessage(data.message || "Email verified successfully!");
@@ -53,13 +60,32 @@ const VerifyEmail = () => {
                         console.log("9. Redirecting to /login now");
                         navigate("/login", { state: { verified: true } });
                     }, 3000);
+                } else if (response.status === 400 && data.message?.toLowerCase().includes("already")) {
+                    // Handle already verified case
+                    console.log("ℹ️ Email already verified");
+                    setStatus("success");
+                    setMessage("This email has already been verified. You can log in now.");
+
+                    setTimeout(() => {
+                        navigate("/login");
+                    }, 2000);
                 } else {
                     console.log("❌ FAILED: Verification failed");
                     console.log("Error message:", data.message);
                     setStatus("error");
-                    setMessage(data.message || "Verification failed. Please try again.");
+
+                    // Better error messages
+                    if (data.message?.toLowerCase().includes("expired")) {
+                        setMessage("This verification link has expired. Please request a new one.");
+                    } else if (data.message?.toLowerCase().includes("used")) {
+                        setMessage("This link has already been used. Please request a new verification link.");
+                    } else if (data.message?.toLowerCase().includes("invalid")) {
+                        setMessage("Invalid verification link. Please check your email or request a new link.");
+                    } else {
+                        setMessage(data.message || "Verification failed. Please try again.");
+                    }
                 }
-            } catch (error) {
+            } catch (error: any) {
                 console.error("❌ NETWORK ERROR:", error);
                 console.error("Error details:", error.message);
                 setStatus("error");
@@ -71,6 +97,8 @@ const VerifyEmail = () => {
 
         verifyEmail();
     }, [searchParams, navigate]);
+
+    console.log("🎨 Rendering with status:", status);
 
     return (
         <>
