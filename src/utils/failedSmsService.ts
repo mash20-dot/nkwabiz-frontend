@@ -16,11 +16,10 @@ export interface FailedSMSResponse {
  */
 export const getFailedSMS = async (): Promise<FailedSMSResponse> => {
     try {
-        // No need to fetch user info first - backend uses JWT token
-        // Directly fetch failed deliveries
+        // Use the correct path pattern matching other SMS endpoints
         const response = await apiFetch(
-            `/sms/api/sms/failed-deliveries`,  // ← Removed /${userId} from path
-            {},
+            `/sms/api/sms/failed-deliveries`,
+            { method: "GET" },
             true
         );
         return response;
