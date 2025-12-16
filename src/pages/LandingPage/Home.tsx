@@ -1,17 +1,17 @@
-import React from "react";
 import { Helmet } from "react-helmet";
 import Navbar from "../../components/LandingPage/Navbar";
-import Hero from "../../components/LandingPage/Hero";
+// import Hero from "../../components/LandingPage/Hero";
 import Features from "../../components/LandingPage/Features";
 import HowItWorks from "../../components/LandingPage/HowItWorks";
 import Benefits from "../../components/LandingPage/Benefits";
 import Testimonials from "../../components/LandingPage/Testimonials";
 import FAQ from "../../components/LandingPage/FAQ";
-import CTA from "../../components/LandingPage/CTA";
 import Footer from "../../components/LandingPage/Footer";
 import Youtubesection from "../../components/LandingPage/Youtubesection";
 import Feedback from "../../components/LandingPage/Feedback";
 import LaptopAndMobile from "../../components/LandingPage/LaptopAndMobile";
+
+import HeroSection from "@/components/LandingPage/HeroSection";
 
 const Home = () => {
   const pageTitle =
@@ -103,7 +103,8 @@ const Home = () => {
       {/* Page Sections */}
       <Navbar />
       <main className="grow">
-        <Hero />
+        {/* <Hero /> */}
+        <HeroSection />
         <HowItWorks />
         <LaptopAndMobile />
         <Youtubesection />
