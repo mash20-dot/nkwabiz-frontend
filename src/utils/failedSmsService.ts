@@ -20,7 +20,7 @@ export const getFailedSMS = async (): Promise<FailedSMSResponse> => {
     try {
         // Get current user info first to get user_id
         const userInfo = await apiFetch("/security/user-info", {}, true);
-        const userId = userInfo.id;
+        const userId = userInfo.user_id;
 
         // Fetch failed deliveries
         const response = await apiFetch(
