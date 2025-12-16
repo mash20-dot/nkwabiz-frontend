@@ -34,6 +34,8 @@ export default function AuthProvider({ children }: AuthProviderProps) {
       "/signup",
       "/forgot-password",
       "/reset-password",
+      "/verify-email",
+      "/resend-verification",
       "/blog",
     ];
 
