@@ -19,6 +19,8 @@ import Login from "./pages/Auth/Login";
 import Signup from "./pages/Auth/Signup";
 import ForgotPassword from "./pages/Auth/ForgotPassword";
 import ResetPassword from "./pages/Auth/ResetPassword";
+import VerifyEmail from "./pages/Auth/VerifyEmail";
+import ResendVerification from "./pages/Auth/ResendVerification";
 import Layout from "./components/Layout/Layout";
 import Home from "./pages/LandingPage/Home";
 import AboutUs from "./pages/LandingPage/AboutUs";
@@ -74,6 +76,8 @@ const WhatsAppButton: React.FC = (): JSX.Element | null => {
     "/signup",
     "/forgot-password",
     "/reset-password",
+    "/verify-email",
+    "/resend-verification",
     "/blog",
   ];
   const shouldShow =
@@ -146,6 +150,8 @@ export function App() {
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/verify-email" element={<VerifyEmail />} />
+                <Route path="/resend-verification" element={<ResendVerification />} />
 
                 {/* PUBLIC BLOG ROUTES */}
                 <Route path="/blog" element={<BlogList />} />

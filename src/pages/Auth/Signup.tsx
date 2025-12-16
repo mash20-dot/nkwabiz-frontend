@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Mail } from "lucide-react";
 import { signupUser } from "../../utils/userApi";
 import Button from "../../components/Button";
 import CurrencySelector from "../../components/LandingPage/CurrencySelector";
@@ -20,11 +20,12 @@ const Signup = () => {
     phone: "",
     location: "",
     password: "",
-    currency: "GHS", // Default currency
+    currency: "GHS",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showVerificationMessage, setShowVerificationMessage] = useState(false);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -49,7 +50,8 @@ const Signup = () => {
     setError("");
     try {
       await signupUser(form);
-      navigate("/login");
+      // Show verification message instead of navigating to login
+      setShowVerificationMessage(true);
     } catch (err: any) {
       setError(err.message || "Signup failed");
     } finally {
@@ -57,6 +59,69 @@ const Signup = () => {
     }
   }
 
+  // Show verification message after successful signup
+  if (showVerificationMessage) {
+    return (
+      <>
+        <SEO
+          title="Verify Your Email - Nkwabiz"
+          description="Check your email to verify your Nkwabiz account"
+          canonical="https://www.nkwabiz.com/signup"
+          noindex={true}
+        />
+        <div className="min-h-screen bg-white flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+          <div className="sm:mx-auto sm:w-full sm:max-w-md">
+            <div className="bg-white py-8 px-6 shadow-lg rounded-lg sm:px-10">
+              <div className="text-center">
+                <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
+                  <Mail className="h-8 w-8 text-green-600" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                  Check Your Email
+                </h2>
+                <p className="text-gray-600 mb-4">
+                  We've sent a verification link to:
+                </p>
+                <p className="text-lg font-semibold text-blue-600 bg-blue-50 py-2 px-4 rounded-md mb-6">
+                  {form.email}
+                </p>
+
+                <div className="bg-gray-50 rounded-lg p-4 mb-6 text-left">
+                  <p className="text-sm text-gray-700 font-medium mb-2">
+                    Please verify your email to activate your account
+                  </p>
+                  <ul className="text-sm text-gray-600 space-y-1 list-disc list-inside">
+                    <li>Click the verification link in the email</li>
+                    <li>The link will expire in 24 hours</li>
+                    <li>Check your spam folder if you don't see it</li>
+                  </ul>
+                </div>
+
+                <Button
+                  onClick={() => navigate("/login")}
+                  className="w-full bg-blue-600 border-transparent shadow-sm hover:bg-blue-700 text-white rounded-md"
+                >
+                  Go to Login
+                </Button>
+
+                <p className="mt-4 text-sm text-gray-500">
+                  Didn't receive the email?{" "}
+                  <button
+                    onClick={() => navigate("/resend-verification", { state: { email: form.email } })}
+                    className="font-medium text-blue-600 hover:text-blue-500"
+                  >
+                    Resend verification email
+                  </button>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // Show signup form
   return (
     <>
       <SEO
@@ -134,7 +199,6 @@ const Signup = () => {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               />
 
-              {/* Currency Selector */}
               <CurrencySelector
                 value={form.currency}
                 onChange={handleCurrencyChange}
