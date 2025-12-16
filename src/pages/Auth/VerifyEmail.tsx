@@ -14,41 +14,59 @@ const VerifyEmail = () => {
         const verifyEmail = async () => {
             const token = searchParams.get("token");
 
+            console.log("=== VERIFICATION DEBUG START ===");
+            console.log("1. Token from URL:", token);
+            console.log("2. Full URL:", window.location.href);
+            console.log("3. API Base URL:", import.meta.env.VITE_API_BASE_URL);
+
             if (!token) {
+                console.log("❌ ERROR: No token found in URL");
                 setStatus("error");
                 setMessage("Invalid verification link. No token provided.");
                 return;
             }
 
             try {
-                const response = await fetch(
-                    `${import.meta.env.VITE_API_BASE_URL}/security/verify-email?token=${token}`,
-                    {
-                        method: "GET",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                    }
-                );
+                const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/security/verify-email?token=${token}`;
+                console.log("4. Calling API:", apiUrl);
+                console.log("5. Making fetch request...");
 
+                const response = await fetch(apiUrl, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
+
+                console.log("6. Response received - Status:", response.status);
                 const data = await response.json();
+                console.log("7. Response data:", JSON.stringify(data, null, 2));
 
-                if (response.ok) {
+                if (response.ok || response.status === 200) {
+                    console.log("✅ SUCCESS: Email verified!");
                     setStatus("success");
                     setMessage(data.message || "Email verified successfully!");
 
+                    console.log("8. Will redirect to login in 3 seconds...");
                     // Redirect to login after 3 seconds
                     setTimeout(() => {
+                        console.log("9. Redirecting to /login now");
                         navigate("/login", { state: { verified: true } });
                     }, 3000);
                 } else {
+                    console.log("❌ FAILED: Verification failed");
+                    console.log("Error message:", data.message);
                     setStatus("error");
                     setMessage(data.message || "Verification failed. Please try again.");
                 }
             } catch (error) {
+                console.error("❌ NETWORK ERROR:", error);
+                console.error("Error details:", error.message);
                 setStatus("error");
                 setMessage("Network error. Please check your connection and try again.");
             }
+
+            console.log("=== VERIFICATION DEBUG END ===");
         };
 
         verifyEmail();
