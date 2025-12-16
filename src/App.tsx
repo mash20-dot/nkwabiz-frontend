@@ -52,7 +52,6 @@ import BlogList from "./pages/BlogList";
 import BlogPost from "./pages/LandingPage/BlogPost";
 
 // PWA Add to Home Screen Prompt
-import AddToHomeScreenPrompt from "./components/LandingPage/AddToHomeScreenPrompt";
 import UpdatePrompt from "./components/LandingPage/UpdatePrompt";
 import AuthProvider from "./components/LandingPage/AuthProvider";
 
@@ -133,9 +132,6 @@ export function App() {
               <Toaster position="top-right" richColors={true} />
               {/* PWA Update Prompt - Shows when new version is available */}
               <UpdatePrompt />
-
-              {/* PWA Add to Home Screen Prompt */}
-              <AddToHomeScreenPrompt />
 
               {/* WhatsApp Button - only shows on landing pages */}
               <WhatsAppButton />
