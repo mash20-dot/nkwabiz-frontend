@@ -13,33 +13,41 @@ interface FailedSMSResponse {
     failed_messages: FailedSMS[];
 }
 
-// Mock API function - replace with your actual implementation
-const getFailedSMS = async (): Promise<FailedSMSResponse> => {
-    // Simulated API call
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve({
-                failed_count: 3,
-                failed_messages: [
-                    {
-                        recipient: "+233241234567",
-                        message: "Your verification code is 123456",
-                        timestamp: "2024-12-16T10:30:00Z"
-                    },
-                    {
-                        recipient: "+233501234567",
-                        message: "Welcome to our service!",
-                        timestamp: "2024-12-16T09:15:00Z"
-                    },
-                    {
-                        recipient: "+233261234567",
-                        message: "Your order has been confirmed",
-                        timestamp: "2024-12-16T08:45:00Z"
-                    }
-                ]
-            });
-        }, 1000);
+// API Service - Replace this with: import { getFailedSMS } from "@/utils/failedSmsService";
+const apiFetch = async (url: string, options: any = {}, auth: boolean = false) => {
+    // This is a placeholder - your actual apiFetch implementation should be imported
+    const response = await fetch(url, {
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            ...(auth ? { 'Authorization': `Bearer ${localStorage.getItem('token')}` } : {}),
+            ...options.headers,
+        },
     });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json();
+};
+
+const getFailedSMS = async (): Promise<FailedSMSResponse> => {
+    try {
+        const response = await apiFetch(
+            `/sms/api/sms/failed-deliveries`,
+            {},
+            true
+        );
+        return response;
+    } catch (error: any) {
+        console.error("Error fetching failed SMS:", error);
+        throw new Error(
+            error.response?.data?.error ||
+            error.message ||
+            "Failed to fetch failed SMS messages"
+        );
+    }
 };
 
 const FailedSmsPage = () => {
