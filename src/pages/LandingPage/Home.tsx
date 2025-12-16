@@ -24,7 +24,7 @@ const Home = () => {
     "bulk sms ghana, bulk sms service ghana, send bulk sms, sms marketing ghana, mass sms ghana, business sms, promotional sms ghana, inventory management ghana, sales management, business management software ghana";
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col relative min-h-screen">
       <Helmet>
         {/* Basic SEO - Bulk SMS Focused */}
         <title>{pageTitle}</title>

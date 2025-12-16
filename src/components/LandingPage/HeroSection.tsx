@@ -3,7 +3,7 @@ import Button from "../Button";
 
 const HeroSection = () => {
   return (
-    <div className="bg-white px-4 py-6 md:px-6 lg:px-16 lg:py-8 w-full h-full md:h-[1024px] lg:h-[1024px]">
+    <div className="bg-white px-4 py-8 md:px-6 lg:px-16 lg:py-16 w-full h-full">
       <div className="w-full h-full flex flex-col gap-8 items-start justify-start">
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-3">
@@ -32,7 +32,7 @@ const HeroSection = () => {
             </Link>
           </div>
         </div>
-        <div className="w-full flex-1 flex bg-blue-100"></div>
+        <div className="w-full h-[760px] rounded-lg flex bg-blue-100"></div>
       </div>
     </div>
   );
