@@ -63,7 +63,7 @@ const SendSms = ({ showForm, closeForm }: SendSMSProps) => {
   const senderIdDropdownRef = useRef<HTMLDivElement>(null);
 
   const COST_PER_SMS = 0.04;
-  const MAX_RECIPIENTS_PER_BULK = 100;
+  const MAX_RECIPIENTS_PER_BULK = 1000;
   const STORAGE_KEY = 'sms_sender_ids';
   const currentBalance = smsBalance || 0;
 
