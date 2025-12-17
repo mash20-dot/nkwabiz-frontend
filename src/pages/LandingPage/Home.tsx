@@ -1,17 +1,8 @@
 import { Helmet } from "react-helmet";
 import Navbar from "../../components/LandingPage/Navbar";
-// import Hero from "../../components/LandingPage/Hero";
-import Features from "../../components/LandingPage/Features";
-import HowItWorks from "../../components/LandingPage/HowItWorks";
-import Benefits from "../../components/LandingPage/Benefits";
-import Testimonials from "../../components/LandingPage/Testimonials";
-import FAQ from "../../components/LandingPage/FAQ";
-import Footer from "../../components/LandingPage/Footer";
-import Youtubesection from "../../components/LandingPage/Youtubesection";
-import Feedback from "../../components/LandingPage/Feedback";
-import LaptopAndMobile from "../../components/LandingPage/LaptopAndMobile";
 
 import HeroSection from "@/components/LandingPage/HeroSection";
+import Products from "@/components/LandingPage/Products";
 
 const Home = () => {
   const pageTitle =
@@ -105,17 +96,9 @@ const Home = () => {
       <main className="grow">
         {/* <Hero /> */}
         <HeroSection />
-        <HowItWorks />
-        <LaptopAndMobile />
-        <Youtubesection />
-        <Features />
-        <Benefits />
-        <Testimonials />
-        <FAQ />
-        <Feedback />
+        <Products />
         {/* <CTA /> */}
       </main>
-      <Footer />
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import Button from "../Button";
+import BulksmsDashboard from "../../../asset/Bulksms-dashboard.png";
 
 const HeroSection = () => {
   return (
@@ -7,16 +8,12 @@ const HeroSection = () => {
       <div className="w-full h-full flex flex-col gap-8 items-start justify-start">
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-3">
-            <h1 className="text-4xl  max-w-4xl font-extrabold text-gray-900 md:text-5xl lg:text-6xl">
-              <span className="block xl:inline">Run Your Business Smarter</span>
-              {"-"}
-              <span className="block xl:inline text-blue-600">
-                Track Inventory & Reach Customers Instantly
-              </span>
+            <h1 className="text-4xl max-w-4xl font-extrabold text-gray-900 md:text-5xl lg:text-6xl">
+              Power Your Business Communication Across SMS, Email & USSD
             </h1>
-            <p className="text-base text-gray-500 max-w-2xl md:text-lg lg:text-lg">
-              Nkwabiz helps growing businesses manage stock, track sales, and
-              send bulk SMS to customers — all from one simple platform.
+            <p className="text-base text-gray-500 max-w-3xl md:text-lg lg:text-lg">
+              Send bulk messages, automate emails, and build USSD experiences
+              that reach customers instantly — all from one reliable platform.
             </p>
           </div>
           <div className="flex gap-3 sm:justify-center lg:justify-start">
@@ -32,7 +29,13 @@ const HeroSection = () => {
             </Link>
           </div>
         </div>
-        <div className="w-full h-[760px] rounded-lg flex bg-blue-100"></div>
+        <div className="w-full flex p-8 rounded-lg bg-blue-100">
+          <img
+            className="rounded-lg w-full h-auto object-contain"
+            src={BulksmsDashboard}
+            alt="Bulk SMS Dashboard"
+          />
+        </div>
       </div>
     </div>
   );

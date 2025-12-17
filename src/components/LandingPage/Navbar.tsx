@@ -59,12 +59,12 @@ const Navbar = () => {
 
           {/* CTA Actions */}
           <div className="flex gap-3 sm:justify-center lg:justify-start">
-            <Link to="/features">
+            <Link to="/login">
               <Button className="h-10 bg-blue-100 font-semibold text-blue-600 hover:bg-blue-200 border-none">
                 Login
               </Button>
             </Link>
-            <Link to="/login">
+            <Link to="/signup">
               <Button className="h-10 bg-blue-600 text-white font-semibold hover:bg-blue-700 border-none">
                 Sign Up
               </Button>
