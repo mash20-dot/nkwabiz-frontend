@@ -3,6 +3,7 @@ import Navbar from "../../components/LandingPage/Navbar";
 
 import HeroSection from "@/components/LandingPage/HeroSection";
 import Products from "@/components/LandingPage/Products";
+import WhyNkwabiz from "@/components/LandingPage/WhyNkwabiz";
 
 const Home = () => {
   const pageTitle =
@@ -97,6 +98,7 @@ const Home = () => {
         {/* <Hero /> */}
         <HeroSection />
         <Products />
+        <WhyNkwabiz />
         {/* <CTA /> */}
       </main>
     </div>

@@ -27,7 +27,7 @@ const Products = () => {
               </p>
             </div>
             <Button className="bg-transparent group-hover:bg-none group-hover:text-blue-600 border-none px-0 py-0 text-gray-500">
-              Learn more
+              Start Sending SMS
               <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
@@ -54,7 +54,7 @@ const Products = () => {
               </p>
             </div>
             <Button className="bg-transparent group-hover:bg-none group-hover:text-blue-600 border-none px-0 py-0 text-gray-500">
-              Learn more
+              Send Emails
               <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
@@ -76,7 +76,7 @@ const Products = () => {
               </p>
             </div>
             <Button className="bg-transparent group-hover:bg-none group-hover:text-blue-600 border-none px-0 py-0 text-gray-500">
-              Learn more
+              Start Tracking Sales
               <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
