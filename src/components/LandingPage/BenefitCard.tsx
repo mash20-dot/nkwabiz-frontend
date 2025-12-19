@@ -6,13 +6,13 @@ type BenefitCardProps = {
 
 const BenefitCard = ({ image, title, description }: BenefitCardProps) => {
   return (
-    <div className="w-full h-full bg-blue-900 text-white px-6 py-8 md:px-10 lg:px-16 lg:py-16 flex flex-col items-center gap-15">
+    <div className="w-full h-full bg-blue-100/10 rounded-md text-white px-6 py-6  flex flex-col items-center gap-6">
       <div>
         <img src={image} alt={title} />
       </div>
-      <div>
-        <h3>{title}</h3>
-        <p>{description}</p>
+      <div className="flex flex-col gap-2">
+        <h3 className="text-xl font-medium">{title}</h3>
+        <p className="text-sm text-gray-200">{description}</p>
       </div>
     </div>
   );
