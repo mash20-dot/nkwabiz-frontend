@@ -4,7 +4,7 @@ import BulksmsDashboard from "../../../asset/Bulksms-dashboard.png";
 
 const HeroSection = () => {
   return (
-    <div className="bg-white px-6 py-10 sm:py-12 sm:px-10 lg:px-16 lg:py-16 w-full">
+    <div className="bg-white px-6 py-8 sm:py-16 sm:px-10 lg:px-20 lg:py-16 w-full">
       <div className="w-full h-full flex flex-col gap-8 lg:gap-12 items-start justify-start">
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-4">

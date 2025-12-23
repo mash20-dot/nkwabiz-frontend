@@ -7,7 +7,7 @@ import EmailMarketing from "../../../asset/EmailMarketing.png";
 
 const Products = () => {
   return (
-    <div className="bg-white px-6 py-8 md:px-10 lg:px-16 lg:py-25 flex flex-col items-center gap-15">
+    <div className="bg-white px-6 py-8 md:px-10 md:py-16 lg:px-20 lg:py-25 flex flex-col items-center gap-15">
       <h2 className="text-3xl max-w-3xl font-bold text-gray-900 md:text-4xl lg:text-5xl text-center">
         One platform. Multiple communication channels.
       </h2>

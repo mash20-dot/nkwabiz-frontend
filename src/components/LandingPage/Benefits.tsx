@@ -1,7 +1,7 @@
-import React from 'react';
-import { TrendingUp, Clock, Shield, Lightbulb } from 'lucide-react';
+import { TrendingUp, Clock, Shield, Lightbulb } from "lucide-react";
 const Benefits = () => {
-  return <div className="bg-gray-50 py-16">
+  return (
+    <div className="bg-gray-50 py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <h2 className="text-base font-semibold text-blue-600 tracking-wide uppercase">
@@ -173,6 +173,7 @@ const Benefits = () => {
           </div>
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };
 export default Benefits;

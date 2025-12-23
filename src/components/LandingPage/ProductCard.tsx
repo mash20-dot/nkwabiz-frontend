@@ -19,7 +19,7 @@ const ProductCard = ({
   return (
     <div
       className={cx(
-        "bg-gray-100/80 cursor-pointer w-full h-90 sm:h-100 lg:h-150 flex rounded-lg overflow-hidden",
+        "bg-gray-100/80 cursor-pointer w-full h-90 sm:h-100 lg:h-120 flex rounded-lg overflow-hidden",
         className
       )}
     >

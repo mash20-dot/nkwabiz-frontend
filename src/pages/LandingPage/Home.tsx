@@ -4,6 +4,8 @@ import Navbar from "../../components/LandingPage/Navbar";
 import HeroSection from "@/components/LandingPage/HeroSection";
 import Products from "@/components/LandingPage/Products";
 import WhyNkwabiz from "@/components/LandingPage/WhyNkwabiz";
+import HowItWorks from "@/components/LandingPage/HowItWorks";
+import Testimonials from "@/components/LandingPage/Testimonials";
 
 const Home = () => {
   const pageTitle =
@@ -95,11 +97,11 @@ const Home = () => {
       {/* Page Sections */}
       <Navbar />
       <main className="grow">
-        {/* <Hero /> */}
         <HeroSection />
         <Products />
         <WhyNkwabiz />
-        {/* <CTA /> */}
+        <HowItWorks />
+        <Testimonials />
       </main>
     </div>
   );

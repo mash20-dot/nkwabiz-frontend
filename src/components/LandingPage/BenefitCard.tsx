@@ -6,7 +6,7 @@ type BenefitCardProps = {
 
 const BenefitCard = ({ image, title, description }: BenefitCardProps) => {
   return (
-    <div className="w-full h-full bg-blue-100/10 rounded-md text-white px-6 py-6  flex flex-col items-center gap-6">
+    <div className="w-full h-full bg-blue-100/5 hover:bg-blue-100/15 cursor-pointer rounded-md text-white px-6 py-6  flex flex-col items-center gap-6">
       <div>
         <img src={image} alt={title} />
       </div>
