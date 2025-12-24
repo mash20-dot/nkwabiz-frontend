@@ -1,9 +1,9 @@
 import BenefitCard from "./BenefitCard";
 import SendSMS from "../../../asset/SendSMS.png";
-import Message from "../../../asset/icons/Message.png";
-import Contact from "../../../asset/icons/Contact.png";
-import Lightning from "../../../asset/icons/Lightning.png";
-import Subscription from "../../../asset/icons/Subscription.png";
+import Message from "../../../asset/icons/message.png";
+import Contact from "../../../asset/icons/contact.png";
+import Lightning from "../../../asset/icons/lightning.png";
+import Subscription from "../../../asset/icons/subscription.png";
 
 const benefits = [
   {
