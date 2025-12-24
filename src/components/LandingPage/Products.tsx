@@ -4,14 +4,15 @@ import Button from "../Button";
 import { ChevronRight } from "lucide-react";
 import SendSMS from "../../../asset/SendSMS.png";
 import EmailMarketing from "../../../asset/EmailMarketing.png";
+import Inventory from "../../../asset/Inventory.png";
 
 const Products = () => {
   return (
     <div className="bg-white px-6 py-8 md:px-10 md:py-16 lg:px-20 lg:py-25 flex flex-col items-center gap-15">
-      <h2 className="text-3xl max-w-3xl font-bold text-gray-900 md:text-4xl lg:text-5xl text-center">
+      <h2 className="text-3xl max-w-3xl font-bold text-gray-900 md:text-4xl lg:text-5xl text-center leading-[120%]">
         One platform. Multiple communication channels.
       </h2>
-      <div className="w-full flex flex-col gap-6">
+      <div className="w-full flex flex-col gap-15">
         <ProductCard className="group" image={SendSMS}>
           <div className="w-1/2 flex flex-col justify-center gap-4 px-8">
             <div className="w-full flex flex-col gap-2">
@@ -60,7 +61,7 @@ const Products = () => {
           </div>
         </ProductCard>
 
-        <ProductCard className="group">
+        <ProductCard className="group" image={Inventory}>
           <div className="w-1/2 flex flex-col justify-center gap-4 px-8">
             <div className="w-full flex flex-col gap-2">
               <Badge className="bg-green-100 border border-green-200 text-green-600">

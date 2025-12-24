@@ -1,30 +1,34 @@
 import BenefitCard from "./BenefitCard";
 import SendSMS from "../../../asset/SendSMS.png";
+import Message from "../../../asset/icons/Message.png";
+import Contact from "../../../asset/icons/Contact.png";
+import Lightning from "../../../asset/icons/Lightning.png";
+import Subscription from "../../../asset/icons/Subscription.png";
 
 const benefits = [
   {
     title: "Reach thousands instantly",
     description:
       "Send bulk SMS to thousands of contacts in seconds — perfect for alerts, promotions, and time-sensitive updates.",
-    image: SendSMS,
+    image: Message,
   },
   {
     title: "Organize contacts your way",
     description:
       "Save contacts by group or category, manage audiences easily, and send targeted messages without manual filtering.",
-    image: SendSMS,
+    image: Contact,
   },
   {
     title: "Messages delivered in real time",
     description:
       "Our infrastructure ensures fast, reliable delivery so your messages reach customers exactly when they matter.",
-    image: SendSMS,
+    image: Lightning,
   },
   {
     title: "No subscriptions. No waste.",
     description:
       "Buy SMS bundles and pay only for messages you send — no fixed monthly fees or hidden charges.",
-    image: SendSMS,
+    image: Subscription,
   },
   {
     title: "From small teams to large campaigns",
@@ -42,12 +46,12 @@ const benefits = [
 
 const WhyNkwabiz = () => {
   return (
-    <div className="w-full bg-blue-900 text-white px-6 py-8 md:px-10 lg:px-20 lg:py-25 flex flex-col items-center gap-15">
+    <div className="w-full bg-blue-800 text-white px-6 py-8 md:px-10 lg:px-20 lg:py-25 flex flex-col items-center gap-15">
       <div className="w-full flex flex-col justify-center items-center gap-2">
-        <h2 className="text-3xl max-w-3xl font-bold text-white md:text-4xl lg:text-5xl text-center">
+        <h2 className="text-3xl max-w-3xl font-bold text-white md:text-4xl lg:text-5xl text-center leading-[120%]">
           Everything Businesses Need to Communicate at Scale
         </h2>
-        <p className="text-center text-gray-200">
+        <p className="text-center text-lg text-gray-200">
           Built for speed, reliability, and flexibility — so you reach customers
           without friction.
         </p>

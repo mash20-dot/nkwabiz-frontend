@@ -19,21 +19,21 @@ const ProductCard = ({
   return (
     <div
       className={cx(
-        "bg-gray-100/80 cursor-pointer w-full h-90 sm:h-100 lg:h-120 flex rounded-lg overflow-hidden",
+        "cursor-pointer w-full h-90 sm:h-100 lg:h-120 flex rounded-lg overflow-hidden",
         className
       )}
     >
       {children}
       <div
         className={cx(
-          "w-1/2 py-4 lg:py-8 pl-4 lg:pl-8 h-90 sm:h-100 lg:h-150 flex items-end justify-center overflow-hidden",
+          "w-1/2 pt-4 lg:pt-8 pl-4 lg:pl-8 h-full flex items-end justify-center overflow-hidden rounded-md",
           imgDivClass
         )}
       >
         {image && (
           <img
             className={cx(
-              "h-full w-auto rounded-sm lg:rounded-md object-cover object-left",
+              "h-full w-auto rounded-tl-md lg:rounded-tl-md object-cover object-left",
               imgClass
             )}
             src={image}

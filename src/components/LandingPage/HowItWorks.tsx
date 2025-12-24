@@ -5,36 +5,34 @@ const steps = [
     title: "Create an account",
     description:
       "Sign up and get instant access to all Nkwabiz communication tools!",
-    className: "bg-white rounded-none w-full h-70 sm:h-80 lg:h-90",
+    className: "w-full h-70 sm:h-80 lg:h-90",
   },
   {
     title: "Choose the service you need",
     description:
       "Select from Bulk SMS, inventory system, email marketing, and more, only what fits your business.",
-    className:
-      "bg-white rounded-none flex-row-reverse w-full h-70 sm:h-80 lg:h-90",
+    className: "flex-row-reverse w-full h-70 sm:h-80 lg:h-90",
   },
   {
     title: "Start communicating with your customers",
     description:
       "Send messages, manage contacts, or build automated flows to engage your customers instantly.",
-    className: "bg-white rounded-none w-full h-70 sm:h-80 lg:h-90",
+    className: "w-full h-70 sm:h-80 lg:h-90",
   },
 ];
 
 const HowItWorks = () => {
   return (
     <div className="w-full bg-white px-6 py-8 md:px-10 md:py-16 lg:px-20 lg:py-25 flex flex-col items-center gap-15">
-      <div className="text-center flex flex-col gap-4">
-        <h2 className="text-3xl max-w-3xl font-bold text-gray-900 md:text-4xl lg:text-5xl text-center">
-          Simple Steps to ztransform your Business
+      <div className="text-center items-center flex flex-col gap-4">
+        <h2 className="text-3xl max-w-3xl font-bold text-gray-900 md:text-4xl lg:text-5xl text-center leading-[120%]">
+          Simple steps to transform your business
         </h2>
-        <p className="max-w-xl mx-auto text-xl text-gray-500">
-          Get started in minutes and see results immediately with our intuitive
-          business management platform.
+        <p className="max-w-xl text-lg text-gray-500">
+          Get started in minutes and reach your customers with ease.
         </p>
       </div>
-      <div className="flex w-full flex-col gap-10 relative">
+      <div className="flex w-full flex-col gap-15 relative">
         {steps.map((step, index) => (
           <ProductCard
             key={index}

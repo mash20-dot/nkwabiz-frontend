@@ -77,15 +77,12 @@ const Testimonials = () => {
       id="testimonials"
       className="bg-linear-to-b from-white to-gray-50 py-8 md:py-16 lg:py-25 overflow-hidden"
     >
-      <div className="">
-        <div className="text-center mb-12">
-          <h2 className="text-base font-semibold text-blue-600 tracking-wide uppercase">
-            Testimonials
-          </h2>
-          <p className="mt-1 text-4xl font-extrabold text-gray-900 sm:text-5xl sm:tracking-tight">
+      <div className="flex flex-col gap-15">
+        <div className="text-center flex flex-col gap-4 items-center">
+          <h2 className="text-3xl max-w-3xl font-bold text-gray-900 md:text-4xl lg:text-5xl text-center leading-[120%]">
             Trusted by business owners
-          </p>
-          <p className="max-w-xl mt-5 mx-auto text-xl text-gray-500">
+          </h2>
+          <p className="max-w-xl mx-auto text-lg text-gray-500">
             See what our customers have to say about how NkwaBiz has improved
             their business operations.
           </p>
@@ -103,7 +100,7 @@ const Testimonials = () => {
             {testimonials.map((testimonial, index) => (
               <div
                 key={`first-${index}`}
-                className="shrink-0 w-96 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 border border-gray-100 hover:scale-105"
+                className="shrink-0 w-100 cursor-pointer bg-white rounded-lg shadow-sm hover:shadow-2xl transition-all duration-300 p-8 border border-gray-100 hover:scale-100"
               >
                 <div className="flex gap-1 mb-4">
                   {[...Array(testimonial.rating)].map((_, i) => (
@@ -138,7 +135,7 @@ const Testimonials = () => {
             {testimonials.map((testimonial, index) => (
               <div
                 key={`second-${index}`}
-                className="shrink-0 w-96 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 border border-gray-100 hover:scale-105"
+                className="shrink-0 w-100 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 border border-gray-100 hover:scale-105"
               >
                 <div className="flex gap-1 mb-4">
                   {[...Array(testimonial.rating)].map((_, i) => (
@@ -169,15 +166,6 @@ const Testimonials = () => {
               </div>
             ))}
           </div>
-        </div>
-
-        <div className="mt-12 text-center">
-          <Link
-            to="/testimonials"
-            className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200"
-          >
-            Read more success stories
-          </Link>
         </div>
       </div>
 

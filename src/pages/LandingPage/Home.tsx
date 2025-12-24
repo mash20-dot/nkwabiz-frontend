@@ -6,6 +6,8 @@ import Products from "@/components/LandingPage/Products";
 import WhyNkwabiz from "@/components/LandingPage/WhyNkwabiz";
 import HowItWorks from "@/components/LandingPage/HowItWorks";
 import Testimonials from "@/components/LandingPage/Testimonials";
+import CTA from "@/components/LandingPage/CTA";
+import Footer from "@/components/LandingPage/Footer";
 
 const Home = () => {
   const pageTitle =
@@ -102,7 +104,9 @@ const Home = () => {
         <WhyNkwabiz />
         <HowItWorks />
         <Testimonials />
+        <CTA />
       </main>
+      <Footer />
     </div>
   );
 };
