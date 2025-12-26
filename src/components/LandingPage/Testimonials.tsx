@@ -77,7 +77,7 @@ const Testimonials = () => {
       id="testimonials"
       className="bg-linear-to-b from-white to-gray-50 py-8 md:py-16 lg:py-25 overflow-hidden"
     >
-      <div className="flex flex-col gap-15">
+      <div className="flex flex-col gap-12 lg:gap-15">
         <div className="text-center flex flex-col gap-4 items-center">
           <h2 className="text-3xl max-w-3xl font-bold text-gray-900 md:text-4xl lg:text-5xl text-center leading-[120%]">
             Trusted by business owners
@@ -91,18 +91,18 @@ const Testimonials = () => {
         {/* Scrolling Testimonials Container */}
         <div className="relative">
           {/* Gradient overlays for fade effect */}
-          <div className="absolute left-0 top-0 bottom-0 w-20 bg-linear-to-r from-gray-50 to-transparent z-10 pointer-events-none"></div>
-          <div className="absolute right-0 top-0 bottom-0 w-20 bg-linear-to-l from-gray-50 to-transparent z-10 pointer-events-none"></div>
+          <div className="absolute left-0 top-0 bottom-0 w-10 bg-linear-to-r from-gray-50 to-transparent z-10 pointer-events-none"></div>
+          <div className="absolute right-0 top-0 bottom-0 w-10 bg-linear-to-l from-gray-50 to-transparent z-10 pointer-events-none"></div>
 
           {/* Scrolling container */}
-          <div className="flex gap-6 animate-scroll-testimonials">
+          <div className="flex gap-5 lg:gap-6 animate-scroll-testimonials">
             {/* First set of testimonials */}
             {testimonials.map((testimonial, index) => (
               <div
                 key={`first-${index}`}
-                className="shrink-0 w-100 cursor-pointer bg-white rounded-lg shadow-sm hover:shadow-2xl transition-all duration-300 p-8 border border-gray-100 hover:scale-100"
+                className="shrink-0 w-80 md:w-100 lg:w-100 cursor-pointer bg-white rounded-md lg:rounded-lg shadow-sm hover:shadow-xl transition-all duration-300 p-6 lg:p-8 border border-gray-100 hover:scale-100"
               >
-                <div className="flex gap-1 mb-4">
+                <div className="flex gap-1 mb-3">
                   {[...Array(testimonial.rating)].map((_, i) => (
                     <Star
                       key={i}
@@ -111,13 +111,13 @@ const Testimonials = () => {
                   ))}
                 </div>
 
-                <p className="text-gray-700 italic mb-6 leading-relaxed">
+                <p className="text-gray-700 italic mb-4 leading-relaxed">
                   "{testimonial.content}"
                 </p>
 
-                <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
+                <div className="flex items-center gap-4">
                   <img
-                    className="h-12 w-12 rounded-full object-cover ring-2 ring-blue-100"
+                    className="h-12 w-12 rounded-full object-cover ring-2 ring-blue-200"
                     src={testimonial.image}
                     alt={testimonial.author}
                   />
@@ -135,9 +135,9 @@ const Testimonials = () => {
             {testimonials.map((testimonial, index) => (
               <div
                 key={`second-${index}`}
-                className="shrink-0 w-100 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 border border-gray-100 hover:scale-105"
+                className="shrink-0 w-100 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-6 lg:p-8 border border-gray-100 hover:scale-100"
               >
-                <div className="flex gap-1 mb-4">
+                <div className="flex gap-1 mb-3">
                   {[...Array(testimonial.rating)].map((_, i) => (
                     <Star
                       key={i}
@@ -150,9 +150,9 @@ const Testimonials = () => {
                   "{testimonial.content}"
                 </p>
 
-                <div className="flex items-center gap-4 pt-4 border-t border-gray-100">
+                <div className="flex items-center gap-4">
                   <img
-                    className="h-12 w-12 rounded-full object-cover ring-2 ring-blue-100"
+                    className="h-12 w-12 rounded-full object-cover ring-2 ring-blue-200"
                     src={testimonial.image}
                     alt={testimonial.author}
                   />
