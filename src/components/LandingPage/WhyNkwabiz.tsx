@@ -1,9 +1,10 @@
 import BenefitCard from "./BenefitCard";
-import SendSMS from "../../../asset/SendSMS.png";
 import Message from "../../../asset/icons/message.png";
 import Contact from "../../../asset/icons/contact.png";
 import Lightning from "../../../asset/icons/lightning.png";
-import Subscription from "../../../asset/icons/subscription.png";
+import CreditCard from "../../../asset/icons/credit.png";
+import Growth from "../../../asset/icons/growth.png";
+import Scalable from "../../../asset/icons/scalable.png";
 
 const benefits = [
   {
@@ -28,19 +29,19 @@ const benefits = [
     title: "No subscriptions. No waste.",
     description:
       "Buy SMS bundles and pay only for messages you send — no fixed monthly fees or hidden charges.",
-    image: Subscription,
+    image: CreditCard,
   },
   {
     title: "From small teams to large campaigns",
     description:
       "Whether you’re sending a few alerts or running large campaigns, Nkwabiz scales with your business needs.",
-    image: SendSMS,
+    image: Growth,
   },
   {
     title: "Easy to use. Built to last.",
     description:
       "A clean dashboard, straightforward workflows, and a platform you can rely on every day.",
-    image: SendSMS,
+    image: Scalable,
   },
 ];
 
