@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { Star } from "lucide-react";
 
 const Testimonials = () => {
