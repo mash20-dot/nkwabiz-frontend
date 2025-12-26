@@ -1,6 +1,6 @@
 import BenefitCard from "./BenefitCard";
 import Message from "../../../asset/icons/message.png";
-import Contact from "../../../asset/icons/contact.png";
+import Phonebook from "../../../asset/icons/phonebook.png";
 import Lightning from "../../../asset/icons/lightning.png";
 import CreditCard from "../../../asset/icons/credit.png";
 import Growth from "../../../asset/icons/growth.png";
@@ -17,7 +17,7 @@ const benefits = [
     title: "Organize contacts your way",
     description:
       "Save contacts by group or category, manage audiences easily, and send targeted messages without manual filtering.",
-    image: Contact,
+    image: Phonebook,
   },
   {
     title: "Messages delivered in real time",
