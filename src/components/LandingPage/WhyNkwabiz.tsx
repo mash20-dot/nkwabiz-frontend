@@ -47,7 +47,7 @@ const benefits = [
 
 const WhyNkwabiz = () => {
   return (
-    <div className="w-full bg-blue-800 text-white px-6 py-8 md:px-10 lg:px-20 lg:py-25 flex flex-col items-center gap-15">
+    <div className="w-full bg-blue-800 text-white px-6 py-8 md:px-10 md:py-16 lg:px-20 lg:py-25 flex flex-col items-center gap-15">
       <div className="w-full flex flex-col justify-center items-center gap-2">
         <h2 className="text-3xl max-w-3xl font-bold text-white md:text-4xl lg:text-5xl text-center leading-[120%]">
           Everything Businesses Need to Communicate at Scale
